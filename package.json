@@ -1,0 +1,11 @@
+{
+  "name": "exp-eplr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "dev": "lite-server --baseDir=www"
+  },
+  "author": "",
+  "license": "ISC"
+}
