@@ -74,10 +74,6 @@ const getSPDateFromStr = (dateStr) => {
 	return new Date(year, (month - 1), day);
 }
 
-//TODO:
-//https://stackoverflow.com/questions/40075726/whats-a-good-way-to-dynamically-render-dom-elements-with-plain-old-js
-
-
 //Code for building the HTML elements
 const E = (tag, attrs = {}, text = '', ... children) => {
 
@@ -102,32 +98,31 @@ const E = (tag, attrs = {}, text = '', ... children) => {
 
 };
 
-const addMemberEntry = (member) => {
+const addMSPComponent = (member) => {
 
-		let colCell = E('div', { 'class': colsClass }, '',
+		let MSPComponent = E('div', { 'class': colsClass }, '',
 		E('div', { 'class': cellClass }, '',
-			E('div', { 'class': txtBoxClass }, '', 
-				E('p', {}, member.ParliamentaryName, ))));
+		E('div', { 'class': txtBoxClass }, '', 
+		E('p', {}, member.ParliamentaryName, ))));
 
-		main.appendChild(colCell);
+		main.appendChild(MSPComponent);
+
+		//TODO: Add support for photos, full names, constituences, maps etc.
 
 		}
 
-
-
 		/********************************************************************/
-
 		
 		Promise.all([get(constituencyURL), get(regionURL), get(membersURL)])
-			.then((dataArr) => {
+		.then((dataArr) => {
 
-				let electionResults = dataArr[0].concat(dataArr[1]);
-				let mspIDList = getMSPIDsFromElectionResults(electionResults);
-				let mspList = getMSPObjectsFromIDs(mspIDList, dataArr[2]);
+			let electionResults = dataArr[0].concat(dataArr[1]);
+			let mspIDList = getMSPIDsFromElectionResults(electionResults);
+			let mspList = getMSPObjectsFromIDs(mspIDList, dataArr[2]);
 
-				mspList.forEach(function (elem) {
-					addMemberEntry(elem);
+			mspList.forEach(function (elem) {
+				addMSPComponent(elem);
 
-				});
 			});
+		});
 			
