@@ -25,3 +25,30 @@ https://data.parliament.scot/api/telephones
 https://data.parliament.scot/api/electionstatuses (1 CURRENT 2 NOT CURRENT)
 https://data.parliament.scot/api/MemberElectionConstituencyStatuses
 https://data.parliament.scot/api/MemberElectionregionStatuses
+
+
+--Member API output:
+BirthDate
+:
+"1970-07-15T00:00:00"
+BirthDateIsProtected
+:
+false
+GenderTypeID
+:
+1
+Notes
+:
+""
+ParliamentaryName
+:
+"Constance, Angela"
+PersonID
+:
+1735
+PhotoURL
+:
+"http://scottishparliament.thirdlight.com/file/35820129812"
+PreferredName
+:
+"Angela"
