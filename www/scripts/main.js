@@ -1,5 +1,5 @@
 const colsClass = 'cols';
-const cellClass = 'cols--cell';
+const cellClass = 'cols--cell cols--cell__fullwidth';
 const txtBoxClass = 'txtbox';
 const main = document.getElementsByTagName('main')[0];
 
@@ -79,24 +79,24 @@ const getSPDateFromStr = (dateStr) => {
 
 
 //Code for building the HTML elements
-const E = (tag, attrs = {}, text, children) => {
+const E = (tag, attrs = {}, text = '', ... children) => {
 
 	const e = document.createElement(tag);
-	Object.assign(e, attrs);
+	
+	if (attrs) {
+		for (let key in attrs) {
+			e.setAttribute(key, attrs[key]);
+		}
+	}
 
 	if (text) {
 		e.appendChild(document.createTextNode(text));
 	}
 
-	if (children) {
-		if (typeof children === 'Array') {
-			for (let i = 0; i < children.length; i++) {
-				e.appendChild(children[i]);
-			}
-
-		} else
-			e.appendChild(children);
-	}
+	for (let i = 0; i < children.length; i++)
+		{
+			e.appendChild(children[i]);
+		}
 
 	return e;
 
@@ -104,11 +104,10 @@ const E = (tag, attrs = {}, text, children) => {
 
 const addMemberEntry = (member) => {
 
-
-	//TODO: Make this work with arrays and attributes
-
-		let colCell = E('div', {}, '', E('div'));
-
+		let colCell = E('div', { 'class': colsClass }, '',
+		E('div', { 'class': cellClass }, '',
+			E('div', { 'class': txtBoxClass }, '', 
+				E('p', {}, member.ParliamentaryName, ))));
 
 		main.appendChild(colCell);
 
@@ -118,6 +117,7 @@ const addMemberEntry = (member) => {
 
 		/********************************************************************/
 
+		
 		Promise.all([get(constituencyURL), get(regionURL), get(membersURL)])
 			.then((dataArr) => {
 
@@ -127,7 +127,7 @@ const addMemberEntry = (member) => {
 
 				mspList.forEach(function (elem) {
 					addMemberEntry(elem);
+
 				});
-
-
 			});
+			

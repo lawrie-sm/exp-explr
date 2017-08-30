@@ -82,9 +82,9 @@ main {
 }
 
 .nav--menu li a {	
-    display: block;
-    text-align: center;
-    text-decoration: none;
+  display: block;
+  text-align: center;
+ 	text-decoration: none;
 	text-transform: uppercase;
 	font-weight: 700;
 	padding: 20px 12px;
@@ -117,6 +117,11 @@ main {
 .cols--cell {
 	margin: 2% 1%;
 	background-color: var(--col-secondary);
+}
+
+.cols--cell__fullwidth
+{
+	min-width: 100%;
 }
 
 .txtbox {
@@ -180,7 +185,5 @@ main {
 		margin: 1% 1%;
 		display: flex;
 		display: -webkit-flex;
-		align-items: center;
-		justify-content: center;
 	}
 }
