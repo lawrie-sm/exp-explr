@@ -32,9 +32,9 @@ main {
 }
 
 .nav--logo {	
-    float: left;
-    text-align: center;
-    text-decoration: none;
+	float: left;
+	text-align: center;
+	text-decoration: none;
 	text-transform: uppercase;
 	font-weight: 700;
 	font-size: 1.5em;
@@ -117,15 +117,26 @@ main {
 .cols--cell {
 	margin: 2% 1%;
 	background-color: var(--col-secondary);
+	display: flex;
+	display: -webkit-flex;
 }
 
 .cols--cell__fullwidth
 {
-	min-width: 100%;
+	min-width: 98%;
 }
 
 .txtbox {
 	padding: 7%;
+}
+
+.portrait-box {
+	padding: 5%;
+	max-width: 250px;
+}
+
+.portrait-img {
+	width: 100%
 }
 
 /*MEDIUM SCREENS*/
@@ -183,7 +194,5 @@ main {
 
 	.cols--cell {
 		margin: 1% 1%;
-		display: flex;
-		display: -webkit-flex;
 	}
 }

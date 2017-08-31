@@ -1,6 +1,11 @@
 const colsClass = 'cols';
 const cellClass = 'cols--cell cols--cell__fullwidth';
 const txtBoxClass = 'txtbox';
+const portraitClass = 'portrait-box';
+const imgBoxClass = 'imgbox';
+
+const smallImgPath = '/img/portraits/';
+
 const main = document.getElementsByTagName('main')[0];
 
 const constituencyURL = 'https://data.parliament.scot/api/MemberElectionConstituencyStatuses';
@@ -67,10 +72,9 @@ const getMSPObjectsFromIDs = (mspIDList, mspObjects) => {
 const getSPDateFromStr = (dateStr) => {
 	let T = dateStr.indexOf('T');
 	dateStr = dateStr.substring(0, T);
+	dateStr = dateStr.replace(/\s+/g, '');
 	let dateArr = dateStr.split('-');
-	let year = dateArr[0],
-		month = dateArr[1],
-		day = dateArr[2];
+	let year = dateArr[0], month = dateArr[1], day = dateArr[2];
 	return new Date(year, (month - 1), day);
 }
 
@@ -99,19 +103,67 @@ const E = (tag, attrs = {}, text = '', ... children) => {
 };
 
 const addMSPComponent = (member) => {
+	
+	let name = member.ParliamentaryName;
+		
+	let birthDate = '(Birth date not given)';
+	if (!member.BirthDateIsProtected)
+	{
+		let d = getSPDateFromStr(member.BirthDate);
+		birthDate = d.getDate() +
+		'/' + (d.getMonth()+1) +
+		'/' + d.getFullYear();
+	}
+	
+	let imgSRC = member.PhotoURL;
+	let imgAlt = name + ' portait';
+	
+	if (imgSRC) {
+	
+		let imgID = imgSRC.substring(imgSRC.lastIndexOf('/') + 1);
+		imgID = imgID.replace(/\s+/g, '');
+		imgSRC = smallImgPath + imgID + '.jpg';
+		
+	} else {
+		
+		imgSRC = '#';
+	}
+	
+	let MSPComponent = E('div', { 'class': colsClass }, '',
+	E('div', { 'class': cellClass }, '',
+		E('div', { 'class': imgBoxClass }, '',
+			E('img', { 'class': portraitClass, 'src': imgSRC })),
+		E('div', { 'class': txtBoxClass }, '',
+			E('p', {}, member.ParliamentaryName),
+			E('p', {}, birthDate)),
+		));
 
-		let MSPComponent = E('div', { 'class': colsClass }, '',
-		E('div', { 'class': cellClass }, '',
-		E('div', { 'class': txtBoxClass }, '', 
-		E('p', {}, member.ParliamentaryName, ))));
-
+		
 		main.appendChild(MSPComponent);
-
-		//TODO: Add support for photos, full names, constituences, maps etc.
-
-		}
+		
+	}
 
 		/********************************************************************/
+		
+		/* TODO
+		
+		- Default image 
+		
+	  More info:
+		- Constituency / Region (link to ONS region code?)
+				See:
+				http://statistics.data.gov.uk/def/geography/collection/S16
+				http://statistics.data.gov.uk/def/geography/collection/S17
+		- Party
+		- Email addresses
+		- Addresses
+		- Telephones
+		- Websites
+		- Government, Committee, CPG, Parliamentary roles
+		- Election results (inc. previous)
+		- Register of interests
+		
+		*/
 		
 		Promise.all([get(constituencyURL), get(regionURL), get(membersURL)])
 		.then((dataArr) => {
