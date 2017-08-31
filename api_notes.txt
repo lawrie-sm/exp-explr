@@ -1,17 +1,13 @@
-First ID appears to be:
-
-
-APIs:
+APIs
 
 Expenses
 ---Groups starts at ID: 1585
 https://data.parliament.scot/api/allowancesgrouptransactions/<ID>
+
 ---Members, starts at ID: 569313
 https://data.parliament.scot/api/allowancesmembertransactions/<ID>
 
 ---Members (including Name > ID)
-https://data.parliament.scot/api/members
-or
 https://data.parliament.scot/api/members/<ID>
 
 ---Parties, Websites etc
@@ -20,27 +16,17 @@ https://data.parliament.scot/api/websites
 https://data.parliament.scot/api/addresses
 https://data.parliament.scot/api/telephones
 
-
 --Elections
 https://data.parliament.scot/api/electionstatuses (1 CURRENT 2 NOT CURRENT)
 https://data.parliament.scot/api/MemberElectionConstituencyStatuses
 https://data.parliament.scot/api/MemberElectionregionStatuses
 
-
---Member API output:
+--Member API keys:
 BirthDate
-"1970-07-15T00:00:00"
 BirthDateIsProtected
-false
 GenderTypeID
-1
 Notes
-""
 ParliamentaryName
-"Constance, Angela"
 PersonID
-1735
 PhotoURL
-"http://scottishparliament.thirdlight.com/file/35820129812"
 PreferredName
-"Angela"
