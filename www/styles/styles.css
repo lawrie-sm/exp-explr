@@ -106,6 +106,7 @@ main {
 
 .main--nav-spacer {
 	margin-top: 80px;
+	width: 100%;
 }
 
 /* GRID */
@@ -115,15 +116,10 @@ main {
 }
 
 .cols--cell {
-	margin: 2% 1%;
+	margin: 3% 0%;
 	background-color: var(--col-secondary);
 	display: flex;
 	display: -webkit-flex;
-}
-
-.cols--cell__fullwidth
-{
-	min-width: 98%;
 }
 
 .txtbox {
@@ -185,13 +181,8 @@ main {
 	.nav--burger {	
 		display: none
 	}
-	
-	.cols {
-		display: flex;
-		display: -webkit-flex;
-	}
 
 	.cols--cell {
-		margin: 1% 1%;
+		margin: 2% 2%;
 	}
 }

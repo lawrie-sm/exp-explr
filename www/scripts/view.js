@@ -1,5 +1,5 @@
 const colsClass = 'cols';
-const cellClass = 'cols--cell cols--cell__fullwidth';
+const cellClass = 'cols--cell';
 const txtBoxClass = 'txtbox';
 const portraitBoxClass = 'portrait-box';
 const portraitImgClass = 'portrait-img';
@@ -56,7 +56,7 @@ const setupMSPComponentsInView = (mspList) => {
 			}
 			
 			let imgSRC = m.photoURL;
-			let imgAlt = m.firstName + ' portait';
+			let imgAlt = m.firstName + ' portrait';
 			
 			if (imgSRC) {
 			
