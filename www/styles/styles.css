@@ -1,11 +1,13 @@
 :root {
-    --col-primary: #764B8E;
+	--col-primary: #764B8E;
 	--col-secondary: #dbc8e6;
 	--col-tertiary: #3D1255;
 	--col-gray: #fcfcfc;
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
@@ -20,18 +22,18 @@ html {
 
 main {
 	margin: 0 auto;
-	width: 98%;	
+	width: 98%;
 }
 
 .nav {
 	position: fixed;
 	top: 0;
-	width: 100%;	
+	width: 100%;
 	color: var(--col-secondary);
 	background-color: var(--col-primary);
 }
 
-.nav--logo {	
+.nav--logo {
 	float: left;
 	text-align: center;
 	text-decoration: none;
@@ -41,17 +43,17 @@ main {
 	padding: 15px 10px;
 }
 
-.nav--burger {	
+.nav--burger {
 	float: right;
 	padding: 7px 12px;
 	cursor: pointer;
 }
 
-.nav--burger div {	
+.nav--burger div {
 	width: 30px;
-    height: 4px;
-    background-color: var(--col-gray);
-    margin: 6px 0;
+	height: 4px;
+	background-color: var(--col-gray);
+	margin: 6px 0;
 }
 
 .nav--menu-mobile-wrapper {
@@ -68,7 +70,8 @@ main {
 	position: absolute;
 	top: -300%;
 	width: 100%;
-	height: 100%; /* This determines the delay between menu and text shifting down*/
+	height: 100%;
+	/* This determines the delay between menu and text shifting down*/
 	list-style-type: none;
 	background-color: var(--col-secondary)
 }
@@ -81,10 +84,10 @@ main {
 	transition: top 0.4s;
 }
 
-.nav--menu li a {	
-  display: block;
-  text-align: center;
- 	text-decoration: none;
+.nav--menu li a {
+	display: block;
+	text-align: center;
+	text-decoration: none;
 	text-transform: uppercase;
 	font-weight: 700;
 	padding: 20px 12px;
@@ -99,8 +102,8 @@ main {
 	color: var(--col-gray);
 }
 
-.nav--button-line-wrapper, .nav--button-line-filler
-{
+.nav--button-line-wrapper,
+.nav--button-line-filler {
 	display: none;
 }
 
@@ -108,6 +111,7 @@ main {
 	margin-top: 80px;
 	width: 100%;
 }
+
 
 /* GRID */
 
@@ -131,57 +135,48 @@ main {
 }
 
 .portrait-img {
-		max-width: 180px;
+	max-width: 180px;
 }
+
 
 /*MEDIUM SCREENS*/
 
-@media (min-width: 640px) { 
+@media (min-width: 640px) {
 	main {
 		max-width: 960px;
-		width: 90%;	
+		width: 90%;
 	}
-	
 	.nav--menu {
-		display: block; /* This overrides the mobile absolute positioning stuff */
+		display: block;
 		position: relative;
 	}
-	
 	.nav--menu li {
 		float: right;
 		border-width: 0px 0px 0px 1px;
 		border-style: solid;
 		border-color: var(--col-tertiary);
 	}
-	
-	.nav--button-line-wrapper, .nav--button-line-filler
-	{
+	.nav--button-line-wrapper,
+	.nav--button-line-filler {
 		display: block;
 		overflow: hidden;
 		height: 5px;
 	}
-	
 	.nav--button-line-wrapper {
 		background-color: inherit;
 	}
-	
-	.nav--button-line-filler
-	{
+	.nav--button-line-filler {
 		margin: auto;
 		width: 0%;
 		background-color: var(--col-secondary);
 		transition: width 0.2s;
 	}
-	
-	
 	nav li:hover .nav--button-line-filler {
 		width: 100%
 	}
-	
-	.nav--burger {	
+	.nav--burger {
 		display: none
 	}
-
 	.cols--cell {
 		margin: 2% 2%;
 	}

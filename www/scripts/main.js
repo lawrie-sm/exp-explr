@@ -1,27 +1,3 @@
-/* TODO
-
-General:
-- Caching
-- Default images
-- Spinner
-- Modules + Using Babel
-
-MSPs:
-- Constituency / Region (link to ONS region code?)
-		See:
-		http://statistics.data.gov.uk/def/geography/collection/S16
-		http://statistics.data.gov.uk/def/geography/collection/S17
-- Party
-- Email addresses
-- Addresses
-- Telephones
-- Websites
-- Government, Committee, CPG, Parliamentary roles
-- Election results (inc. previous)
-- Register of interests
-
-*/
-
 Promise.all([
 get(membersAPI),
 get(constituencyElectionsAPI),
