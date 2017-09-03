@@ -1,12 +1,15 @@
 TODO
 
-General:
+General
+- Plain JS Modules
+- Babel for ES6
+- Async / Await
 - Caching
 - Default images
 - Spinner
-- Modules + Using Babel
+- Redesign
 
-MSPs:
+Possible MSP info sources
 - Constituency / Region (link to ONS region code?)
 		See:
 		http://statistics.data.gov.uk/def/geography/collection/S16
