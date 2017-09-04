@@ -1,6 +1,8 @@
 (function () {
 	'use strict';
 	
+	/* GLOBALS & UTILS */
+	
 	const CURRENT_DATE = new Date();
 	
 	function Area(_name, _code) {		
@@ -10,7 +12,6 @@
 
 	function MSP
 	(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL) {
-			this.ID = _ID;
 			this.constit = _constit;
 			this.region = _region;
 			this.firstName = _firstName;
@@ -18,7 +19,21 @@
 			this.DOB = _DOB;
 			this.photoURL = _photoURL;
 	}
+
+	const getSPDateFromStr = (dateStr) => {
+		let T = dateStr.indexOf('T');
+		dateStr = dateStr.substring(0, T);
+		dateStr = dateStr.replace(/\s+/g, '');
+		let dateArr = dateStr.split('-');
+		let year = dateArr[0],
+			month = dateArr[1],
+			day = dateArr[2];
+		return new Date(year, (month - 1), day);
+	};
 	
+/******************************************************************/
+/* API */
+
 	const getDataFromAPIs = new Promise((resolve, reject) => {
 		const APIroot = 'https://data.parliament.scot/api/';
 		const membersAPI = APIroot + 'members';
@@ -62,10 +77,14 @@
 		});
 	});
 
-	const getCurrentMSPsFromElectionResults =
-		(constitResults, regResults, constituencies, regions) => {
+	/******************************************************************/
+	/* DATA PROCESSING */
+	
+	//Builds a Map of MSPs using their PersonIDs
+	const getMSPMap =
+	(constitResults, regResults, constituencies, regions) => {
 
-			let r = [];
+			let r = new Map();
 			let results;
 
 			for (let isLoopingRegions = 0; isLoopingRegions < 2; isLoopingRegions++) {
@@ -89,7 +108,7 @@
 						(CURRENT_DATE >= startDate &&
 							endDate == null)) {
 
-						let newMSP = new MSP(electionResult.PersonID);
+						let newMSP = new MSP();
 
 						if (isLoopingRegions) {
 
@@ -111,87 +130,72 @@
 							newMSP.region = new Area(region.Name, region.RegionCode);
 
 						}
-						r.push(newMSP);
+						r.set(electionResult.PersonID, newMSP);
 					}
 				});
 			}
 			return r;
 		};
 
-
-	const addMSPData = (mspList, basicMSPData) => {
-
-		mspList.forEach((m) => {
+	const addMSPData = (mspMap, basicMSPData) => {
+	console.log(mspMap);
+	
+		mspMap.forEach((val, key, map) => {
 
 			let mspDataObj = basicMSPData.find((dataElem) => {
-				return dataElem.PersonID === m.ID;
+				return dataElem.PersonID === key;
 			});
 
 			let fullName = mspDataObj.ParliamentaryName.split(',');
-			m.firstName = fullName[1];
-			m.lastName = fullName[0];
+			val.firstName = fullName[1];
+			val.lastName = fullName[0];
 
 			if (!mspDataObj.BirthDateIsProtected) {
-				m.DOB = getSPDateFromStr(mspDataObj.BirthDate);
+				val.DOB = getSPDateFromStr(mspDataObj.BirthDate);
 			}
 
-			m.photoURL = mspDataObj.PhotoURL;
+			val.photoURL = mspDataObj.PhotoURL;
 
 		});
 	};
 
-	//Processes an SP formatted date string into a JS date object
-	const getSPDateFromStr = (dateStr) => {
-		let T = dateStr.indexOf('T');
-		dateStr = dateStr.substring(0, T);
-		dateStr = dateStr.replace(/\s+/g, '');
-		let dateArr = dateStr.split('-');
-		let year = dateArr[0],
-			month = dateArr[1],
-			day = dateArr[2];
-		return new Date(year, (month - 1), day);
-	};
 
-	/******************************************************************/
+/******************************************************************/
+/* VIEW */
 
-
-	const colsClass = 'cols';
-	const cellClass = 'cols--cell';
-	const txtBoxClass = 'txtbox';
-	const portraitBoxClass = 'portrait-box';
-	const portraitImgClass = 'portrait-img';
-	const smallImgPath = '/img/portraits/';
-	const main = document.getElementsByTagName('main')[0];
-
-	//Code for building the HTML elements
-	const E = (tag, attrs = {}, text = '', ...children) => {
-		const e = document.createElement(tag);
-		if (attrs) {
-			for (let key in attrs) {
-				e.setAttribute(key, attrs[key]);
+	const setView = (mspMap) => {
+		const colsClass = 'cols';
+		const cellClass = 'cols--cell';
+		const txtBoxClass = 'txtbox';
+		const portraitBoxClass = 'portrait-box';
+		const portraitImgClass = 'portrait-img';
+		const smallImgPath = '/img/portraits/';
+		const main = document.getElementsByTagName('main')[0];
+		
+		const E = (tag, attrs = {}, text = '', ...children) => {
+			const e = document.createElement(tag);
+			if (attrs) {
+				for (let key in attrs) {
+					e.setAttribute(key, attrs[key]);
+				}
 			}
-		}
-		if (text) {
-			e.appendChild(document.createTextNode(text));
-		}
-		for (let i = 0; i < children.length; i++) {
-			e.appendChild(children[i]);
-		}
-		return e;
-	};
+			if (text) {
+				e.appendChild(document.createTextNode(text));
+			}
+			for (let i = 0; i < children.length; i++) {
+				e.appendChild(children[i]);
+			}
+			return e;
+		};
 
-
-	const setupMSPComponentsInView = (mspList) => {
-
-		mspList.forEach((m) => {
-
+		mspMap.forEach((m) => {
 			let location;
 			if (m.constit) {
 				location = m.constit.name + ', ' + m.region.name;
 			} else {
 				location = m.region.name;
 			}
-
+			
 			let birthDate = '(Birth date not given)';
 			if (m.DOB) {
 				let d = m.DOB;
@@ -199,16 +203,13 @@
 					'/' + (d.getMonth() + 1) +
 					'/' + d.getFullYear();
 			}
-
+			
 			let imgSRC = m.photoURL;
 			let imgAlt = m.firstName + ' portrait';
-
 			if (imgSRC) {
-
 				let imgID = imgSRC.substring(imgSRC.lastIndexOf('/') + 1);
 				imgID = imgID.replace(/\s+/g, '');
 				imgSRC = smallImgPath + imgID + '.jpg';
-
 			} else {
 				imgSRC = '#';
 			}
@@ -236,24 +237,22 @@
 					)));
 
 			main.appendChild(MSPComponent);
-
 		});
-
-	};
-
+	}
 	
 	
 	/******************************************************************/
-
+  /* MAIN */
+	
 	getDataFromAPIs.then((d) => {
-
-		let mspList = getCurrentMSPsFromElectionResults(
+		
+		let mspMap = getMSPMap(
 			d.constitResults, d.regResults, d.constits, d.regions);
-
-		addMSPData(mspList, d.basicMSPData);
-
-		setupMSPComponentsInView(mspList);
+			
+		addMSPData(mspMap, d.basicMSPData);
+		
+		setView(mspMap);
 
 	});
-
+	
 }());
