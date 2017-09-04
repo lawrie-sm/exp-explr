@@ -1,25 +1,15 @@
 (function () {
 	'use strict';
-
-	const currentDate = new Date();
-
-	const APIroot = 'https://data.parliament.scot/api/';
-	const membersAPI = APIroot + 'members';
-	const constituencyElectionsAPI = APIroot + 'MemberElectionConstituencyStatuses';
-	const regionalElectionsAPI = APIroot + 'MemberElectionregionStatuses';
-	const regionsAPI = APIroot + 'regions';
-	const constituenciesAPI = APIroot + 'constituencies';
-
-	class Area {
-		constructor(_name, _code) {
+	
+	const CURRENT_DATE = new Date();
+	
+	function Area(_name, _code) {		
 			this.name = _name;
 			this.code = _code;
-		}
 	}
 
-	class MSP {
-		constructor(
-			_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL) {
+	function MSP
+	(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL) {
 			this.ID = _ID;
 			this.constit = _constit;
 			this.region = _region;
@@ -27,28 +17,51 @@
 			this.lastName = _lastName;
 			this.DOB = _DOB;
 			this.photoURL = _photoURL;
-		}
 	}
+	
+	const getDataFromAPIs = new Promise((resolve, reject) => {
+		const APIroot = 'https://data.parliament.scot/api/';
+		const membersAPI = APIroot + 'members';
+		const constituencyElectionsAPI = APIroot + 'MemberElectionConstituencyStatuses';
+		const regionalElectionsAPI = APIroot + 'MemberElectionregionStatuses';
+		const regionsAPI = APIroot + 'regions';
+		const constituenciesAPI = APIroot + 'constituencies';
 
-	const get = (url) => {
-		return new Promise((resolve, reject) => {
-			fetch(url, {
-					method: 'get'
-				})
-				.then(function (response) {
-					return response.json();
-				})
-				.then(function (data) {
-					resolve(data);
-				});
+		const get = (url) => {
+			return new Promise((resolve, reject) => {
+				fetch(url, {
+						method: 'get'
+					})
+					.then(function (response) {
+						return response.json();
+					})
+					.then(function (data) {
+						resolve(data);
+					});
+			});
+		};
+			
+		Promise.all([
+		get(membersAPI),
+		get(constituencyElectionsAPI),
+		get(regionalElectionsAPI),
+		get(constituenciesAPI),
+		get(regionsAPI)
+		]).then((dataArr) => {
+
+		let returnData = {
+		'basicMSPData': dataArr[0],
+		'constitResults':  dataArr[1],
+		'regResults': dataArr[2],
+		'constits': dataArr[3],
+		'regions': dataArr[4],
+		}
+	
+		resolve(returnData);
+		
 		});
-	};
+	});
 
-	/*
-	Determines the currently elected MSPs (by ID) from
-	election results API and assigns them the correct
-	region / constituency objects
-	*/
 	const getCurrentMSPsFromElectionResults =
 		(constitResults, regResults, constituencies, regions) => {
 
@@ -71,9 +84,9 @@
 						endDate = getSPDateFromStr(electionResult.ValidUntilDate);
 					}
 
-					if ((currentDate >= startDate &&
-							currentDate <= endDate) ||
-						(currentDate >= startDate &&
+					if ((CURRENT_DATE >= startDate &&
+							CURRENT_DATE <= endDate) ||
+						(CURRENT_DATE >= startDate &&
 							endDate == null)) {
 
 						let newMSP = new MSP(electionResult.PersonID);
@@ -105,9 +118,7 @@
 			return r;
 		};
 
-	/*
-	Copies over additional data from API into MSP objects
-	*/
+
 	const addMSPData = (mspList, basicMSPData) => {
 
 		mspList.forEach((m) => {
@@ -131,7 +142,6 @@
 
 	//Processes an SP formatted date string into a JS date object
 	const getSPDateFromStr = (dateStr) => {
-
 		let T = dateStr.indexOf('T');
 		dateStr = dateStr.substring(0, T);
 		dateStr = dateStr.replace(/\s+/g, '');
@@ -139,11 +149,11 @@
 		let year = dateArr[0],
 			month = dateArr[1],
 			day = dateArr[2];
-
 		return new Date(year, (month - 1), day);
 	};
 
 	/******************************************************************/
+
 
 	const colsClass = 'cols';
 	const cellClass = 'cols--cell';
@@ -155,26 +165,21 @@
 
 	//Code for building the HTML elements
 	const E = (tag, attrs = {}, text = '', ...children) => {
-
 		const e = document.createElement(tag);
-
 		if (attrs) {
 			for (let key in attrs) {
 				e.setAttribute(key, attrs[key]);
 			}
 		}
-
 		if (text) {
 			e.appendChild(document.createTextNode(text));
 		}
-
 		for (let i = 0; i < children.length; i++) {
 			e.appendChild(children[i]);
 		}
-
 		return e;
-
 	};
+
 
 	const setupMSPComponentsInView = (mspList) => {
 
@@ -186,7 +191,6 @@
 			} else {
 				location = m.region.name;
 			}
-
 
 			let birthDate = '(Birth date not given)';
 			if (m.DOB) {
@@ -231,35 +235,22 @@
 						E('p', {}, location)
 					)));
 
-
 			main.appendChild(MSPComponent);
 
 		});
 
 	};
 
+	
+	
 	/******************************************************************/
 
-	Promise.all([
-		get(membersAPI),
-		get(constituencyElectionsAPI),
-		get(regionalElectionsAPI),
-		get(constituenciesAPI),
-		get(regionsAPI)
-	]).then((dataArr) => {
+	getDataFromAPIs.then((d) => {
 
-		let basicMSPData = dataArr[0];
-		let constitResults = dataArr[1];
-		let regResults = dataArr[2];
-		let constits = dataArr[3];
-		let regions = dataArr[4];
-
-		//Grab the current MSPs from election results
-		//Also stored regional/constituency IDS
 		let mspList = getCurrentMSPsFromElectionResults(
-			constitResults, regResults, constits, regions);
+			d.constitResults, d.regResults, d.constits, d.regions);
 
-		addMSPData(mspList, basicMSPData);
+		addMSPData(mspList, d.basicMSPData);
 
 		setupMSPComponentsInView(mspList);
 
