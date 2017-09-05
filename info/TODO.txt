@@ -1,8 +1,8 @@
 TODO
 
+- Integrate babel + polyfills
+
 General
-- Plain JS Modules
-- Babel for ES6
 - Async / Await
 - Caching
 - Default images
@@ -22,7 +22,6 @@ Possible MSP info sources
 - Government, Committee, CPG, Parliamentary roles
 - Election results (inc. previous)
 - Register of interests
-
 
 Misc
 - make the "clicked" bar below nav elements be relative to the mouse

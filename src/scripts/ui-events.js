@@ -1,3 +1,5 @@
+'use strict';
+
 //Menu code
 const openClass = 'nav--menu__open';
 const wasOpenedClass = 'nav--menu__was-opened';
