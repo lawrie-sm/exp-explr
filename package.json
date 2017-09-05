@@ -1,23 +1,24 @@
 {
-  "name": "exp-eplr",
+  "name": "msp-data",
   "version": "1.0.0",
   "description": "",
   "main": "index.html",
   "scripts": {
     "dev": "lite-server --baseDir=dist",
-		 "build": "webpack src/scripts/app.js dist/bundle.js"
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
-    "babel-preset-minify": "^0.2.0",
     "lite-server": "^2.3.0",
+    "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
+    "promise-polyfill": "6.0.2",
     "whatwg-fetch": "^2.0.3"
   }
 }
