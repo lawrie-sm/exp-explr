@@ -2,7 +2,7 @@ const path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: ['./src/app.js'],
+  entry: ['./src/controller.js'],
 	devtool: 'inline-source-map',
 	 devServer: {
      contentBase: './dist'
