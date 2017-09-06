@@ -2,7 +2,7 @@ const path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: ['promise-polyfill', 'whatwg-fetch', './src/scripts/app.js'],
+  entry: ['classlist-polyfill', 'promise-polyfill', 'whatwg-fetch', './src/app.js'],
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')

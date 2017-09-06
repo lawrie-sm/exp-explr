@@ -2,6 +2,7 @@
 
 import * as model from './model.js';
 import * as view from './view.js';
+import * as ui from './ui.js';
 
 model.getDataFromAPIs.then((d) => {
 	

@@ -18,6 +18,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
+    "classlist-polyfill": "^1.2.0",
     "promise-polyfill": "6.0.2",
     "whatwg-fetch": "^2.0.3"
   }
