@@ -5,8 +5,10 @@
   "main": "index.html",
   "scripts": {
     "dev": "lite-server --baseDir=dist",
-    "build": "webpack"
+		"dev-build": "webpack --config webpack.dev-config",
+    "prod-build": "webpack --config webpack.prod-config"
   },
+	
   "author": "",
   "license": "ISC",
   "devDependencies": {
