@@ -1,20 +1,15 @@
 TODO
-
-- Integrate babel + polyfills
+- make the "clicked" bar below nav elements be relative to the mouse
 
 General
-- Async / Await
+- pages
 - Caching
-- Default images
+- Proper Default images
 - Spinner
 - Redesign
 
-Possible MSP info sources
-- Constituency / Region (link to ONS region code?)
-		See:
-		http://statistics.data.gov.uk/def/geography/collection/S16
-		http://statistics.data.gov.uk/def/geography/collection/S17
-- Party
+
+---- To be queried on a per-MSP basis / as needed by search:
 - Email addresses
 - Addresses
 - Telephones
@@ -22,7 +17,3 @@ Possible MSP info sources
 - Government, Committee, CPG, Parliamentary roles
 - Election results (inc. previous)
 - Register of interests
-
-Misc
-- make the "clicked" bar below nav elements be relative to the mouse
-- Use anonymouse function closures to implement modules

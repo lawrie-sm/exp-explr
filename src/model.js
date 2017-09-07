@@ -1,23 +1,27 @@
 'use strict';
 
-const CURRENT_DATE = new Date();
-
 function Area(_name, _code) {		
 	this.name = _name;
 	this.code = _code;
 }
 
+function Party(_name, _abbreviation) {
+	this.name = _name;
+	this.abbreviation = _abbreviation
+}
+
 function MSP
-(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL) {
+(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL, _party) {
 	this.constit = _constit;
 	this.region = _region;
 	this.firstName = _firstName;
 	this.lastName = _lastName;
 	this.DOB = _DOB;
 	this.photoURL = _photoURL;
+	this.party = _party;
 }
 
-const getSPDateFromStr = (dateStr) => {
+const strToDate = (dateStr) => {
 	let T = dateStr.indexOf('T');
 	dateStr = dateStr.substring(0, T);
 	dateStr = dateStr.replace(/\s+/g, '');
@@ -26,6 +30,14 @@ const getSPDateFromStr = (dateStr) => {
 	month = dateArr[1],
 	day = dateArr[2];
 	return new Date(year, (month - 1), day);
+};
+
+const dateIsWithinRangeOfSPObj = (date, spObj) => {
+	let startDate = strToDate(spObj.ValidFromDate);
+	let endDate = (spObj.ValidUntilDate != null) ?
+	strToDate(spObj.ValidUntilDate) : null;
+	return ((date >= startDate && date <= endDate) ||
+	(date >= startDate && endDate == null));
 };
 
 /******************************************************************/
@@ -39,6 +51,9 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 	const regionalElectionsAPI = APIroot + 'MemberElectionregionStatuses';
 	const regionsAPI = APIroot + 'regions';
 	const constituenciesAPI = APIroot + 'constituencies';
+	const partyAPI = APIroot + 'parties';
+	const partyMembershipAPI = APIroot + 'memberparties';
+
 
 	const get = (url) => {
 		return new Promise((resolve, reject) => {
@@ -49,6 +64,9 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 					return response.json();
 				})
 				.then(function (data) {
+					if (!data) {
+						console.log('Error getting data!');
+					}
 					resolve(data);
 				});
 		});
@@ -59,7 +77,9 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 	get(constituencyElectionsAPI),
 	get(regionalElectionsAPI),
 	get(constituenciesAPI),
-	get(regionsAPI)
+	get(regionsAPI),
+	get(partyAPI),
+	get(partyMembershipAPI)
 	]).then((dataArr) => {
 
 	let returnData = {
@@ -68,6 +88,8 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 	'regResults': dataArr[2],
 	'constits': dataArr[3],
 	'regions': dataArr[4],
+  'parties': dataArr[5],
+	'partyMemberships': dataArr[6]
 	}
 
 	resolve(returnData);
@@ -79,18 +101,13 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 // TODO: Make it work with other time ranges than current
 
 export const getMSPMap =
-(constitResults, regResults, constituencies, regions) => {
+(date, constitResults, regResults, constituencies, regions) => {
 
 	let mspMap = new Map();
 	let results = regResults.concat(constitResults);
 	results.forEach((result) => {
 			
-		let startDate = getSPDateFromStr(result.ValidFromDate);
-		let endDate = (result.ValidUntilDate != null) ?
-		getSPDateFromStr(result.ValidUntilDate) : null;
-
-		if ((CURRENT_DATE >= startDate && CURRENT_DATE <= endDate) ||
-			(CURRENT_DATE >= startDate && endDate == null)) {
+		if (dateIsWithinRangeOfSPObj(date, result)) {
 
 			let msp = new MSP();
 			
@@ -118,9 +135,9 @@ export const getMSPMap =
 	return mspMap;
 };
 
-export const addMSPData = (mspMap, basicMSPData) => {
-console.log(mspMap);
-
+export const addMSPData = (date, mspMap, basicMSPData, parties, partyMemberships) => {
+	console.dir(parties);
+	
 	mspMap.forEach((msp, mspID) => {
 
 		let mspDataObj = basicMSPData.find((dataElem) => {
@@ -130,9 +147,21 @@ console.log(mspMap);
 		msp.firstName = fullName[1];
 		msp.lastName = fullName[0];
 		if (!mspDataObj.BirthDateIsProtected) {
-			msp.DOB = getSPDateFromStr(mspDataObj.BirthDate);
+			msp.DOB = strToDate(mspDataObj.BirthDate);
 		}
 		msp.photoURL = mspDataObj.PhotoURL;
+		
+	
+		let membership = partyMemberships.find((memb) => {
+			return (memb.PersonID === mspID) &&
+			dateIsWithinRangeOfSPObj(date, memb);
+		});
+		let partyObj = parties.find((p) => {
+			return (p.ID === membership.PartyID);
+		});
+		msp.party = new Party(partyObj.ActualName, partyObj.Abbreviation);
+		console.log(msp.party);
 
 	});
 };
+

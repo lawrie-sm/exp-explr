@@ -1,13 +1,19 @@
 'use strict';
 
+
+
 export const setView = (mspMap) => {
+		const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/150x150';
+		
 		const colsClass = 'cols';
 		const cellClass = 'cols--cell';
 		const txtBoxClass = 'txtbox';
 		const portraitBoxClass = 'portrait-box';
 		const portraitImgClass = 'portrait-img';
 		const smallImgPath = '/img/portraits/';
+		
 		const main = document.getElementsByTagName('main')[0];
+		let frag = document.createDocumentFragment();
 		
 		const E = (tag, attrs = {}, text = '', ...children) => {
 			const e = document.createElement(tag);
@@ -62,7 +68,7 @@ export const setView = (mspMap) => {
 						}, '',
 						E('img', {
 							'class': portraitImgClass,
-							'src': imgSRC,
+							'src': PLACEHOLDER_IMG_URL, //imgSRC,
 							'alt': imgAlt
 						})),
 					E('div', {
@@ -70,11 +76,12 @@ export const setView = (mspMap) => {
 						}, '',
 						E('p', {}, m.firstName + ' ' + m.lastName),
 						E('p', {}, birthDate),
+						E('p', {}, m.party.name),
 						E('p', {}, location)
 					)));
-
-			main.appendChild(MSPComponent);
+			frag.appendChild(MSPComponent);
 		});
+		main.appendChild(frag);
 	}
 
 export const setupNavMenu = () => {

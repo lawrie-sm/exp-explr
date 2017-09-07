@@ -31,4 +31,11 @@ PersonID
 PhotoURL
 PreferredName
 
--------------------------------------------------------------------------------
+--Parties
+https://data.parliament.scot/api/memberparties
+{"ID":625,
+"PersonID":5598,
+"PartyID":7,
+"ValidFromDate":"2016-05-05T00:00:00",
+"ValidUntilDate":null,
+"MemberPartyRoles":null}
