@@ -75,81 +75,64 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 	});
 });
 
-//Builds a Map of MSPs using their PersonIDs
+// Builds a Map of MSPs using their PersonIDs
+// TODO: Make it work with other time ranges than current
+
 export const getMSPMap =
 (constitResults, regResults, constituencies, regions) => {
 
-	let r = new Map();
-	let results;
+	let mspMap = new Map();
+	let results = regResults.concat(constitResults);
+	results.forEach((result) => {
+			
+		let startDate = getSPDateFromStr(result.ValidFromDate);
+		let endDate = (result.ValidUntilDate != null) ?
+		getSPDateFromStr(result.ValidUntilDate) : null;
 
-	for (let isLoopingRegions = 0; isLoopingRegions < 2; isLoopingRegions++) {
-		if (isLoopingRegions) {
-			results = regResults;
-		} else {
-			results = constitResults;
+		if ((CURRENT_DATE >= startDate && CURRENT_DATE <= endDate) ||
+			(CURRENT_DATE >= startDate && endDate == null)) {
+
+			let msp = new MSP();
+			
+			if (result.ConstituencyID) {
+				let constit = constituencies.find((c) => {
+					return c.ID == result.ConstituencyID;
+				});
+				msp.constit = new Area(constit.Name, constit.ConstituencyCode);
+				let region = regions.find((reg) => {
+					return reg.ID == constit.RegionID;
+				});
+				msp.region = new Area(region.Name, region.RegionCode);
+				
+			} else {
+				let region = regions.find((reg) => {
+					return reg.ID == result.RegionID;
+				});
+				msp.region = new Area(region.Name, region.RegionCode);
+			}
+			
+			mspMap.set(result.PersonID, msp);
 		}
+	});
 
-		results.forEach((electionResult) => {
-
-			let startDate = null;
-			let endDate = null;
-			startDate = getSPDateFromStr(electionResult.ValidFromDate);
-			if (electionResult.ValidUntilDate != null) {
-				endDate = getSPDateFromStr(electionResult.ValidUntilDate);
-			}
-
-			if ((CURRENT_DATE >= startDate &&
-					CURRENT_DATE <= endDate) ||
-				(CURRENT_DATE >= startDate &&
-					endDate == null)) {
-
-				let newMSP = new MSP();
-
-				if (isLoopingRegions) {
-
-					let region = regions.find((reg) => {
-						return reg.ID == electionResult.RegionID;
-					});
-					newMSP.region = new Area(region.Name, region.RegionCode);
-
-				} else {
-
-					let constit = constituencies.find((c) => {
-						return c.ID == electionResult.ConstituencyID;
-					});
-					newMSP.constit = new Area(constit.Name, constit.ConstituencyCode);
-
-					let region = regions.find((reg) => {
-						return reg.ID == constit.RegionID;
-					});
-					newMSP.region = new Area(region.Name, region.RegionCode);
-
-				}
-				r.set(electionResult.PersonID, newMSP);
-			}
-		});
-	}
-	return r;
+	return mspMap;
 };
 
 export const addMSPData = (mspMap, basicMSPData) => {
 console.log(mspMap);
 
-	mspMap.forEach((val, key, map) => {
+	mspMap.forEach((msp, mspID) => {
 
 		let mspDataObj = basicMSPData.find((dataElem) => {
-			return dataElem.PersonID === key;
+			return dataElem.PersonID === mspID;
 		});
-
 		let fullName = mspDataObj.ParliamentaryName.split(',');
-		val.firstName = fullName[1];
-		val.lastName = fullName[0];
-
+		msp.firstName = fullName[1];
+		msp.lastName = fullName[0];
 		if (!mspDataObj.BirthDateIsProtected) {
-			val.DOB = getSPDateFromStr(mspDataObj.BirthDate);
+			msp.DOB = getSPDateFromStr(mspDataObj.BirthDate);
 		}
-
-		val.photoURL = mspDataObj.PhotoURL;
+		msp.photoURL = mspDataObj.PhotoURL;
 
 	});
 };
