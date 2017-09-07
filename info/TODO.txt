@@ -9,11 +9,18 @@ General
 - Redesign
 
 
----- To be queried on a per-MSP basis / as needed by search:
+---- To be queried on page load and displayed for all MSP cards:
+-name
+-DOB
+-party
+-constituency/region
+-Govt/Party role
+
+---- To be queried on a per-MSP basis / as needed by search function:
 - Email addresses
 - Addresses
 - Telephones
 - Websites
-- Government, Committee, CPG, Parliamentary roles
+- Committee, CPG, Parliamentary roles
 - Election results (inc. previous)
 - Register of interests

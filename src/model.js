@@ -98,10 +98,10 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 });
 
 // Builds a Map of MSPs using their PersonIDs
-// TODO: Make it work with other time ranges than current
-
 export const getMSPMap =
 (date, constitResults, regResults, constituencies, regions) => {
+
+//TODO: Api call here + return a promise from this funct
 
 	let mspMap = new Map();
 	let results = regResults.concat(constitResults);
@@ -132,11 +132,12 @@ export const getMSPMap =
 		}
 	});
 
+	//TODO: addMSPdata call here
+	
 	return mspMap;
 };
 
 export const addMSPData = (date, mspMap, basicMSPData, parties, partyMemberships) => {
-	console.dir(parties);
 	
 	mspMap.forEach((msp, mspID) => {
 
@@ -160,7 +161,7 @@ export const addMSPData = (date, mspMap, basicMSPData, parties, partyMemberships
 			return (p.ID === membership.PartyID);
 		});
 		msp.party = new Party(partyObj.ActualName, partyObj.Abbreviation);
-		console.log(msp.party);
+		
 
 	});
 };

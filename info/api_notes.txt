@@ -39,3 +39,17 @@ https://data.parliament.scot/api/memberparties
 "ValidFromDate":"2016-05-05T00:00:00",
 "ValidUntilDate":null,
 "MemberPartyRoles":null}
+
+https://data.parliament.scot/api/memberpartyroles
+{"ID":1,
+"MemberPartyID":204,
+"PartyRoleTypeID":1,
+"ValidFromDate":"2009-12-22T00:00:00",
+"ValidUntilDate":"2011-03-22T00:00:00",
+"Notes":""}
+
+https://data.parliament.scot/api/partyroles
+{"ID":1,
+"Name":"Chief of Staff",
+"PartyID":5,
+"Notes":""}
