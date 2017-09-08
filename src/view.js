@@ -12,22 +12,6 @@ export const setView = (mspMap) => {
 		
 		const main = document.getElementsByTagName('main')[0];
 		let cols = '';
-		
-		const E = (tag, attrs = {}, text = '', ...children) => {
-			const e = document.createElement(tag);
-			if (attrs) {
-				for (let key in attrs) {
-					e.setAttribute(key, attrs[key]);
-				}
-			}
-			if (text) {
-				e.appendChild(document.createTextNode(text));
-			}
-			for (let i = 0; i < children.length; i++) {
-				e.appendChild(children[i]);
-			}
-			return e;
-		};
 
 		mspMap.forEach((m) => {
 			let location;
