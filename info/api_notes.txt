@@ -53,3 +53,9 @@ https://data.parliament.scot/api/partyroles
 "Name":"Chief of Staff",
 "PartyID":5,
 "Notes":""}
+
+https://data.parliament.scot/api/governmentroles
+{"ID":1,"Name":"Cabinet Secretary for Commonwealth Games, Sport, Equalities and Pensioners' Rights","Notes":""}
+
+https://data.parliament.scot/api/membergovernmentroles
+{"ID":1,"PersonID":1870,"GovernmentRoleID":1,"ValidFromDate":"2014-04-22T00:00:00","ValidUntilDate":"2014-11-21T00:00:00"}

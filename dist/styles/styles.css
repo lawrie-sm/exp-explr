@@ -1,5 +1,5 @@
 :root {
-	--col-primary: #764B8E;
+	--col-primary: #6E66B0;
 	--col-secondary: #dbc8e6;
 	--col-tertiary: #3D1255;
 	--col-gray: #fcfcfc;
@@ -112,15 +112,9 @@ main {
 	width: 100%;
 }
 
-
-/* GRID */
-
-.cols {
+.cellBlock {
 	display: block;
-}
-
-.cols--cell {
-	margin: 3% 0%;
+	margin: 3% 1%;
 	background-color: var(--col-secondary);
 	display: flex;
 	display: -webkit-flex;
