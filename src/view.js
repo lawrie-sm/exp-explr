@@ -11,7 +11,7 @@ export const setView = (mspMap) => {
 		const smallImgPath = '/img/portraits/';
 		
 		const main = document.getElementsByTagName('main')[0];
-		let frag = document.createDocumentFragment();
+		let cols = '';
 		
 		const E = (tag, attrs = {}, text = '', ...children) => {
 			const e = document.createElement(tag);
@@ -55,31 +55,29 @@ export const setView = (mspMap) => {
 				imgSRC = '#';
 			}
 
-			let MSPComponent = E('div', {
-					'class': colsClass
-				}, '',
-				E('div', {
-						'class': cellClass
-					}, '',
-					E('div', {
-							'class': portraitBoxClass
-						}, '',
-						E('img', {
-							'class': portraitImgClass,
-							'src': PLACEHOLDER_IMG_URL, //imgSRC,
-							'alt': imgAlt
-						})),
-					E('div', {
-							'class': txtBoxClass
-						}, '',
-						E('p', {}, m.firstName + ' ' + m.lastName),
-						E('p', {}, birthDate),
-						E('p', {}, m.party.name),
-						E('p', {}, location)
-					)));
-			frag.appendChild(MSPComponent);
+			let MSPComponent =
+			` 
+			<div class="${colsClass}">
+				<div class="${cellClass}">
+					<div class="${portraitBoxClass}">
+						<img class="${portraitImgClass}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
+					</div>
+					<div class="${txtBoxClass}">
+						<p>${m.firstName + ' ' + m.lastName}</p>
+						<p>${birthDate}</p>
+						<p>${m.party.name}</p>
+						<p>${location}</p>
+					</div>
+				</div>
+			</div>
+			`;
+						
+			cols = cols + MSPComponent;
+			
 		});
-		main.appendChild(frag);
+		
+		main.innerHTML = cols;
+
 	}
 
 export const setupNavMenu = () => {

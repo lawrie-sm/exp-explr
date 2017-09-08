@@ -90,7 +90,7 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 	'regions': dataArr[4],
   'parties': dataArr[5],
 	'partyMemberships': dataArr[6]
-	}
+	};
 
 	resolve(returnData);
 	
