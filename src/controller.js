@@ -9,18 +9,11 @@ import * as view from './view.js';
 
 view.setupNavMenu();
 
-model.getDataFromAPIs.then((d) => {
-	
-	//TODO: restructure so that the model is doing this + passes back
-	//complete MSP map
 
-	
-	let mspMap = model.getMSPMap(
-		CURRENT_DATE, d.constitResults, d.regResults, d.constits, d.regions);
-		
-	model.addMSPData(
-	CURRENT_DATE, mspMap, d.basicMSPData, d.parties, d.partyMemberships);
-	
+//TODO: getMSPMap should return a promise so this can be tidier
+model.getDataFromAPIs.then((data) => {
+
+	let mspMap = model.getMSPMap(CURRENT_DATE, data);
 	view.setView(mspMap);
 	
 });

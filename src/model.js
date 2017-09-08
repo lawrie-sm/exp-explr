@@ -86,7 +86,7 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 	'basicMSPData': dataArr[0],
 	'constitResults':  dataArr[1],
 	'regResults': dataArr[2],
-	'constits': dataArr[3],
+	'constituencies': dataArr[3],
 	'regions': dataArr[4],
   'parties': dataArr[5],
 	'partyMemberships': dataArr[6]
@@ -97,51 +97,47 @@ export const getDataFromAPIs = new Promise((resolve, reject) => {
 	});
 });
 
-// Builds a Map of MSPs using their PersonIDs
-export const getMSPMap =
-(date, constitResults, regResults, constituencies, regions) => {
+export const getMSPMap = (date, data) => {
+	let mspMap = getActiveMSPsByDate(date, data);
+	addMSPData(mspMap, date, data);
+	return mspMap;
+};
 
-//TODO: Api call here + return a promise from this funct
-
+const getActiveMSPsByDate = (date, data) => {
 	let mspMap = new Map();
-	let results = regResults.concat(constitResults);
+	let results = data.regResults.concat(data.constitResults);
+	
 	results.forEach((result) => {
-			
 		if (dateIsWithinRangeOfSPObj(date, result)) {
-
 			let msp = new MSP();
 			
 			if (result.ConstituencyID) {
-				let constit = constituencies.find((c) => {
+				let constit = data.constituencies.find((c) => {
 					return c.ID == result.ConstituencyID;
 				});
 				msp.constit = new Area(constit.Name, constit.ConstituencyCode);
-				let region = regions.find((reg) => {
+				let region = data.regions.find((reg) => {
 					return reg.ID == constit.RegionID;
 				});
 				msp.region = new Area(region.Name, region.RegionCode);
 				
 			} else {
-				let region = regions.find((reg) => {
+				let region = data.regions.find((reg) => {
 					return reg.ID == result.RegionID;
 				});
 				msp.region = new Area(region.Name, region.RegionCode);
 			}
-			
 			mspMap.set(result.PersonID, msp);
 		}
 	});
-
-	//TODO: addMSPdata call here
 	
 	return mspMap;
-};
+}
 
-export const addMSPData = (date, mspMap, basicMSPData, parties, partyMemberships) => {
-	
+const addMSPData = (mspMap, date, data) => {
 	mspMap.forEach((msp, mspID) => {
 
-		let mspDataObj = basicMSPData.find((dataElem) => {
+		let mspDataObj = data.basicMSPData.find((dataElem) => {
 			return dataElem.PersonID === mspID;
 		});
 		let fullName = mspDataObj.ParliamentaryName.split(',');
@@ -151,18 +147,15 @@ export const addMSPData = (date, mspMap, basicMSPData, parties, partyMemberships
 			msp.DOB = strToDate(mspDataObj.BirthDate);
 		}
 		msp.photoURL = mspDataObj.PhotoURL;
-		
 	
-		let membership = partyMemberships.find((memb) => {
+		let membership = data.partyMemberships.find((memb) => {
 			return (memb.PersonID === mspID) &&
 			dateIsWithinRangeOfSPObj(date, memb);
 		});
-		let partyObj = parties.find((p) => {
+		let partyObj = data.parties.find((p) => {
 			return (p.ID === membership.PartyID);
 		});
 		msp.party = new Party(partyObj.ActualName, partyObj.Abbreviation);
-		
-
 	});
 };
 

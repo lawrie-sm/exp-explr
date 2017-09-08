@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 export const setView = (mspMap) => {
 		const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/150x150';
 		
