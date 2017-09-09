@@ -27,18 +27,18 @@ const dateIsWithinRangeOfSPObj = (date, spObj) => {
 	(date >= startDate && endDate == null));
 };
 
-	let byProp = (typeToCheck, valueToFind, date) => {
-		if (date) {
-			return (e) => {
-				return (e[typeToCheck] === valueToFind &&
-				dateIsWithinRangeOfSPObj(date, e));
-				};
-		} else {
-			return (e) => {
-				return e[typeToCheck] === valueToFind;
+let byProp = (typeToCheck, valueToFind, date) => {
+	if (date) {
+		return (e) => {
+			return (e[typeToCheck] === valueToFind &&
+			dateIsWithinRangeOfSPObj(date, e));
 			};
-		}
-	};
+	} else {
+		return (e) => {
+			return e[typeToCheck] === valueToFind;
+		};
+	}
+};
 
 const getMSPsByDate = (date, data) => {
 	let mspMap = new Map();
@@ -100,7 +100,6 @@ const getMSPsByDate = (date, data) => {
 	return mspMap;
 };
 
-
 const updateMSPMapWithExpandedData = (date, data) => {
 	console.dir(data);
 	msp_map.forEach((msp) => {
@@ -110,7 +109,6 @@ const updateMSPMapWithExpandedData = (date, data) => {
 
 	});
 };
-
 
 export const getMSPMap = (date) => {
 		return new Promise((resolve, reject) => {	
@@ -122,6 +120,7 @@ export const getMSPMap = (date) => {
 					resolve(msp_map);
 				});
 			}
+
 			else {
 				msp_map = getMSPsByDate(date, basic_data_cache);
 				resolve(msp_map);
