@@ -1,4 +1,4 @@
-export function Area(_name, _code) {		
+export function Area(_name, _code) {
 	this.name = _name;
 	this.code = _code;
 }
@@ -31,8 +31,7 @@ export function Website(_type, _url) {
 	this.url = _url;
 }
 
-export function MSP
-(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL, _party) {
+export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL, _party) {
 	this.constit = _constit;
 	this.region = _region;
 	this.firstName = _firstName;
