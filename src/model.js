@@ -27,15 +27,15 @@ const dateIsWithinRangeOfSPObj = (date, spObj) => {
 		(date >= startDate && endDate == null));
 };
 
-let byProp = (typeToCheck, valueToFind, date) => {
+let byProp = (typeToCheckStr, valueToFind, date) => {
 	if (date) {
 		return (e) => {
-			return (e[typeToCheck] === valueToFind &&
+			return (e[typeToCheckStr] === valueToFind &&
 				dateIsWithinRangeOfSPObj(date, e));
 		};
 	} else {
 		return (e) => {
-			return e[typeToCheck] === valueToFind;
+			return e[typeToCheckStr] === valueToFind;
 		};
 	}
 };
@@ -86,8 +86,8 @@ const getMSPsByDate = (date, data) => {
 			let partyRoles = data.partyMemberRoles.filter(byProp('MemberPartyID', membershipObj.ID, date));
 			if (partyRoles) {
 				partyRoles.forEach((role) => {
-					let partyRole = data.partyRoles.find(byProp('ID', role.PartyRoleTypeID));
-					msp.partyRoles.push(partyRole.Name);
+					let partyRoleType = data.partyRoles.find(byProp('ID', role.PartyRoleTypeID));
+					msp.partyRoles.push(new objs.PartyRole(partyRoleType.Name, role.Notes));
 				});
 			}
 		}
@@ -106,13 +106,26 @@ const getMSPsByDate = (date, data) => {
 };
 
 const updateMSPMapWithExpandedData = (date, data) => {
-	console.dir(data);
-	msp_map.forEach((msp) => {
-
-		/*TODO: Rewrite the other MSP data adding code to
-		be less search-intensive, then replicate here*/
-
-	});
+	const mapMSPData = (arr, valTypeStr, typeArr, typeIDStr, destObjStr, objType) => {
+		arr.forEach((obj) => {
+			let msp = msp_map.get(obj.PersonID);
+			if (msp) {
+				let typeStr = (typeArr.find(byProp('ID', obj[typeIDStr]))).Name;
+				//Some specific code for dealing with addresses
+				if (valTypeStr === 'Line1') {
+					let street = obj.Line1 + ', ' + obj.Line2;
+					msp[destObjStr][typeStr] = new objType(street, obj.PostCode, obj.Region, obj.Town);
+				}
+				else if (obj[valTypeStr]) {
+					msp[destObjStr][typeStr] = obj[valTypeStr];
+				}
+			}
+		});
+	};
+	mapMSPData(data.addresses, 'Line1', data.addressTypes, 'AddressTypeID', 'addresses', objs.Address);
+	mapMSPData(data.emails, 'Address', data.emailTypes, 'EmailAddressTypeID', 'emails', objs.Email);
+	mapMSPData(data.telephones, 'Telephone1', data.telephoneTypes, 'TelephoneTypeID', 'telephones', objs.Telephone);
+	mapMSPData(data.websites, 'WebURL', data.websiteTypes, 'WebSiteTypeID', 'websites', objs.Website);
 };
 
 export const getMSPMap = (date) => {
@@ -125,7 +138,6 @@ export const getMSPMap = (date) => {
 				resolve(msp_map);
 			});
 		} else {
-			msp_map = getMSPsByDate(date, basic_data_cache);
 			resolve(msp_map);
 		}
 
@@ -143,7 +155,6 @@ export const getExpandedMSPMap = (date) => {
 			});
 
 		} else {
-			updateMSPMapWithExpandedData(expanded_data_cache);
 			resolve(msp_map);
 		}
 

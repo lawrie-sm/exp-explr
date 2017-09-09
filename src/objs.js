@@ -8,27 +8,16 @@ export function Party(_name, _abbreviation) {
 	this.abbreviation = _abbreviation;
 }
 
-export function Address(_type, _street, _postCode, _region, _town) {
-	this.type = _type;
+export function PartyRole(_internalName, _officialName) {
+	this.internalName = _internalName;
+	this.officialName = _officialName;
+}
+
+export function Address(_street, _postCode, _region, _town) {
 	this.street = _street;
 	this.postCode = _postCode;
 	this.region = _region;
 	this.town = _town;
-}
-
-export function Email(_type, _address) {
-	this.type = _type;
-	this.address = _address;
-}
-
-export function Telephone(_type, _number) {
-	this.type = _type;
-	this.number = _number;
-}
-
-export function Website(_type, _url) {
-	this.type = _type;
-	this.url = _url;
 }
 
 export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL, _party) {
@@ -41,8 +30,8 @@ export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoU
 	this.party = _party;
 	this.partyRoles = [];
 	this.govtRoles = [];
-	this.addresses = [];
-	this.emailAddresses = [];
-	this.telephones = [];
-	this.websites = [];
+	this.addresses = {};
+	this.emails = {};
+	this.telephones = {};
+	this.websites = {};
 }

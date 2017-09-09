@@ -49,9 +49,17 @@ export const setupMSPBlocks = (mspMap) => {
 			imgSRC = '#';
 		}
 
-		let partyRoles = (msp.partyRoles) ?
-			msp.partyRoles.join(', ').replace(/party/gi, '') : '';
+		let partyRoles = '';
+		if (msp.partyRoles) {
+			msp.partyRoles.forEach((role) => {
+				let str = role.internalName.replace(/Party Spokesperson on/gi, '');
+				str += ', ';
+				partyRoles += str;
+			});
+		}
+
 		let govtRoles = (msp.govtRoles) ? msp.govtRoles.join(', ') : '';
+	
 
 		let MSPFragment = `
 			<div id="${mspID}" class="${CELL_CLASS}">
@@ -64,7 +72,6 @@ export const setupMSPBlocks = (mspMap) => {
 					<p>${birthDate}</p>
 					<p>${msp.party.name}</p>
 					<p>${partyRoles}</p>
-					<p>${location}</p>
 				</div>
 			</div>
 			`;

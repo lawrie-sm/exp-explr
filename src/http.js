@@ -69,8 +69,8 @@ export const getExpandedMSPData = () =>  {
 				'addressTypes':  dataArr[1],
 				'telephones': dataArr[2],
 				'telephoneTypes': dataArr[3],
-				'emailAddresses': dataArr[4],
-				'emailAddressTypes': dataArr[5],
+				'emails': dataArr[4],
+				'emailTypes': dataArr[5],
 				'websites': dataArr[6],
 				'websiteTypes': dataArr[7]
 			};
