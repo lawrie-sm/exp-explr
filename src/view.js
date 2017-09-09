@@ -8,7 +8,7 @@ export const setupMSPBlocks = (mspMap) => {
 		return () => {
 			const CELL_EXPANDED_CLASS = 'cellBlock__expanded';
 			if (cell.classList.toggle(CELL_EXPANDED_CLASS)) {
-				controller.getExpandedCellData(cell.id);
+				controller.getExpandedCellData();
 			}
 		};
 	};
@@ -49,6 +49,10 @@ export const setupMSPBlocks = (mspMap) => {
 				imgSRC = '#';
 			}
 
+			let partyRoles = (msp.partyRoles) ?
+			msp.partyRoles.join(', ').replace(/party/gi, '') : '';
+			let govtRoles = (msp.govtRoles) ? msp.govtRoles.join(', ') : '';
+			
 			/*TODO:
 			May want to parse the govtRole string to ensure 
 			PLOs are not given the same prominence as ministers
@@ -64,11 +68,11 @@ export const setupMSPBlocks = (mspMap) => {
 					<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
 				</div>
 				<div class="${TXT_BOX_CLASS}">
-					<p>${(msp.govtRole) ? msp.govtRole : ''}</p>
+					<p>${govtRoles}</p>
 					<p>${msp.firstName} ${ msp.lastName}</p>
 					<p>${birthDate}</p>
 					<p>${msp.party.name}</p>
-					<p>${(msp.partyRole) ? msp.partyRole : ''}</p>
+					<p>${partyRoles}</p>
 					<p>${location}</p>
 				</div>
 			</div>

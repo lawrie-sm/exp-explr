@@ -6,8 +6,8 @@ const CURRENT_DATE = new Date();
 
 let test_date = new Date(2011, 1, 1);
 
-export const getExpandedCellData = (id) => {
-	model.getExpandedMSPMap(id).then((specificMSPData) => {
+export const getExpandedCellData = () => {
+	model.getExpandedMSPMap(CURRENT_DATE).then((specificMSPData) => {
 	});
 };
 

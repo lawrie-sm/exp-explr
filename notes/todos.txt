@@ -1,8 +1,8 @@
 TODO
 - make the "clicked" bar below nav elements be relative to the mouse
+- Filtering the data arrays by date and applying them to the final map (instead of looping through MSPs and searching) might be more efficient
+- proper support for updating with dates without re-calling API
 - CSS should be processed and inlined by webpack?
-
-General
 - pages
 - Caching
 - Proper Default images
