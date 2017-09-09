@@ -18,9 +18,9 @@ General
 -Govt/Party role
 
 ---- To be queried on a per-MSP basis / as needed by search function:
-- Email addresses
 - Addresses
 - Telephones
+- Email addresses
 - Websites
 - Committee, CPG, Parliamentary roles
 - Election results (inc. previous)

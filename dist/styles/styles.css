@@ -113,11 +113,17 @@ main {
 }
 
 .cellBlock {
-	display: block;
+	height: 14em;
 	margin: 3% 1%;
 	background-color: var(--col-secondary);
 	display: flex;
 	display: -webkit-flex;
+	transition: height 0.25s;
+	-webkit-transition: height 0.25s;
+}
+
+.cellBlock__expanded {
+	height: 28em;
 }
 
 .txtbox {
@@ -171,7 +177,7 @@ main {
 	.nav--burger {
 		display: none
 	}
-	.cols--cell {
+	.cellBlock {
 		margin: 2% 2%;
 	}
 }

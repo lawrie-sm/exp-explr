@@ -1,5 +1,9 @@
 'use strict';
 
+const API_ROOT = 'https://data.parliament.scot/api/';
+let has_expanded_data = false; //TODO: Won't need this once we have caching
+let msp_map = null;
+
 function Area(_name, _code) {		
 	this.name = _name;
 	this.code = _code;
@@ -59,41 +63,66 @@ const get = (url) => {
 	});
 };
 
-export const getInitialMSPData = new Promise((resolve, reject) => {
-	const API_ROOT = 'https://data.parliament.scot/api/';
-
-	Promise.all([
-	get(API_ROOT + 'members'),
-	get(API_ROOT + 'MemberElectionConstituencyStatuses'),
-	get(API_ROOT + 'MemberElectionregionStatuses'),
-	get(API_ROOT + 'constituencies'),
-	get(API_ROOT + 'regions'),
-	get(API_ROOT + 'parties'),
-	get(API_ROOT + 'memberparties'),
-	get(API_ROOT + 'partyroles'),
-	get(API_ROOT + 'memberpartyroles'),
-	get(API_ROOT + 'governmentroles'),
-	get(API_ROOT + 'membergovernmentroles')
-	]).then((dataArr) => {
-
-	let returnData = {
-		'basicMSPData': dataArr[0],
-		'constitResults':  dataArr[1],
-		'regResults': dataArr[2],
-		'constituencies': dataArr[3],
-		'regions': dataArr[4],
-		'parties': dataArr[5],
-		'partyMemberships': dataArr[6],
-		'partyRoles': dataArr[7],
-		'partyMemberRoles': dataArr[8],
-		'govtRoles': dataArr[9],
-		'govtMemberRoles': dataArr[10]
-	};
-
-	resolve(returnData);
-	
+const getInitialMSPData = () => {
+	return new Promise((resolve, reject) => {
+		Promise.all([
+		get(API_ROOT + 'members'),
+		get(API_ROOT + 'MemberElectionConstituencyStatuses'),
+		get(API_ROOT + 'MemberElectionregionStatuses'),
+		get(API_ROOT + 'constituencies'),
+		get(API_ROOT + 'regions'),
+		get(API_ROOT + 'parties'),
+		get(API_ROOT + 'memberparties'),
+		get(API_ROOT + 'partyroles'),
+		get(API_ROOT + 'memberpartyroles'),
+		get(API_ROOT + 'governmentroles'),
+		get(API_ROOT + 'membergovernmentroles')
+		]).then((dataArr) => {
+			let returnData = {
+				'basicMSPData': dataArr[0],
+				'constitResults':  dataArr[1],
+				'regResults': dataArr[2],
+				'constituencies': dataArr[3],
+				'regions': dataArr[4],
+				'parties': dataArr[5],
+				'partyMemberships': dataArr[6],
+				'partyRoles': dataArr[7],
+				'partyMemberRoles': dataArr[8],
+				'govtRoles': dataArr[9],
+				'govtMemberRoles': dataArr[10]
+			};
+			resolve(returnData);
+		});
 	});
-});
+};
+
+const getExpandedMSPData = () =>  {
+	return new Promise((resolve, reject) => {
+	Promise.all([
+		get(API_ROOT + 'addresses'),
+		get(API_ROOT + 'addresstypes'),
+		get(API_ROOT + 'telephones'),
+		get(API_ROOT + 'telephonetypes'),
+		get(API_ROOT + 'emailaddresses'),
+		get(API_ROOT + 'emailaddresstypes'),
+		get(API_ROOT + 'websites'),
+		get(API_ROOT + 'websitetypes')
+		]).then((dataArr) => {
+			let returnData = {
+				'addresses': dataArr[0],
+				'addressTypes':  dataArr[1],
+				'telephones': dataArr[2],
+				'telephoneTypes': dataArr[3],
+				'emailAddresses': dataArr[4],
+				'emailAddressTypes': dataArr[5],
+				'websites': dataArr[6],
+				'websiteTypes': dataArr[7]
+			};
+			console.dir(returnData);
+			resolve(returnData);
+		});
+	});
+};
 
 const getMSPsByDate = (date, data) => {
 	let mspMap = new Map();
@@ -174,16 +203,40 @@ const getMSPsByDate = (date, data) => {
 		}
 	});
 	
-
-
 	return mspMap;
 };
 
+
+const updateMSPMapWithExpandedData = () => {
+
+};
+
+
 export const getMSPMap = (date) => {
-	return new Promise((resolve, reject) => {	
-		getInitialMSPData.then((data) => {
-			let mspMap = getMSPsByDate(date, data);
-			resolve(mspMap);
+		return new Promise((resolve, reject) => {	
+			
+			if (msp_map == null) {
+				getInitialMSPData().then((data) => {
+					msp_map = getMSPsByDate(date, data);
+					resolve(msp_map);
+				});
+			}
+
 		});
+};
+
+export const getExpandedMSPMap = (id) => {
+	return new Promise((resolve, reject) => {
+
+		if (!has_expanded_data) {
+			
+			getExpandedMSPData().then((data) => {
+
+			resolve(msp_map);
+			});
+		} else {
+			resolve(msp_map);
+		}
+
 	});
 };
