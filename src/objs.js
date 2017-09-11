@@ -21,6 +21,11 @@ export function Address(_type, _street, _postCode, _region, _town) {
 	this.town = _town;
 }
 
+export function Role(_groupName, _roleName) {	
+	this.roleName = _roleName;
+	this.groupName = _groupName;
+}
+
 export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL, _party) {
 	this.constit = _constit;
 	this.region = _region;
@@ -31,6 +36,8 @@ export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoU
 	this.party = _party;
 	this.partyRoles = [];
 	this.govtRoles = [];
+	this.committeeRoles = [];
+	this.CPGRoles = [];
 	this.addresses = [];
 	this.emails = [];
 	this.telephones = [];

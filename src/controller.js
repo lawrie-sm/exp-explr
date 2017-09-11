@@ -15,7 +15,7 @@ export const getExpandedCellData = () => {
 }
 
 
-/***************************************************/
+/*** Main ***/
 
 view.setupNavMenu();
 

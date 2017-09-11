@@ -107,7 +107,7 @@ const getMSPsByDate = (date, data) => {
 
 const updateMSPMapWithExpandedData = (date, data) => {
 	//Contact info
-	const mapMSPData = (arr, valTypeStr, typeArr, typeIDStr, destArr) => {
+	const processContactData = (arr, valTypeStr, typeArr, typeIDStr, destArr) => {
 		arr.forEach((obj) => {
 			let msp = msp_map.get(obj.PersonID);
 			if (msp) {
@@ -126,13 +126,23 @@ const updateMSPMapWithExpandedData = (date, data) => {
 		});
 	};
 	
-	mapMSPData(data.addresses, 'Line1', data.addressTypes, 'AddressTypeID', 'addresses');
-	mapMSPData(data.emails, 'Address', data.emailTypes, 'EmailAddressTypeID', 'emails');
-	mapMSPData(data.telephones, 'Telephone1', data.telephoneTypes, 'TelephoneTypeID', 'telephones');
-	mapMSPData(data.websites, 'WebURL', data.websiteTypes, 'WebSiteTypeID', 'websites');
+	processContactData(data.addresses, 'Line1', data.addressTypes, 'AddressTypeID', 'addresses');
+	processContactData(data.emails, 'Address', data.emailTypes, 'EmailAddressTypeID', 'emails');
+	processContactData(data.telephones, 'Telephone1', data.telephoneTypes, 'TelephoneTypeID', 'telephones');
+	processContactData(data.websites, 'WebURL', data.websiteTypes, 'WebSiteTypeID', 'websites');
+	
+	//TODO: Make a generic function to do the work below for CPGs, Govt and party roles
 	
 	//Committees
-	//... TODO
+	data.memberCommitteeRoles.forEach((roleObj) => {
+		let msp = msp_map.get(roleObj.PersonID);
+		if (msp && dateIsWithinRangeOfSPObj(date, roleObj)) {
+			let role = data.committeeRoles.find(byProp('ID', roleObj.CommitteeRoleID));
+			let committee = data.committees.find(byProp('ID', roleObj.CommitteeID));
+			msp.committeeRoles.push(new objs.Role(role, committee));
+			console.dir(msp);
+		}
+	});
 };
 
 export const getMSPMap = (date) => {
