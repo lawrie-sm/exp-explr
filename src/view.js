@@ -3,16 +3,6 @@
 import * as controller from './controller';
 
 export const setupMSPBlocks = (mspMap) => {
-
-	const onCellClick = (cell) => {
-		return () => {
-			const CELL_EXPANDED_CLASS = 'cellBlock__expanded';
-			if (cell.classList.toggle(CELL_EXPANDED_CLASS)) {
-				controller.getExpandedCellData();
-			}
-		};
-	};
-
 	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/150x150';
 	const CELL_CLASS = 'cellBlock';
 	const TXT_BOX_CLASS = 'txtbox';
@@ -20,9 +10,46 @@ export const setupMSPBlocks = (mspMap) => {
 	const PORT_IMG_CLASS = 'portrait-img';
 	const SML_IMG_PATH = '/img/portraits/';
 	const MAIN_ELEM = document.getElementsByTagName('main')[0];
+	const EXP_BOX_CLASS = 'expanded-box';
+	const EXP_BOX__HIDDEN_CLASS = 'expanded-box__hidden';
+	
+	//Click function to expand, get and add additional info
+	const onCellClick = (cell, msp) => {
+		const setupExpBox = (cell, msp) => {
+			let expFragment = `
+			<div class="${EXP_BOX_CLASS}">
+				<p>${msp.addresses.Parliamentary.street}</p>
+				<p>${msp.emails['Work Email']}</p>
+				<p>${msp.websites['Biography']}</p>
+			</div>
+			`;
+			cell.innerHTML += expFragment;
+		}
+		
+		return () => {
+			const CELL_EXPANDED_CLASS = 'cellBlock__expanded';
+			let expBox = cell.getElementsByClassName(EXP_BOX_CLASS)[0];
+			if (cell.classList.toggle(CELL_EXPANDED_CLASS)) {
+				controller.getExpandedCellData().then((mspMap) => {
+					if (!expBox) {
+						expBox = setupExpBox(cell, msp);
+						expBox = cell.getElementsByClassName(EXP_BOX_CLASS)
+					} else {
+						expBox.classList.toggle(EXP_BOX__HIDDEN_CLASS);
+					}
+							
+				});
+			} else {
+				if (expBox) {
+					expBox.classList.toggle(EXP_BOX__HIDDEN_CLASS);
+				}
+			}
+		}
+	}
 
 	let cells = '';
 
+	//Main loop to build initial MSP cells
 	mspMap.forEach((msp, mspID) => {
 		let location;
 		if (msp.constit) {
@@ -60,7 +87,6 @@ export const setupMSPBlocks = (mspMap) => {
 
 		let govtRoles = (msp.govtRoles) ? msp.govtRoles.join(', ') : '';
 	
-
 		let MSPFragment = `
 			<div id="${mspID}" class="${CELL_CLASS}">
 				<div class="${PORT_BOX_CLASS}">
@@ -75,19 +101,17 @@ export const setupMSPBlocks = (mspMap) => {
 				</div>
 			</div>
 			`;
-
 		cells = cells + MSPFragment;
-
 	});
 
 	MAIN_ELEM.innerHTML = cells;
-
+	
 	for (let i = 0; i < MAIN_ELEM.children.length; i++) {
-		MAIN_ELEM.children[i].addEventListener('click', onCellClick(MAIN_ELEM.children[i]));
+		let cell = MAIN_ELEM.children[i];
+		cell.addEventListener('click', onCellClick(cell, mspMap.get(Number(cell.id))));
 	}
-
+	
 };
-
 
 export const setupNavMenu = () => {
 	const OPEN_CLASS = 'nav--menu__open';

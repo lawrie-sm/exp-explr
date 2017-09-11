@@ -138,6 +138,14 @@ main {
 	max-width: 180px;
 }
 
+.expanded-box {
+	display: block;
+	padding: 7%;
+}
+
+.expanded-box__hidden {
+	display: none;
+}
 
 /*MEDIUM SCREENS*/
 
