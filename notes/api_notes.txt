@@ -59,3 +59,13 @@ https://data.parliament.scot/api/governmentroles
 
 https://data.parliament.scot/api/membergovernmentroles
 {"ID":1,"PersonID":1870,"GovernmentRoleID":1,"ValidFromDate":"2014-04-22T00:00:00","ValidUntilDate":"2014-11-21T00:00:00"}
+
+
+membercrosspartyroles
+crosspartygrouproles
+crosspartygroups
+personcommitteeroles
+committeeroles
+committees
+committeetypelinks
+committeetypes

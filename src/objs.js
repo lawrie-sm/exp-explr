@@ -13,7 +13,8 @@ export function PartyRole(_internalName, _officialName) {
 	this.officialName = _officialName;
 }
 
-export function Address(_street, _postCode, _region, _town) {
+export function Address(_type, _street, _postCode, _region, _town) {
+	this.type = _type;
 	this.street = _street;
 	this.postCode = _postCode;
 	this.region = _region;
@@ -30,8 +31,8 @@ export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoU
 	this.party = _party;
 	this.partyRoles = [];
 	this.govtRoles = [];
-	this.addresses = {};
-	this.emails = {};
-	this.telephones = {};
-	this.websites = {};
+	this.addresses = [];
+	this.emails = [];
+	this.telephones = [];
+	this.websites = [];
 }

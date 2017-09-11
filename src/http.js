@@ -51,7 +51,17 @@ export const getInitialMSPData = () => {
 		});
 	});
 };
+/*
 
+membercrosspartyroles
+crosspartygrouproles
+crosspartygroups
+personcommitteeroles
+committeeroles
+committees
+committeetypelinks
+committeetypes
+*/
 export const getExpandedMSPData = () =>  {
 	return new Promise((resolve, reject) => {
 	Promise.all([
@@ -62,7 +72,15 @@ export const getExpandedMSPData = () =>  {
 		get(API_ROOT + 'emailaddresses'),
 		get(API_ROOT + 'emailaddresstypes'),
 		get(API_ROOT + 'websites'),
-		get(API_ROOT + 'websitetypes')
+		get(API_ROOT + 'websitetypes'),
+		get(API_ROOT + 'membercrosspartyroles'),
+		get(API_ROOT + 'crosspartygrouproles'),
+		get(API_ROOT + 'crosspartygroups'),
+		get(API_ROOT + 'personcommitteeroles'),
+		get(API_ROOT + 'committeeroles'),
+		get(API_ROOT + 'committees'),
+		get(API_ROOT + 'committeetypelinks'),
+		get(API_ROOT + 'committeetypes')
 		]).then((dataArr) => {
 			let returnData = {
 				'addresses': dataArr[0],
@@ -72,7 +90,15 @@ export const getExpandedMSPData = () =>  {
 				'emails': dataArr[4],
 				'emailTypes': dataArr[5],
 				'websites': dataArr[6],
-				'websiteTypes': dataArr[7]
+				'websiteTypes': dataArr[7],
+				'memberCPGRoles': dataArr[8],
+				'CPGroles': dataArr[9],
+				'CPGs': dataArr[10],
+				'memberCommitteeRoles': dataArr[11],
+				'committeeRoles': dataArr[12],
+				'committees': dataArr[13],
+				'committeeTypeLinks': dataArr[14],
+				'committeeTypes': dataArr[15],
 			};
 			resolve(returnData);
 		});

@@ -18,9 +18,9 @@ export const setupMSPBlocks = (mspMap) => {
 		const setupExpBox = (cell, msp) => {
 			let expFragment = `
 			<div class="${EXP_BOX_CLASS}">
-				<p>${msp.addresses.Parliamentary.street}</p>
-				<p>${msp.emails['Work Email']}</p>
-				<p>${msp.websites['Biography']}</p>
+				<p>${(msp.addresses[0]) ? msp.addresses[0].street : null}</p>
+				<p>${(msp.emails[0]) ? msp.emails[0].value : null}</p>
+				<p>${(msp.websites[0]) ? msp.websites[0].value : null}</p>
 			</div>
 			`;
 			cell.innerHTML += expFragment;
