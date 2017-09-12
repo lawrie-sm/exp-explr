@@ -37,7 +37,7 @@ export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoU
 	this.partyRoles = [];
 	this.govtRoles = [];
 	this.committeeRoles = [];
-	this.CPGRoles = [];
+	this.cpgRoles = [];
 	this.addresses = [];
 	this.emails = [];
 	this.telephones = [];

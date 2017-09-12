@@ -27,7 +27,7 @@ const dateIsWithinRangeOfSPObj = (date, spObj) => {
 		(date >= startDate && endDate == null));
 };
 
-let byProp = (typeToCheckStr, valueToFind, date) => {
+const byProp = (typeToCheckStr, valueToFind, date) => {
 	if (date) {
 		return (e) => {
 			return (e[typeToCheckStr] === valueToFind &&
@@ -76,6 +76,7 @@ const getMSPsByDate = (date, data) => {
 		}
 	});
 
+	//TODO: Could use processRoleData here
 	//Add party memberships and roles
 	data.partyMemberships.forEach((membershipObj) => {
 		let msp = mspMap.get(membershipObj.PersonID);
@@ -106,8 +107,8 @@ const getMSPsByDate = (date, data) => {
 };
 
 const updateMSPMapWithExpandedData = (date, data) => {
-	//Contact info
-	const processContactData = (arr, valTypeStr, typeArr, typeIDStr, destArr) => {
+	const processContactData = (
+	arr, valTypeStr, typeArr, typeIDStr, destArr) => {
 		arr.forEach((obj) => {
 			let msp = msp_map.get(obj.PersonID);
 			if (msp) {
@@ -126,23 +127,33 @@ const updateMSPMapWithExpandedData = (date, data) => {
 		});
 	};
 	
-	processContactData(data.addresses, 'Line1', data.addressTypes, 'AddressTypeID', 'addresses');
-	processContactData(data.emails, 'Address', data.emailTypes, 'EmailAddressTypeID', 'emails');
-	processContactData(data.telephones, 'Telephone1', data.telephoneTypes, 'TelephoneTypeID', 'telephones');
-	processContactData(data.websites, 'WebURL', data.websiteTypes, 'WebSiteTypeID', 'websites');
+	const processRoleData = (
+	date, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => {
+		arr.forEach((roleObj) => {
+			let msp = msp_map.get(roleObj.PersonID);
+			if (msp && dateIsWithinRangeOfSPObj(date, roleObj)) {
+				let role = roleTypeArr.find(byProp('ID', roleObj[roleIDStr]));
+				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
+				msp[destArrStr].push(new objs.Role(group.Name, role.Name));
+			}
+		});
+	}
 	
-	//TODO: Make a generic function to do the work below for CPGs, Govt and party roles
+	processContactData(data.addresses, 'Line1', data.addressTypes,
+	'AddressTypeID', 'addresses');
+	processContactData(data.emails, 'Address', data.emailTypes,
+	'EmailAddressTypeID', 'emails');
+	processContactData(data.telephones, 'Telephone1', data.telephoneTypes,
+	'TelephoneTypeID', 'telephones');
+	processContactData(data.websites, 'WebURL', data.websiteTypes,
+	'WebSiteTypeID', 'websites');
+	processRoleData(
+	date, data.membercpgRoles, data.cpgRoles, 'CrossPartyGroupRoleID',
+	data.cpgs, 'CrossPartyGroupID', 'cpgRoles');
+	processRoleData(
+	date, data.memberCommitteeRoles, data.committeeRoles, 'CommitteeRoleID',
+	data.committees, 'CommitteeID', 'committeeRoles');
 	
-	//Committees
-	data.memberCommitteeRoles.forEach((roleObj) => {
-		let msp = msp_map.get(roleObj.PersonID);
-		if (msp && dateIsWithinRangeOfSPObj(date, roleObj)) {
-			let role = data.committeeRoles.find(byProp('ID', roleObj.CommitteeRoleID));
-			let committee = data.committees.find(byProp('ID', roleObj.CommitteeID));
-			msp.committeeRoles.push(new objs.Role(role, committee));
-			console.dir(msp);
-		}
-	});
 };
 
 export const getMSPMap = (date) => {

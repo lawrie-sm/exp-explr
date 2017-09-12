@@ -11,7 +11,7 @@ export const setupMSPBlocks = (mspMap) => {
 	const SML_IMG_PATH = '/img/portraits/';
 	const MAIN_ELEM = document.getElementsByTagName('main')[0];
 	const EXP_BOX_CLASS = 'expanded-box';
-	const EXP_BOX__HIDDEN_CLASS = 'expanded-box__hidden';
+	const EXP_BOX_HIDDEN_CLASS = 'expanded-box__hidden';
 	
 	//Click function to expand, get and add additional info
 	const onCellClick = (cell, msp) => {
@@ -35,13 +35,13 @@ export const setupMSPBlocks = (mspMap) => {
 						expBox = setupExpBox(cell, msp);
 						expBox = cell.getElementsByClassName(EXP_BOX_CLASS)
 					} else {
-						expBox.classList.toggle(EXP_BOX__HIDDEN_CLASS);
+						expBox.classList.toggle(EXP_BOX_HIDDEN_CLASS);
 					}
 							
 				});
 			} else {
 				if (expBox) {
-					expBox.classList.toggle(EXP_BOX__HIDDEN_CLASS);
+					expBox.classList.toggle(EXP_BOX_HIDDEN_CLASS);
 				}
 			}
 		}

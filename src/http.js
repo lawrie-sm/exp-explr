@@ -91,7 +91,7 @@ export const getExpandedMSPData = () =>  {
 				'emailTypes': dataArr[5],
 				'websites': dataArr[6],
 				'websiteTypes': dataArr[7],
-				'memberCPGRoles': dataArr[8],
+				'membercpgRoles': dataArr[8],
 				'cpgRoles': dataArr[9],
 				'cpgs': dataArr[10],
 				'memberCommitteeRoles': dataArr[11],
