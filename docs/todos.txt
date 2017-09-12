@@ -1,0 +1,10 @@
+TODO
+- Redesign
+- Caching
+- proper support for updating with dates without re-calling API
+- CSS should be processed and inlined by webpack?
+- pages
+- Proper Default images
+- Spinner
+- make the "clicked" bar below nav elements be relative to the mouse
+- Searches, sorting, committee grouping
