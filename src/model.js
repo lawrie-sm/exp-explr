@@ -40,6 +40,42 @@ const byProp = (typeToCheckStr, valueToFind, date) => {
 	}
 };
 
+const processRoleData = (
+date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => {
+	arr.forEach((roleObj) => {
+		let msp = mspMap.get(roleObj.PersonID);
+		if (msp && dateIsWithinRangeOfSPObj(date, roleObj)) {
+			let role = roleTypeArr.find(byProp('ID', roleObj[roleIDStr]));
+			if (groupArr && groupIDStr) {
+				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
+				msp[destArrStr].push(new objs.Role(group.Name, role.Name));
+			} else {
+				msp[destArrStr].push(role.Name);
+			}
+		}
+	});
+}
+
+const processContactData = (
+mspMap, arr, valTypeStr, typeArr, typeIDStr, destArr) => {
+	arr.forEach((obj) => {
+		let msp = mspMap.get(obj.PersonID);
+		if (msp) {
+			let typeStr = (typeArr.find(byProp('ID', obj[typeIDStr]))).Name;
+			//Some specific code for dealing with addresses
+			if (valTypeStr === 'Line1') {
+				let street = obj.Line1 + ', ' + obj.Line2;
+				let objToPush = new objs.Address(typeStr, street, obj.PostCode, obj.Region, obj.Town)
+				msp[destArr].push(objToPush);
+			}
+			else if (obj[valTypeStr]) {
+				let objToPush = {"type": typeStr, "value": obj[valTypeStr]};
+				msp[destArr].push(objToPush);
+			}
+		}
+	});
+};
+	
 const getMSPsByDate = (date, data) => {
 	let mspMap = new Map();
 	let results = data.regResults.concat(data.constitResults);
@@ -76,8 +112,7 @@ const getMSPsByDate = (date, data) => {
 		}
 	});
 
-	//TODO: Could use processRoleData here
-	//Add party memberships and roles
+	//Add party membership
 	data.partyMemberships.forEach((membershipObj) => {
 		let msp = mspMap.get(membershipObj.PersonID);
 		if (msp && dateIsWithinRangeOfSPObj(date, membershipObj)) {
@@ -93,66 +128,36 @@ const getMSPsByDate = (date, data) => {
 			}
 		}
 	});
-
-	//Add Government roles
-	data.govtMemberRoles.forEach((govtRoleObj) => {
-		let msp = mspMap.get(govtRoleObj.PersonID);
-		if (msp && dateIsWithinRangeOfSPObj(date, govtRoleObj)) {
-			let govtRole = data.govtRoles.find(byProp('ID', govtRoleObj.GovernmentRoleID));
-			msp.govtRoles.push(govtRole.Name);
-		}
-	});
-
+	
+	//Add government roles
+	processRoleData(
+	date, mspMap, data.govtMemberRoles, data.govtRoles, 'GovernmentRoleID',
+	'', '', 'govtRoles');
+	
 	return mspMap;
 };
 
 const updateMSPMapWithExpandedData = (date, data) => {
-	const processContactData = (
-	arr, valTypeStr, typeArr, typeIDStr, destArr) => {
-		arr.forEach((obj) => {
-			let msp = msp_map.get(obj.PersonID);
-			if (msp) {
-				let typeStr = (typeArr.find(byProp('ID', obj[typeIDStr]))).Name;
-				//Some specific code for dealing with addresses
-				if (valTypeStr === 'Line1') {
-					let street = obj.Line1 + ', ' + obj.Line2;
-					let objToPush = new objs.Address(typeStr, street, obj.PostCode, obj.Region, obj.Town)
-					msp[destArr].push(objToPush);
-				}
-				else if (obj[valTypeStr]) {
-					let objToPush = {"type": typeStr, "value": obj[valTypeStr]};
-					msp[destArr].push(objToPush);
-				}
-			}
-		});
-	};
+
+	processRoleData(
+	date, msp_map, data.membercpgRoles, data.cpgRoles,
+	'CrossPartyGroupRoleID', data.cpgs, 'CrossPartyGroupID', 'cpgRoles');
 	
-	const processRoleData = (
-	date, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => {
-		arr.forEach((roleObj) => {
-			let msp = msp_map.get(roleObj.PersonID);
-			if (msp && dateIsWithinRangeOfSPObj(date, roleObj)) {
-				let role = roleTypeArr.find(byProp('ID', roleObj[roleIDStr]));
-				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
-				msp[destArrStr].push(new objs.Role(group.Name, role.Name));
-			}
-		});
-	}
-	
-	processContactData(data.addresses, 'Line1', data.addressTypes,
+	processRoleData(
+	date, msp_map, data.memberCommitteeRoles, data.committeeRoles,
+	'CommitteeRoleID', data.committees, 'CommitteeID', 'committeeRoles');
+		
+	processContactData(msp_map, data.addresses, 'Line1', data.addressTypes,
 	'AddressTypeID', 'addresses');
-	processContactData(data.emails, 'Address', data.emailTypes,
+	
+	processContactData(msp_map, data.emails, 'Address', data.emailTypes,
 	'EmailAddressTypeID', 'emails');
-	processContactData(data.telephones, 'Telephone1', data.telephoneTypes,
+	
+	processContactData(msp_map, data.telephones, 'Telephone1', data.telephoneTypes,
 	'TelephoneTypeID', 'telephones');
-	processContactData(data.websites, 'WebURL', data.websiteTypes,
+	
+	processContactData(msp_map, data.websites, 'WebURL', data.websiteTypes,
 	'WebSiteTypeID', 'websites');
-	processRoleData(
-	date, data.membercpgRoles, data.cpgRoles, 'CrossPartyGroupRoleID',
-	data.cpgs, 'CrossPartyGroupID', 'cpgRoles');
-	processRoleData(
-	date, data.memberCommitteeRoles, data.committeeRoles, 'CommitteeRoleID',
-	data.committees, 'CommitteeID', 'committeeRoles');
 	
 };
 
