@@ -3,8 +3,9 @@
 import * as controller from './controller';
 
 export const setupMSPBlocks = (mspMap) => {
-	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/150x150';
-	const CELL_CLASS = 'cellBlock';
+	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
+	const CELL_CLASS = 'cell';
+	const CELL_CONTAINER_CLASS = 'cell-container';
 	const TXT_BOX_CLASS = 'txtbox';
 	const PORT_BOX_CLASS = 'portrait-box';
 	const PORT_IMG_CLASS = 'portrait-img';
@@ -49,6 +50,9 @@ export const setupMSPBlocks = (mspMap) => {
 
 	let cells = '';
 
+	let cellContainer = document.createElement("div");
+	cellContainer.classList.add(CELL_CONTAINER_CLASS);
+	
 	//Main loop to build initial MSP cells
 	mspMap.forEach((msp, mspID) => {
 		let location;
@@ -95,7 +99,6 @@ export const setupMSPBlocks = (mspMap) => {
 				<div class="${TXT_BOX_CLASS}">
 					<p>${govtRoles}</p>
 					<p>${msp.firstName} ${ msp.lastName}</p>
-					<p>${birthDate}</p>
 					<p>${msp.party.name}</p>
 					<p>${partyRoles}</p>
 				</div>
@@ -104,10 +107,11 @@ export const setupMSPBlocks = (mspMap) => {
 		cells = cells + MSPFragment;
 	});
 
-	MAIN_ELEM.innerHTML = cells;
+	cellContainer.innerHTML = cells;
+	MAIN_ELEM.appendChild(cellContainer);
 	
-	for (let i = 0; i < MAIN_ELEM.children.length; i++) {
-		let cell = MAIN_ELEM.children[i];
+	for (let i = 0; i < cellContainer.children.length; i++) {
+		let cell = cellContainer.children[i];
 		cell.addEventListener('click', onCellClick(cell, mspMap.get(Number(cell.id))));
 	}
 	

@@ -112,18 +112,19 @@ main {
 	width: 100%;
 }
 
-.cellBlock {
-	height: 14em;
+.cell-container {
 	margin: 3% 1%;
 	background-color: var(--col-secondary);
 	display: flex;
 	display: -webkit-flex;
-	transition: height 0.25s;
-	-webkit-transition: height 0.25s;
+	flex-wrap: wrap;
 }
 
-.cellBlock__expanded {
-	height: 28em;
+.cell {
+	margin: 2% 2%;
+	height: 14em;
+	width: 46%;
+	border: 1px solid red;
 }
 
 .txtbox {
@@ -184,8 +185,5 @@ main {
 	}
 	.nav--burger {
 		display: none
-	}
-	.cellBlock {
-		margin: 2% 2%;
 	}
 }
