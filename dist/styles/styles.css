@@ -1,8 +1,8 @@
 :root {
 	--col-primary: #6E66B0;
-	--col-secondary: #dbc8e6;
-	--col-tertiary: #3D1255;
-	--col-gray: #fcfcfc;
+	--col-secondary: #d5dae2;
+	--col-tertiary: #eaebed;
+	--col-grey: #fcfcfc;
 }
 
 *,
@@ -17,7 +17,7 @@
 
 html {
 	font-family: "Raleway", sans serif;
-	background-color: var(--col-gray);
+	background-color: var(--col-grey);
 }
 
 main {
@@ -52,7 +52,7 @@ main {
 .nav--burger div {
 	width: 30px;
 	height: 4px;
-	background-color: var(--col-gray);
+	background-color: var(--col-grey);
 	margin: 6px 0;
 }
 
@@ -99,7 +99,7 @@ main {
 }
 
 .nav li:hover a {
-	color: var(--col-gray);
+	color: var(--col-grey);
 }
 
 .nav--button-line-wrapper,
@@ -114,7 +114,7 @@ main {
 
 .cell-container {
 	margin: 3% 1%;
-	background-color: var(--col-secondary);
+	background-color: var(--col-grey);
 	display: flex;
 	display: -webkit-flex;
 	flex-wrap: wrap;
@@ -123,15 +123,46 @@ main {
 .cell {
 	display: flex;
 	display: -webkit-flex;
-	align-items: center;
-
-	margin: 2% 2%;
+	
+	background-color: var(--col-tertiary);
+	margin: 1% 2%;
 	width: 46%;
-	border: 1px solid red;
+}
+
+.cell__pty_SNP {
+	border-left: 4px solid yellow;
+}
+
+.cell__pty_Con {
+	border-left: 4px solid blue;
+}
+
+.cell__pty_Lab {
+	border-left: 4px solid red;
+}
+
+.cell__pty_Green {
+	border-left: 4px solid green;
+}
+
+.cell__pty_LD {
+	border-left: 4px solid orange;
+}
+
+.cell__pty_NPA {
+	border-left: 4px solid gray;
+}
+
+.cell__gov {
+	border: 3px solid purple;
 }
 
 .txtbox {
 	padding: 2%;
+}
+
+.msp-name {
+	font-weight: 600;
 }
 
 .portrait-box {

@@ -3,16 +3,20 @@
 import * as controller from './controller';
 
 export const setupMSPBlocks = (mspMap) => {
-	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
+	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/50x50';
 	const CELL_CLASS = 'cell';
 	const CELL_CONTAINER_CLASS = 'cell-container';
+	const CELL_PARTY_CLASS_ROOT = 'cell__pty_';
+	const CELL_GOV_CLASS = 'cell__gov';
 	const TXT_BOX_CLASS = 'txtbox';
+	const P_NAME_CLASS = 'msp-name'
 	const PORT_BOX_CLASS = 'portrait-box';
 	const PORT_IMG_CLASS = 'portrait-img';
 	const SML_IMG_PATH = '/img/portraits/';
 	const MAIN_ELEM = document.getElementsByTagName('main')[0];
 	const EXP_BOX_CLASS = 'expanded-box';
 	const EXP_BOX_HIDDEN_CLASS = 'expanded-box__hidden';
+	
 	
 	//Click function to expand, get and add additional info
 	const onCellClick = (cell, msp) => {
@@ -80,26 +84,27 @@ export const setupMSPBlocks = (mspMap) => {
 			imgSRC = '#';
 		}
 
-		let partyRoles = '';
-		if (msp.partyRoles) {
-			msp.partyRoles.forEach((role) => {
-				let str = role.internalName.replace(/Party Spokesperson on/gi, '');
-				str += ', ';
-				partyRoles += str;
-			});
+		let partyRole = '';
+		if (msp.partyRoles && msp.partyRoles.length > 0) {
+			partyRole = msp.partyRoles[msp.partyRoles.length - 1].officialName;
+			partyRole = partyRole.replace(/\\r\\n/, ', ');
 		}
-
+		
+		let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
 		let govtRoles = (msp.govtRoles) ? msp.govtRoles.join(', ') : '';
-	
+		
 		let MSPFragment = `
-			<div id="${mspID}" class="${CELL_CLASS}">
+			<div id="${mspID}" class="
+			${CELL_CLASS}
+			${cellPartyClass}
+			${(govtRoles) ? CELL_GOV_CLASS : ''}">
 				<div class="${PORT_BOX_CLASS}">
 					<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
 				</div>
 				<div class="${TXT_BOX_CLASS}">
-					<p>${govtRoles}</p>
-					<p>${msp.firstName} ${ msp.lastName} (${msp.party.abbreviation})</p>
-					<p>${partyRoles}</p>
+					<p class="${P_NAME_CLASS}">${msp.firstName} ${ msp.lastName} (${msp.party.abbreviation})</p>
+					${(govtRoles) ? '<p>' + govtRoles + '</p>' : ''}
+					${(partyRole) ? '<p>' + partyRole + '</p>' : ''}
 				</div>
 			</div>
 			`;
