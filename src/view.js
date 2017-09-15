@@ -98,8 +98,7 @@ export const setupMSPBlocks = (mspMap) => {
 				</div>
 				<div class="${TXT_BOX_CLASS}">
 					<p>${govtRoles}</p>
-					<p>${msp.firstName} ${ msp.lastName}</p>
-					<p>${msp.party.name}</p>
+					<p>${msp.firstName} ${ msp.lastName} (${msp.party.abbreviation})</p>
 					<p>${partyRoles}</p>
 				</div>
 			</div>

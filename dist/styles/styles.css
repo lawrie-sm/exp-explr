@@ -121,18 +121,21 @@ main {
 }
 
 .cell {
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+
 	margin: 2% 2%;
-	height: 14em;
 	width: 46%;
 	border: 1px solid red;
 }
 
 .txtbox {
-	padding: 7%;
+	padding: 2%;
 }
 
 .portrait-box {
-	padding: 5%;
+	padding: 2%;
 }
 
 .portrait-img {
