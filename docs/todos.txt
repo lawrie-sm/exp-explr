@@ -1,5 +1,9 @@
 TODO
 - Redesign
+ - Drop Shadows
+ - Purple corners for minister
+ - Modal for extra info
+ - Images
 - Caching
 - proper support for updating with dates without re-calling API
 - CSS should be processed and inlined by webpack?

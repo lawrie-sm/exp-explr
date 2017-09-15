@@ -6,8 +6,8 @@ export const setupMSPBlocks = (mspMap) => {
 	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/50x50';
 	const CELL_CLASS = 'cell';
 	const CELL_CONTAINER_CLASS = 'cell-container';
-	const CELL_PARTY_CLASS_ROOT = 'cell__pty_';
-	const CELL_GOV_CLASS = 'cell__gov';
+	const CELL_PARTY_CLASS_ROOT = 'cell__pty-';
+	const CELL_MINI_CLASS = 'cell__mini';
 	const TXT_BOX_CLASS = 'txtbox';
 	const P_NAME_CLASS = 'msp-name'
 	const PORT_BOX_CLASS = 'portrait-box';
@@ -91,13 +91,15 @@ export const setupMSPBlocks = (mspMap) => {
 		}
 		
 		let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
+		
 		let govtRoles = (msp.govtRoles) ? msp.govtRoles.join(', ') : '';
+		let isMini = govtRoles;
+		if (govtRoles.includes('Parliamentary Liaison Officer')) {
+			isMini = !isMini;
+		}
 		
 		let MSPFragment = `
-			<div id="${mspID}" class="
-			${CELL_CLASS}
-			${cellPartyClass}
-			${(govtRoles) ? CELL_GOV_CLASS : ''}">
+			<div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
 				<div class="${PORT_BOX_CLASS}">
 					<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
 				</div>

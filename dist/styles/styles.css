@@ -129,31 +129,31 @@ main {
 	width: 46%;
 }
 
-.cell__pty_SNP {
+.cell__pty-SNP {
 	border-left: 4px solid yellow;
 }
 
-.cell__pty_Con {
+.cell__pty-Con {
 	border-left: 4px solid blue;
 }
 
-.cell__pty_Lab {
+.cell__pty-Lab {
 	border-left: 4px solid red;
 }
 
-.cell__pty_Green {
+.cell__pty-Green {
 	border-left: 4px solid green;
 }
 
-.cell__pty_LD {
+.cell__pty-LD {
 	border-left: 4px solid orange;
 }
 
-.cell__pty_NPA {
+.cell__pty-NPA {
 	border-left: 4px solid gray;
 }
 
-.cell__gov {
+.cell__mini {
 	border: 3px solid purple;
 }
 
