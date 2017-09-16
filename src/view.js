@@ -17,43 +17,58 @@ const PORT_IMG_CLASS = 'portrait-img';
 const SML_IMG_PATH = '/img/portraits/';
 const MAIN_ELEM = document.getElementsByTagName('main')[0];
 const MODAL_CLASS = 'modal';
-const MODAL_BOX_CLASS = 'modal-box';
-const MODAL_BOX_CONTENT_CLASS = 'modal-box-content';
-const MODAL_CLOSE_CLASS = 'modal-close';
+const MODAL_BOX_CLASS = 'modal--box';
+const MODAL_BOX_CONTENT_CLASS = 'modal--box-content';
+const MODAL_CLOSE_CLASS = 'modal--close';
 const MODAL_HIDDEN_CLASS = 'modal__hidden';
+const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
+const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
+const MODAL_IMG_CLASS ='modal--box-img';
 
-/*
-const getDOBStr = (msp) => {
-	let birthDate = '(Birth date not given)';
+
+const getDOBHTML = (msp) => {
+	let birthDate = '';
 	if (msp.DOB) {
 		let d = msp.DOB;
 		birthDate = d.getDate() +
 			'/' + (d.getMonth() + 1) +
 			'/' + d.getFullYear();
-	}
-	return birthDate;
+			return `<p>${birthDate}</p>`;
+	} else return '';
 };
-*/
 
-const getPartyRoles = (msp, mspID) => {
-	let partyRoles = '';
-	partyRoles = msp.partyRoles.map(
-		(e) => {
-			return (e.officialName) ? e.officialName : e.internalName;
-		})[msp.partyRoles.length - 1];
 
-	//HACK -- For Green leaders
-	if (msp.partyRoles.find((e) => {return e.internalName == 'Party Leader'}) &&
-			msp.party.abbreviation === 'Green')
-		partyRoles = 'Co-Convener; ' + partyRoles;
-	//HACK -- For Kez/Alex (16/09/17)
-	if (mspID == 3812)
-		partyRoles = 'Finance Spokesperson';
-	if (mspID == 5119)
-		partyRoles = 'Interim Leader; Community, Social Security and Equalities Spokesperson';
+//Can't just loop through party roles in template string since they are stored weird
+const getPartyRolesHTML = (msp, mspID) => {
+	if (msp.partyRoles && msp.partyRoles.length > 0) {
+		let partyRoles = '';
+		partyRoles = msp.partyRoles.map(
+			(e) => {
+				return (e.officialName) ? e.officialName : e.internalName;
+			})[msp.partyRoles.length - 1];
 
-	partyRoles = partyRoles.replace(/\\r\\n/, ', ');
-	return partyRoles;
+		//HACK -- For Green leaders
+		if (msp.partyRoles.find((e) => {return e.internalName == 'Party Leader'}) &&
+				msp.party.abbreviation === 'Green') {
+			partyRoles = 'Co-Convener; ' + partyRoles;
+		}
+		//HACK -- For Kez/Alex (16/09/17)
+		if (mspID == 3812) {
+			partyRoles = 'Finance Spokesperson';
+		}
+		if (mspID == 5119) {
+			partyRoles = 'Interim Leader; Community, Social Security and Equalities Spokesperson';
+		}
+			partyRoles = partyRoles.replace(/\\r\\n/, ', ');
+		return `<p class="${ROLE_CLASS}">${partyRoles}</p>`;
+	} else return '';
+};
+
+const getGovtRolesHTML = (msp) => {
+	if (msp.govtRoles && msp.govtRoles.length > 0) {
+		let govtRoles = getUniqueArray(msp.govtRoles).join(', ');
+		return `<p class="${ROLE_CLASS}">${govtRoles}</p>`;
+	} else return '';
 };
 
 const getLocationStr = (msp) => {
@@ -71,24 +86,73 @@ const getUniqueArray = (arr) => {
 	return arr.filter((e, i, self) => {
 		return self.indexOf(e) === i;
 	});
-}
+};
+
+const getModalHTML = (msp, mspID) => {
+
+	let DOBHTML = getDOBHTML(msp);
+	let partyRolesHTML = getPartyRolesHTML(msp, mspID);
+	let govtRolesHTML = getGovtRolesHTML(msp);
+
+	//TODO: Emails, telephones etc.
+
+	let comRoleList = msp.committeeRoles.map((role) =>
+	`<li>
+	${((role.roleName === 'Member') ? '' : role.roleName + ' &ndash;')
+	.replace(/Substitute Member/g, 'Substitute')}
+	${role.groupName}
+	</li>`)
+	.join('');
+	
+	let cpgRoleList = msp.cpgRoles.map((role) =>
+	`<li>
+	${(role.roleName === 'Member' ? '' : role.roleName + ' &ndash;')}
+	${role.groupName.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
+	</li>`)
+	.join('');
+
+	return `
+	<div class="${MODAL_PERSONAL_BOX_CLASS}">
+		<img class="${MODAL_IMG_CLASS}" src="${msp.photoURL}"></img>
+		<h3 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h3>
+		${DOBHTML ? DOBHTML : ''}
+		<p>${msp.party.name}</p>
+		<p>${(msp.constit) ? msp.constit.name + ', ' : '' }${msp.region.name}</p>
+		${partyRolesHTML ? partyRolesHTML : ''}
+		${govtRolesHTML ? govtRolesHTML : ''}
+
+	</div>
+	
+	<div class="${MODAL_CONTENT_TEXT_BOX_CLASS}">
+
+		${(comRoleList && comRoleList.length > 0) ?`
+		<h4>Committees</h4>
+		<ul>${comRoleList}</ul>
+		`: ''}
+		${(cpgRoleList && cpgRoleList.length > 0) ? `
+		<h4>Cross-Party Groups</h4>
+		<ul>${cpgRoleList}</ul>
+		`: ''}
+	</div>
+	`;
+};
 
 //Click function to expand, get and add additional info
 const onCellClick = (mspID) => {
 	return () => {
 		const MODAL_ELEM = document.getElementsByClassName(MODAL_CLASS)[0];
-		const MODAL_BOX = document.getElementsByClassName(MODAL_BOX_CLASS)[0];
-		const MODAL_BOX_CONTENT = document.getElementsByClassName(MODAL_BOX_CONTENT_CLASS)[0];
+		if (MODAL_ELEM.classList.contains(MODAL_HIDDEN_CLASS)) {
 
-		MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS);
+			const MODAL_BOX = document.getElementsByClassName(MODAL_BOX_CLASS)[0];
+			const MODAL_BOX_CONTENT = document.getElementsByClassName(MODAL_BOX_CONTENT_CLASS)[0];
+			MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS);
 
-		//TODO: Spinner here
-
-		controller.getExpandedCellData().then((mspMap) => {
-			let msp = mspMap.get(mspID);
-			MODAL_BOX_CONTENT.innerHTML = `<p>${msp.firstName}</p>`;
-			MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
-		});
+			controller.getExpandedCellData().then((mspMap) => {
+				let msp = mspMap.get(mspID);
+				MODAL_BOX_CONTENT.innerHTML = getModalHTML(msp, mspID);
+				MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
+			});
+		}
 	};
 };
 
@@ -114,23 +178,12 @@ export const setupMSPBlocks = (mspMap) => {
 			imgSRC = '#';
 		}
 
-		let partyRoles = '';
-		if (msp.partyRoles && msp.partyRoles.length > 0) {
-			partyRoles = getPartyRoles(msp, mspID);
-		}
-		let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
-		let partyRolesHTML = `<p class="${ROLE_CLASS}">${partyRoles}</p>`;
+		let govtRolesHTML = getGovtRolesHTML(msp);
+		let isMini = (govtRolesHTML && govtRolesHTML.search('Parliamentary Liaison Officer') == -1 ?
+		true : false); 
 		
-		let govtRoles = '';
-		let isMini = false;
-		if (msp.govtRoles && msp.govtRoles.length > 0) {
-			govtRoles = getUniqueArray(msp.govtRoles).join(', ');
-			isMini = govtRoles;
-			if (govtRoles.includes('Parliamentary Liaison Officer')) {
-				isMini = !isMini;
-			}
-		}
-		let govtRolesHTML = `<p class="${ROLE_CLASS}">${govtRoles}</p>`;
+		let partyRolesHTML = getPartyRolesHTML(msp, mspID);
+		let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
 		
 		let MSPFragment = `
 			<div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
@@ -143,8 +196,8 @@ export const setupMSPBlocks = (mspMap) => {
 					<span class="${PARTY_CLASS}">(${msp.party.abbreviation})</span>
 					<span class="${LOCATION_CLASS}">(${location})</span>
 					</p>
-					${(govtRoles) ? govtRolesHTML : ''}
-					${(partyRoles) ? partyRolesHTML : ''}
+					${(govtRolesHTML) ? govtRolesHTML : ''}
+					${(partyRolesHTML) ? partyRolesHTML : ''}
 				</div>
 			</div>
 			`;
@@ -159,6 +212,8 @@ export const setupMSPBlocks = (mspMap) => {
 		cell.addEventListener('click', onCellClick(Number(cell.id)));
 	}
 	
+console.dir(mspMap);
+
 };
 
 export const setupNavMenu = () => {

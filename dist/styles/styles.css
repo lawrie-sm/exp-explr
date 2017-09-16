@@ -29,10 +29,32 @@ h1, h2, h3, h4, h5, h6 {
 	margin: 0;
 }
 
+h1 {
+	font-size: 1em;
+}
+
+h2 {
+	font-size: 1em;
+}
+
+h3 {
+	font-size: 1.5em;
+}
+
+h4 {
+	font-size: 1.25em;
+	margin: 0 1%;
+}
 
 p {
 	line-height: 120%
 }
+
+ul {
+	list-style: disc;
+	padding-left: 1.25em;
+}
+
 main {
 	margin: 0 auto;
 	width: 98%;
@@ -233,15 +255,17 @@ main {
 	display: none;
 }
 
-.modal-box {
-	background-color: var(--col-grey);
+.modal--box {
+	max-width: 760px;
 	margin: auto;
 	padding: 20px;
 	width: 80%;
+	background-color: var(--col-tertiary);
 	box-shadow: 0px 3px 6px 1px rgba(0,0,0,0.4);
+	height: initial;
 }
 
-.modal-close {
+.modal--close {
 	color: #aaaaaa;
 	float: right;
 	font-size: 28px;
@@ -249,11 +273,31 @@ main {
 	cursor: pointer;
 }
 
-.modal-close:hover,
-.modal-close:focus {
+.modal--close:hover,
+.modal--close:focus {
 	color: #000;
 	text-decoration: none;
 	cursor: pointer;
+}
+
+.modal--box-content {
+	display: flex;
+	display: -webkit-flex;
+}
+
+.modal--box-pbox {
+	width: 37%;
+	margin: 3%;
+}
+
+.modal--box-img {
+	max-height: 178px;
+}
+
+.modal--box-txtbox{
+	width: 57%;
+	margin: 3%;
+	flex: 1;
 }
 
 /*MEDIUM SCREENS*/
