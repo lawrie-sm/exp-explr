@@ -52,7 +52,7 @@ const getUniqueArray = (arr) => {
 }
 
 export const setupMSPBlocks = (mspMap) => {
-	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/50x50';
+	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
 	const CELL_CLASS = 'cell';
 	const CELL_CONTAINER_CLASS = 'cell-container';
 	const CELL_PARTY_CLASS_ROOT = 'cell__pty-';
@@ -148,9 +148,7 @@ export const setupMSPBlocks = (mspMap) => {
 					<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
 				</div>
 				<div class="${TXT_BOX_CLASS}">
-					<p>
-					<span class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</span>
-					</p>
+					<h4 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h4>
 					<p>
 					<span class="${PARTY_CLASS}">(${msp.party.abbreviation})</span>
 					<span class="${LOCATION_CLASS}">(${location})</span>

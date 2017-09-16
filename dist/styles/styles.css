@@ -1,7 +1,7 @@
 :root {
 	--col-primary: #6E66B0;
-	--col-secondary: #9B83E4;
-	--col-tertiary: #DDDBE2;
+	--col-secondary: #9486BD;
+	--col-tertiary: #E4E2E1;
 	--col-grey: #fcfcfc;
 }
 
@@ -16,10 +16,23 @@
 }
 
 html {
-	font-family: "Raleway", sans serif;
+	font-family: "Source Sans Pro", serif;
 	background-color: var(--col-grey);
+	font-size: 16px;
 }
 
+h1, h2, h3, h4, h5, h6 {
+	font-size: 1em;
+	font-weight: 700;
+	font-family: "Lato", sans serif;
+	padding: 0;
+	margin: 0;
+}
+
+
+p {
+	line-height: 120%
+}
 main {
 	margin: 0 auto;
 	width: 98%;
@@ -173,20 +186,16 @@ main {
 }
 
 .msp-name {
-	font-weight: 600;
 }
 
 .msp-location {
  color: grey;
- font-size: 0.85em;
 }
 
 .msp-party {
 	color: grey;
-	font-size: 0.85em;
  }
  .msp-role {
-	 font-size: 0.85em;
  }
 
 .portrait-box {
