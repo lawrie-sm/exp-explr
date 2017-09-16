@@ -133,11 +133,10 @@ main {
 	display: flex;
 	display: -webkit-flex;
 	flex-wrap: wrap;
-	align-content: center;
-	justify-content: center;
 }
 
 .cell {
+	cursor: pointer;
 	position: relative;
 	display: flex;
 	display: -webkit-flex;
@@ -145,6 +144,14 @@ main {
 	margin: 2% 2%;
 	width: 98%;
 	box-shadow: 1px 2px 4px 0px rgba(0,0,0,0.275);
+	-webkit-transition: transform 0.25s, box-shadow 0.25s;
+	transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.cell:hover,
+.cell:focus {
+	transform: translateY(-5px);
+	box-shadow: 2px 7px 5px 0px rgba(0,0,0,0.2);
 }
 
 .cell__pty-SNP {
@@ -182,7 +189,7 @@ main {
 }
 
 .txtbox {
-	margin: 1% 2%;
+	margin: auto 1%;
 	padding: 1%;
 	flex: 1;
 }
@@ -201,7 +208,7 @@ main {
  }
 
 .portrait-box {
-	margin: 1%;
+	margin: auto 1%;
 	padding: 1%;
 }
 
