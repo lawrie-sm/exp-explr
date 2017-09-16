@@ -2,6 +2,27 @@
 
 import * as controller from './controller';
 
+const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
+const CELL_CLASS = 'cell';
+const CELL_CONTAINER_CLASS = 'cell-container';
+const CELL_PARTY_CLASS_ROOT = 'cell__pty-';
+const CELL_MINI_CLASS = 'cell__mini';
+const TXT_BOX_CLASS = 'txtbox';
+const NAME_CLASS = 'msp-name';
+const LOCATION_CLASS = 'msp-location';
+const PARTY_CLASS = 'msp-party';
+const ROLE_CLASS = 'msp-role';
+const PORT_BOX_CLASS = 'portrait-box';
+const PORT_IMG_CLASS = 'portrait-img';
+const SML_IMG_PATH = '/img/portraits/';
+const MAIN_ELEM = document.getElementsByTagName('main')[0];
+const MODAL_CLASS = 'modal';
+const MODAL_BOX_CLASS = 'modal-box';
+const MODAL_BOX_CONTENT_CLASS = 'modal-box-content';
+const MODAL_CLOSE_CLASS = 'modal-close';
+const MODAL_HIDDEN_CLASS = 'modal__hidden';
+
+/*
 const getDOBStr = (msp) => {
 	let birthDate = '(Birth date not given)';
 	if (msp.DOB) {
@@ -12,6 +33,7 @@ const getDOBStr = (msp) => {
 	}
 	return birthDate;
 };
+*/
 
 const getPartyRoles = (msp, mspID) => {
 	let partyRoles = '';
@@ -43,7 +65,7 @@ const getLocationStr = (msp) => {
 	}
 	location = location.replace(/ and /g, ' & ');
 	return location;
-}
+};
 
 const getUniqueArray = (arr) => {
 	return arr.filter((e, i, self) => {
@@ -51,59 +73,27 @@ const getUniqueArray = (arr) => {
 	});
 }
 
-export const setupMSPBlocks = (mspMap) => {
-	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
-	const CELL_CLASS = 'cell';
-	const CELL_CONTAINER_CLASS = 'cell-container';
-	const CELL_PARTY_CLASS_ROOT = 'cell__pty-';
-	const CELL_MINI_CLASS = 'cell__mini';
-	const TXT_BOX_CLASS = 'txtbox';
-	const NAME_CLASS = 'msp-name';
-	const LOCATION_CLASS = 'msp-location';
-	const PARTY_CLASS = 'msp-party';
-	const ROLE_CLASS = 'msp-role';
-	const PORT_BOX_CLASS = 'portrait-box';
-	const PORT_IMG_CLASS = 'portrait-img';
-	const SML_IMG_PATH = '/img/portraits/';
-	const MAIN_ELEM = document.getElementsByTagName('main')[0];
-	const EXP_BOX_CLASS = 'expanded-box';
-	const EXP_BOX_HIDDEN_CLASS = 'expanded-box__hidden';
-	
-	
-	//Click function to expand, get and add additional info
-	const onCellClick = (cell, msp) => {
-		const setupExpBox = (cell, msp) => {
-			let expFragment = `
-			<div class="${EXP_BOX_CLASS}">
-				<p>${(msp.addresses[0]) ? msp.addresses[0].street : null}</p>
-				<p>${(msp.emails[0]) ? msp.emails[0].value : null}</p>
-				<p>${(msp.websites[0]) ? msp.websites[0].value : null}</p>
-			</div>
-			`;
-			cell.innerHTML += expFragment;
-		};
-		
-		return () => {
-			const CELL_EXPANDED_CLASS = 'cellBlock__expanded';
-			let expBox = cell.getElementsByClassName(EXP_BOX_CLASS)[0];
-			if (cell.classList.toggle(CELL_EXPANDED_CLASS)) {
-				controller.getExpandedCellData().then(() => {
-					if (!expBox) {
-						expBox = setupExpBox(cell, msp);
-						expBox = cell.getElementsByClassName(EXP_BOX_CLASS);
-					} else {
-						expBox.classList.toggle(EXP_BOX_HIDDEN_CLASS);
-					}
-							
-				});
-			} else {
-				if (expBox) {
-					expBox.classList.toggle(EXP_BOX_HIDDEN_CLASS);
-				}
-			}
-		};
-	};
+//Click function to expand, get and add additional info
+const onCellClick = (mspID) => {
+	return () => {
+		const MODAL_ELEM = document.getElementsByClassName(MODAL_CLASS)[0];
+		const MODAL_BOX = document.getElementsByClassName(MODAL_BOX_CLASS)[0];
+		const MODAL_BOX_CONTENT = document.getElementsByClassName(MODAL_BOX_CONTENT_CLASS)[0];
 
+		MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS);
+
+		//TODO: Spinner here
+
+		controller.getExpandedCellData().then((mspMap) => {
+			let msp = mspMap.get(mspID);
+			MODAL_BOX_CONTENT.innerHTML = `<p>${msp.firstName}</p>`;
+			MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
+		});
+	};
+};
+
+
+export const setupMSPBlocks = (mspMap) => {
 	let cells = '';
 
 	let cellContainer = document.createElement("div");
@@ -166,7 +156,7 @@ export const setupMSPBlocks = (mspMap) => {
 	
 	for (let i = 0; i < cellContainer.children.length; i++) {
 		let cell = cellContainer.children[i];
-		cell.addEventListener('click', onCellClick(cell, mspMap.get(Number(cell.id))));
+		cell.addEventListener('click', onCellClick(Number(cell.id)));
 	}
 	
 };
@@ -204,4 +194,28 @@ export const setupNavMenu = () => {
 	BURGER.addEventListener('click', onBurgerClick());
 	MEDIA_QUERY.addListener(updateMenuOnScreenChange(MEDIA_QUERY));
 	window.onload = updateMenuOnScreenChange(MEDIA_QUERY);
+};
+
+export const setupModalShell = () => {
+	const onModalClose = (modal) => {
+		return () => {
+			modal.classList.toggle(MODAL_HIDDEN_CLASS);
+		};
+	};
+
+	const modalShellHTML =`
+	<div class="${MODAL_CLASS}">
+		<div class="${MODAL_BOX_CLASS}">
+			<div class="${MODAL_CLOSE_CLASS}">&times;</div>
+			<div class ="${MODAL_BOX_CONTENT_CLASS}"><div>
+		</div>
+	</div>
+	`;
+
+	MAIN_ELEM.innerHTML += modalShellHTML;
+	let MODAL_ELEM = document.getElementsByClassName(MODAL_CLASS)[0];
+	const CLOSE_ELEM = document.getElementsByClassName(MODAL_CLOSE_CLASS)[0];
+	CLOSE_ELEM.addEventListener('click', onModalClose(MODAL_ELEM));
+	//Toggle hidden on during initial page load
+	MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS); 
 };

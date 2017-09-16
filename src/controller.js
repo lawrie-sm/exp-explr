@@ -18,7 +18,7 @@ export const getExpandedCellData = () => {
 /*** Main ***/
 
 view.setupNavMenu();
-
+view.setupModalShell();
 model.getMSPMap(CURRENT_DATE).then((mspMap) => {
 	view.setupMSPBlocks(mspMap);
 });
