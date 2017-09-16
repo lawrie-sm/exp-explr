@@ -1,7 +1,7 @@
 :root {
 	--col-primary: #6E66B0;
-	--col-secondary: #d5dae2;
-	--col-tertiary: #eaebed;
+	--col-secondary: #9B83E4;
+	--col-tertiary: #DDDBE2;
 	--col-grey: #fcfcfc;
 }
 
@@ -27,10 +27,12 @@ main {
 
 .nav {
 	position: fixed;
+	z-index: 1;
 	top: 0;
 	width: 100%;
-	color: var(--col-secondary);
+	color: var(--col-grey);
 	background-color: var(--col-primary);
+	box-shadow: 0px 2px 3px 1px rgba(0,0,0,0.4);
 }
 
 .nav--logo {
@@ -73,7 +75,7 @@ main {
 	height: 100%;
 	/* This determines the delay between menu and text shifting down*/
 	list-style-type: none;
-	background-color: var(--col-secondary)
+	background-color: var(--col-secondary);
 }
 
 .nav--menu__open {
@@ -121,12 +123,13 @@ main {
 }
 
 .cell {
+	position: relative;
 	display: flex;
 	display: -webkit-flex;
-	
 	background-color: var(--col-tertiary);
-	margin: 1% 2%;
-	width: 46%;
+	margin: 2% 2%;
+	width: 98%;
+	box-shadow: 1px 2px 4px 0px rgba(0,0,0,0.275);
 }
 
 .cell__pty-SNP {
@@ -153,20 +156,42 @@ main {
 	border-left: 4px solid gray;
 }
 
-.cell__mini {
-	border: 3px solid purple;
+.cell__mini:before {
+    content:"";
+    position:absolute;
+    top:0;
+    right:0;
+    border-width:0 24px 24px 0;
+    border-style:solid;
+    border-color: rgba(0,0,0,0) var(--col-secondary);
 }
 
 .txtbox {
-	padding: 2%;
+	margin: 1% 2%;
+	padding: 1%;
+	flex: 1;
 }
 
 .msp-name {
 	font-weight: 600;
 }
 
+.msp-location {
+ color: grey;
+ font-size: 0.85em;
+}
+
+.msp-party {
+	color: grey;
+	font-size: 0.85em;
+ }
+ .msp-role {
+	 font-size: 0.85em;
+ }
+
 .portrait-box {
-	padding: 2%;
+	margin: 1%;
+	padding: 1%;
 }
 
 .portrait-img {
@@ -186,7 +211,7 @@ main {
 
 @media (min-width: 640px) {
 	main {
-		max-width: 960px;
+		max-width: 1280px;
 		width: 90%;
 	}
 	.nav--menu {
@@ -219,5 +244,19 @@ main {
 	}
 	.nav--burger {
 		display: none
+	}
+	.cell {
+		width: 46%;
+		margin: 1% 2%;
+	}
+}
+
+
+
+/* LARGE SCREENS */
+
+@media (min-width: 1024px) {
+	.cell {
+		width: 29%;
 	}
 }

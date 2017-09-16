@@ -2,6 +2,29 @@
 
 import * as controller from './controller';
 
+
+function getDOBStr(msp) {
+	let birthDate = '(Birth date not given)';
+	if (msp.DOB) {
+		let d = msp.DOB;
+		birthDate = d.getDate() +
+			'/' + (d.getMonth() + 1) +
+			'/' + d.getFullYear();
+	}
+	return birthDate;
+}
+
+function getLocationStr(msp) {
+	let location = '';
+	if (msp.constit) {
+		location = msp.constit.name;
+	} else {
+		location = msp.region.name;
+	}
+	location = location.replace(/ and /g, ' & ');
+	return location;
+}
+
 export const setupMSPBlocks = (mspMap) => {
 	const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/50x50';
 	const CELL_CLASS = 'cell';
@@ -9,7 +32,10 @@ export const setupMSPBlocks = (mspMap) => {
 	const CELL_PARTY_CLASS_ROOT = 'cell__pty-';
 	const CELL_MINI_CLASS = 'cell__mini';
 	const TXT_BOX_CLASS = 'txtbox';
-	const P_NAME_CLASS = 'msp-name'
+	const NAME_CLASS = 'msp-name';
+	const LOCATION_CLASS = 'msp-location';
+	const PARTY_CLASS = 'msp-party';
+	const ROLE_CLASS = 'msp-role';
 	const PORT_BOX_CLASS = 'portrait-box';
 	const PORT_IMG_CLASS = 'portrait-img';
 	const SML_IMG_PATH = '/img/portraits/';
@@ -29,16 +55,16 @@ export const setupMSPBlocks = (mspMap) => {
 			</div>
 			`;
 			cell.innerHTML += expFragment;
-		}
+		};
 		
 		return () => {
 			const CELL_EXPANDED_CLASS = 'cellBlock__expanded';
 			let expBox = cell.getElementsByClassName(EXP_BOX_CLASS)[0];
 			if (cell.classList.toggle(CELL_EXPANDED_CLASS)) {
-				controller.getExpandedCellData().then((mspMap) => {
+				controller.getExpandedCellData().then(() => {
 					if (!expBox) {
 						expBox = setupExpBox(cell, msp);
-						expBox = cell.getElementsByClassName(EXP_BOX_CLASS)
+						expBox = cell.getElementsByClassName(EXP_BOX_CLASS);
 					} else {
 						expBox.classList.toggle(EXP_BOX_HIDDEN_CLASS);
 					}
@@ -49,8 +75,8 @@ export const setupMSPBlocks = (mspMap) => {
 					expBox.classList.toggle(EXP_BOX_HIDDEN_CLASS);
 				}
 			}
-		}
-	}
+		};
+	};
 
 	let cells = '';
 
@@ -59,20 +85,9 @@ export const setupMSPBlocks = (mspMap) => {
 	
 	//Main loop to build initial MSP cells
 	mspMap.forEach((msp, mspID) => {
-		let location;
-		if (msp.constit) {
-			location = msp.constit.name + ', ' + msp.region.name;
-		} else {
-			location = msp.region.name;
-		}
 
-		let birthDate = '(Birth date not given)';
-		if (msp.DOB) {
-			let d = msp.DOB;
-			birthDate = d.getDate() +
-				'/' + (d.getMonth() + 1) +
-				'/' + d.getFullYear();
-		}
+
+		let location = getLocationStr(msp);
 
 		let imgSRC = msp.photoURL;
 		let imgAlt = msp.firstName + ' portrait';
@@ -98,15 +113,32 @@ export const setupMSPBlocks = (mspMap) => {
 			isMini = !isMini;
 		}
 		
+		let govtRolesHTML = `<p class="${ROLE_CLASS}">${govtRoles}</p>`;
+		let partyRoleHTML = `<p class="${ROLE_CLASS}">${partyRole}</p>`;
+
+	/*TODO:
+			- Remove non-unique Govt roles (make a reusable function)
+			- Make location strings past a certain length into their own p
+			- Investigate better fonts/typography (names should be h tagged etc)
+			- Resize images to fit the 50x50 box
+	*/
+		
+
 		let MSPFragment = `
 			<div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
 				<div class="${PORT_BOX_CLASS}">
 					<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
 				</div>
 				<div class="${TXT_BOX_CLASS}">
-					<p class="${P_NAME_CLASS}">${msp.firstName} ${ msp.lastName} (${msp.party.abbreviation})</p>
-					${(govtRoles) ? '<p>' + govtRoles + '</p>' : ''}
-					${(partyRole) ? '<p>' + partyRole + '</p>' : ''}
+					<p>
+					<span class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</span>
+					</p>
+					<p>
+					<span class="${PARTY_CLASS}">(${msp.party.abbreviation})</span>
+					<span class="${LOCATION_CLASS}">(${location})</span>
+					</p>
+					${(govtRoles) ? govtRolesHTML : ''}
+					${(partyRole) ? partyRoleHTML : ''}
 				</div>
 			</div>
 			`;
@@ -150,7 +182,7 @@ export const setupNavMenu = () => {
 			DROPDOWN.classList.remove(WAS_OPENED_CLASS);
 			WRAPPER.classList.toggle(WRAPPER_CLASS, mediaQ.matches);
 			WRAPPER.classList.toggle(MOB_WRAPPER_CLASS, !mediaQ.matches);
-		};
+		};//
 	};
 
 	BURGER.addEventListener('click', onBurgerClick());

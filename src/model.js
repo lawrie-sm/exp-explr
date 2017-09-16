@@ -54,7 +54,7 @@ date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => 
 			}
 		}
 	});
-}
+};
 
 const processContactData = (
 mspMap, arr, valTypeStr, typeArr, typeIDStr, destArr) => {
@@ -65,7 +65,7 @@ mspMap, arr, valTypeStr, typeArr, typeIDStr, destArr) => {
 			//Some specific code for dealing with addresses
 			if (valTypeStr === 'Line1') {
 				let street = obj.Line1 + ', ' + obj.Line2;
-				let objToPush = new objs.Address(typeStr, street, obj.PostCode, obj.Region, obj.Town)
+				let objToPush = new objs.Address(typeStr, street, obj.PostCode, obj.Region, obj.Town);
 				msp[destArr].push(objToPush);
 			}
 			else if (obj[valTypeStr]) {
@@ -84,7 +84,6 @@ const getMSPsByDate = (date, data) => {
 	results.forEach((result) => {
 		if (dateIsWithinRangeOfSPObj(date, result)) {
 			let msp = new objs.MSP();
-			let mspID = result.PersonID;
 			if (result.ConstituencyID) {
 				let constit = data.constituencies.find(byProp('ID', result.ConstituencyID));
 				msp.constit = new objs.Area(constit.Name, constit.ConstituencyCode);
