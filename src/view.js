@@ -2,8 +2,7 @@
 
 import * as controller from './controller';
 
-
-function getDOBStr(msp) {
+const getDOBStr = (msp) => {
 	let birthDate = '(Birth date not given)';
 	if (msp.DOB) {
 		let d = msp.DOB;
@@ -12,9 +11,30 @@ function getDOBStr(msp) {
 			'/' + d.getFullYear();
 	}
 	return birthDate;
-}
+};
 
-function getLocationStr(msp) {
+const getPartyRoles = (msp, mspID) => {
+	let partyRoles = '';
+	partyRoles = msp.partyRoles.map(
+		(e) => {
+			return (e.officialName) ? e.officialName : e.internalName;
+		})[msp.partyRoles.length - 1];
+
+	//HACK -- For Green leaders
+	if (msp.partyRoles.find((e) => {return e.internalName == 'Party Leader'}) &&
+			msp.party.abbreviation === 'Green')
+		partyRoles = 'Co-Convener; ' + partyRoles;
+	//HACK -- For Kez/Alex (16/09/17)
+	if (mspID == 3812)
+		partyRoles = 'Finance Spokesperson';
+	if (mspID == 5119)
+		partyRoles = 'Interim Leader; Community, Social Security and Equalities Spokesperson';
+
+	partyRoles = partyRoles.replace(/\\r\\n/, ', ');
+	return partyRoles;
+};
+
+const getLocationStr = (msp) => {
 	let location = '';
 	if (msp.constit) {
 		location = msp.constit.name;
@@ -23,6 +43,12 @@ function getLocationStr(msp) {
 	}
 	location = location.replace(/ and /g, ' & ');
 	return location;
+}
+
+const getUniqueArray = (arr) => {
+	return arr.filter((e, i, self) => {
+		return self.indexOf(e) === i;
+	});
 }
 
 export const setupMSPBlocks = (mspMap) => {
@@ -86,7 +112,6 @@ export const setupMSPBlocks = (mspMap) => {
 	//Main loop to build initial MSP cells
 	mspMap.forEach((msp, mspID) => {
 
-
 		let location = getLocationStr(msp);
 
 		let imgSRC = msp.photoURL;
@@ -99,31 +124,24 @@ export const setupMSPBlocks = (mspMap) => {
 			imgSRC = '#';
 		}
 
-		let partyRole = '';
+		let partyRoles = '';
 		if (msp.partyRoles && msp.partyRoles.length > 0) {
-			partyRole = msp.partyRoles[msp.partyRoles.length - 1].officialName;
-			partyRole = partyRole.replace(/\\r\\n/, ', ');
+			partyRoles = getPartyRoles(msp, mspID);
 		}
-		
 		let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
+		let partyRolesHTML = `<p class="${ROLE_CLASS}">${partyRoles}</p>`;
 		
-		let govtRoles = (msp.govtRoles) ? msp.govtRoles.join(', ') : '';
-		let isMini = govtRoles;
-		if (govtRoles.includes('Parliamentary Liaison Officer')) {
-			isMini = !isMini;
+		let govtRoles = '';
+		let isMini = false;
+		if (msp.govtRoles && msp.govtRoles.length > 0) {
+			govtRoles = getUniqueArray(msp.govtRoles).join(', ');
+			isMini = govtRoles;
+			if (govtRoles.includes('Parliamentary Liaison Officer')) {
+				isMini = !isMini;
+			}
 		}
-		
 		let govtRolesHTML = `<p class="${ROLE_CLASS}">${govtRoles}</p>`;
-		let partyRoleHTML = `<p class="${ROLE_CLASS}">${partyRole}</p>`;
-
-	/*TODO:
-			- Remove non-unique Govt roles (make a reusable function)
-			- Make location strings past a certain length into their own p
-			- Investigate better fonts/typography (names should be h tagged etc)
-			- Resize images to fit the 50x50 box
-	*/
 		
-
 		let MSPFragment = `
 			<div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
 				<div class="${PORT_BOX_CLASS}">
@@ -138,7 +156,7 @@ export const setupMSPBlocks = (mspMap) => {
 					<span class="${LOCATION_CLASS}">(${location})</span>
 					</p>
 					${(govtRoles) ? govtRolesHTML : ''}
-					${(partyRole) ? partyRoleHTML : ''}
+					${(partyRoles) ? partyRolesHTML : ''}
 				</div>
 			</div>
 			`;

@@ -1,8 +1,7 @@
 TODO
 - Redesign
- - Drop Shadows
- - Purple corners for minister
  - Modal for extra info
+ - Typography and headings
  - Images
 - Caching
 - proper support for updating with dates without re-calling API
