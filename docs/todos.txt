@@ -1,13 +1,9 @@
-TODO
-- Redesign
- - Modal for extra info
- - Typography and headings
- - Images
+TODO:
+- Images
 - Caching
-- proper support for updating with dates without re-calling API
+- proper support for different dates
 - CSS should be processed and inlined by webpack?
 - pages
 - Proper Default images
 - Spinner
-- make the "clicked" bar below nav elements be relative to the mouse
 - Searches, sorting, committee grouping
