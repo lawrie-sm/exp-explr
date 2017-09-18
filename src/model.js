@@ -40,6 +40,16 @@ const byProp = (typeToCheckStr, valueToFind, date) => {
 	}
 };
 
+const getRoleRank = (roleName) => {
+	switch(roleName) {
+    case 'Convener': return 0; break;
+    case 'Co-Convener': return 1; break;
+		case 'Deputy Convener': return 2; break;
+		case 'Member': return 3; break;
+    default: return 10;
+	};
+}
+
 const processRoleData = (
 date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => {
 	arr.forEach((roleObj) => {
@@ -48,7 +58,9 @@ date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => 
 			let role = roleTypeArr.find(byProp('ID', roleObj[roleIDStr]));
 			if (groupArr && groupIDStr) {
 				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
-				msp[destArrStr].push(new objs.Role(group.Name, role.Name));
+				let rank = getRoleRank(role.Name);
+				msp[destArrStr].push(new objs.Role(group.Name, role.Name, rank));
+				console.log(group.Name, role.Name, rank);
 			} else {
 				msp[destArrStr].push(role.Name);
 			}

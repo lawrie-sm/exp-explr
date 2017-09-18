@@ -87,6 +87,12 @@ const getUniqueArray = (arr) => {
 	});
 };
 
+const sortByRoleRank = (arr) => {
+		return arr.sort((a, b) => {
+			return a.roleRank - b.roleRank
+	});
+}
+
 const getModalHTML = (msp, mspID) => {
 
 	let DOBHTML = getDOBHTML(msp);
@@ -121,7 +127,7 @@ const getModalHTML = (msp, mspID) => {
 		).join('');
 	}
 
-	let comRoleList = msp.committeeRoles.map((role) =>
+	let comRoleList = sortByRoleRank(msp.committeeRoles).map((role) =>
 	`<li>
 	${((role.roleName === 'Member') ? '' : role.roleName + ' &ndash;')
 	.replace(/Substitute Member/g, 'Substitute')}
@@ -129,7 +135,7 @@ const getModalHTML = (msp, mspID) => {
 	</li>`)
 	.join('');
 	
-	let cpgRoleList = msp.cpgRoles.map((role) =>
+	let cpgRoleList = sortByRoleRank(msp.cpgRoles).map((role) =>
 	`<li>
 	${(role.roleName === 'Member' ? '' : role.roleName + ' &ndash;')}
 	${role.groupName.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
