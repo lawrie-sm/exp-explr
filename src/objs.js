@@ -21,9 +21,15 @@ export function Address(_type, _street, _postCode, _region, _town) {
 	this.town = _town;
 }
 
-export function Role(_groupName, _roleName) {	
+export function Role(_groupName, _roleName, _roleRank) {	
 	this.roleName = _roleName;
 	this.groupName = _groupName;
+	this.roleRank = _roleRank;
+}
+
+export function Contact(_type, _value) {	
+	this.type = _type;
+	this.value = _value;
 }
 
 export function MSP(_ID, _constit, _region, _firstName, _lastName, _DOB, _photoURL, _party) {

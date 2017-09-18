@@ -69,7 +69,7 @@ mspMap, arr, valTypeStr, typeArr, typeIDStr, destArr) => {
 				msp[destArr].push(objToPush);
 			}
 			else if (obj[valTypeStr]) {
-				let objToPush = {"type": typeStr, "value": obj[valTypeStr]};
+				let objToPush = new objs.Contact(typeStr, obj[valTypeStr]);
 				msp[destArr].push(objToPush);
 			}
 		}

@@ -37,7 +37,6 @@ const getDOBHTML = (msp) => {
 	} else return '';
 };
 
-
 //Can't just loop through party roles in template string since they are stored weird
 const getPartyRolesHTML = (msp, mspID) => {
 	if (msp.partyRoles && msp.partyRoles.length > 0) {
@@ -94,7 +93,33 @@ const getModalHTML = (msp, mspID) => {
 	let partyRolesHTML = getPartyRolesHTML(msp, mspID);
 	let govtRolesHTML = getGovtRolesHTML(msp);
 
-	//TODO: Emails, telephones etc.
+	let emailsHTML = '';
+	if (msp.emails && msp.emails.length > 0) {
+		emailsHTML = msp.emails.map((email) =>
+			`<li> <a href="mailto:${email.value}">${email.type}</a></li>`
+		).join('');
+	}
+
+	let websitesHTML = '';
+	if (msp.websites && msp.websites.length > 0) {
+		websitesHTML = msp.websites.map((website) =>
+		`<li> <a href="${website.value}">${website.type}</a></li>`
+		).join('');
+	}
+
+	let addressesHTML = '';
+	if (msp.addresses && msp.addresses.length > 0) {
+		addressesHTML = msp.addresses.map((address) =>
+			`<p>
+					<strong> ${address.type} Address: </strong>
+					${address.street}
+					${address.postCode}
+					${address.region ? address.region : ''}
+					${address.town}
+
+			</p>`
+		).join('');
+	}
 
 	let comRoleList = msp.committeeRoles.map((role) =>
 	`<li>
@@ -113,7 +138,9 @@ const getModalHTML = (msp, mspID) => {
 
 	return `
 	<div class="${MODAL_PERSONAL_BOX_CLASS}">
+	
 		<img class="${MODAL_IMG_CLASS}" src="${msp.photoURL}"></img>
+		
 		<h3 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h3>
 		${DOBHTML ? DOBHTML : ''}
 		<p>${msp.party.name}</p>
@@ -124,15 +151,25 @@ const getModalHTML = (msp, mspID) => {
 	</div>
 	
 	<div class="${MODAL_CONTENT_TEXT_BOX_CLASS}">
+	
+		<h4>Contact</h4>
+
+		${addressesHTML ? addressesHTML : ''}
+
+		${emailsHTML ? emailsHTML : ''}
+
+		${websitesHTML ? websitesHTML : ''}
 
 		${(comRoleList && comRoleList.length > 0) ?`
 		<h4>Committees</h4>
 		<ul>${comRoleList}</ul>
 		`: ''}
+		
 		${(cpgRoleList && cpgRoleList.length > 0) ? `
 		<h4>Cross-Party Groups</h4>
 		<ul>${cpgRoleList}</ul>
 		`: ''}
+		
 	</div>
 	`;
 };
@@ -151,8 +188,10 @@ const onCellClick = (mspID) => {
 				let msp = mspMap.get(mspID);
 				MODAL_BOX_CONTENT.innerHTML = getModalHTML(msp, mspID);
 				MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
+				console.dir(mspMap); /*****************************/
 			});
 		}
+
 	};
 };
 
@@ -211,8 +250,6 @@ export const setupMSPBlocks = (mspMap) => {
 		let cell = cellContainer.children[i];
 		cell.addEventListener('click', onCellClick(Number(cell.id)));
 	}
-	
-console.dir(mspMap);
 
 };
 
