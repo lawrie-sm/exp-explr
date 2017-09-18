@@ -60,7 +60,6 @@ date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => 
 				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
 				let rank = getRoleRank(role.Name);
 				msp[destArrStr].push(new objs.Role(group.Name, role.Name, rank));
-				console.log(group.Name, role.Name, rank);
 			} else {
 				msp[destArrStr].push(role.Name);
 			}

@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "webpack-dev-server --open --config webpack.dev-config",
-    "prod": "webpack-dev-server --open --config webpack.prod-config"
+    "prod": "webpack --config webpack.prod-config"
   },
   "author": "",
   "license": "ISC",

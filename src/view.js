@@ -194,7 +194,6 @@ const onCellClick = (mspID) => {
 				let msp = mspMap.get(mspID);
 				MODAL_BOX_CONTENT.innerHTML = getModalHTML(msp, mspID);
 				MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
-				console.dir(mspMap); /*****************************/
 			});
 		}
 
