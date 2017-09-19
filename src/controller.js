@@ -14,11 +14,9 @@ export const getExpandedCellData = () => {
 	});
 }
 
-
 /*** Main ***/
 
-view.setupNavMenu();
-view.setupModalShell();
+view.init();
 model.getMSPMap(CURRENT_DATE).then((mspMap) => {
-	view.setupMSPBlocks(mspMap);
+	view.refresh(mspMap);
 });

@@ -2,7 +2,9 @@
 
 import * as controller from './controller';
 
+const MAIN_ELEM = document.getElementsByTagName('main')[0];
 const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
+const SML_IMG_PATH = '/img/portraits/';
 const CELL_CLASS = 'cell';
 const CELL_CONTAINER_CLASS = 'cell-container';
 const CELL_PARTY_CLASS_ROOT = 'cell__pty-';
@@ -14,8 +16,6 @@ const PARTY_CLASS = 'msp-party';
 const ROLE_CLASS = 'msp-role';
 const PORT_BOX_CLASS = 'portrait-box';
 const PORT_IMG_CLASS = 'portrait-img';
-const SML_IMG_PATH = '/img/portraits/';
-const MAIN_ELEM = document.getElementsByTagName('main')[0];
 const MODAL_CLASS = 'modal';
 const MODAL_BOX_CLASS = 'modal--box';
 const MODAL_BOX_CONTENT_CLASS = 'modal--box-content';
@@ -24,7 +24,12 @@ const MODAL_HIDDEN_CLASS = 'modal__hidden';
 const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
 const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
 const MODAL_IMG_CLASS ='modal--box-img';
+const PREFS_BAR_CLASS ='pref-bar';
+const PREFS_DATE_INPUT_ID = 'date-input'
 
+const fragmentFromString = (strHTML) => {
+	return document.createRange().createContextualFragment(strHTML);
+}
 
 const getDOBHTML = (msp) => {
 	let birthDate = '';
@@ -94,7 +99,7 @@ const sortByRoleRank = (arr) => {
 }
 
 const getModalHTML = (msp, mspID) => {
-
+	
 	let DOBHTML = getDOBHTML(msp);
 	let partyRolesHTML = getPartyRolesHTML(msp, mspID);
 	let govtRolesHTML = getGovtRolesHTML(msp);
@@ -200,65 +205,47 @@ const onCellClick = (mspID) => {
 	};
 };
 
+const getMSPCellHTML = (msp, mspID) => {
+	let location = getLocationStr(msp);
 
-export const setupMSPBlocks = (mspMap) => {
-	let cells = '';
-
-	let cellContainer = document.createElement("div");
-	cellContainer.classList.add(CELL_CONTAINER_CLASS);
-	
-	//Main loop to build initial MSP cells
-	mspMap.forEach((msp, mspID) => {
-
-		let location = getLocationStr(msp);
-
-		let imgSRC = msp.photoURL;
-		let imgAlt = msp.firstName + ' portrait';
-		if (imgSRC) {
-			let imgID = imgSRC.substring(imgSRC.lastIndexOf('/') + 1);
-			imgID = imgID.replace(/\s+/g, '');
-			imgSRC = SML_IMG_PATH + imgID + '.jpg';
-		} else {
-			imgSRC = '#';
-		}
-
-		let govtRolesHTML = getGovtRolesHTML(msp);
-		let isMini = (govtRolesHTML && govtRolesHTML.search('Parliamentary Liaison Officer') == -1 ?
-		true : false); 
-		
-		let partyRolesHTML = getPartyRolesHTML(msp, mspID);
-		let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
-		
-		let MSPFragment = `
-			<div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
-				<div class="${PORT_BOX_CLASS}">
-					<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
-				</div>
-				<div class="${TXT_BOX_CLASS}">
-					<h4 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h4>
-					<p>
-					<span class="${PARTY_CLASS}">(${msp.party.abbreviation})</span>
-					<span class="${LOCATION_CLASS}">(${location})</span>
-					</p>
-					${(govtRolesHTML) ? govtRolesHTML : ''}
-					${(partyRolesHTML) ? partyRolesHTML : ''}
-				</div>
-			</div>
-			`;
-		cells = cells + MSPFragment;
-	});
-
-	cellContainer.innerHTML = cells;
-	MAIN_ELEM.appendChild(cellContainer);
-	
-	for (let i = 0; i < cellContainer.children.length; i++) {
-		let cell = cellContainer.children[i];
-		cell.addEventListener('click', onCellClick(Number(cell.id)));
+	let imgSRC = msp.photoURL;
+	let imgAlt = msp.firstName + ' portrait';
+	if (imgSRC) {
+		let imgID = imgSRC.substring(imgSRC.lastIndexOf('/') + 1);
+		imgID = imgID.replace(/\s+/g, '');
+		imgSRC = SML_IMG_PATH + imgID + '.jpg';
+	} else {
+		imgSRC = '#';
 	}
 
-};
+	let govtRolesHTML = getGovtRolesHTML(msp);
+	let isMini = (govtRolesHTML && govtRolesHTML.search('Parliamentary Liaison Officer') == -1 ?
+	true : false); 
+	
+	let partyRolesHTML = getPartyRolesHTML(msp, mspID);
+	let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
+	
+	let MSPFragment = `
+		<div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
+			<div class="${PORT_BOX_CLASS}">
+				<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
+			</div>
+			<div class="${TXT_BOX_CLASS}">
+				<h4 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h4>
+				<p>
+				<span class="${PARTY_CLASS}">(${msp.party.abbreviation})</span>
+				<span class="${LOCATION_CLASS}">(${location})</span>
+				</p>
+				${(govtRolesHTML) ? govtRolesHTML : ''}
+				${(partyRolesHTML) ? partyRolesHTML : ''}
+			</div>
+		</div>
+		`;
 
-export const setupNavMenu = () => {
+	return MSPFragment;
+}
+
+const setupNavMenu = () => {
 	const OPEN_CLASS = 'nav--menu__open';
 	const WAS_OPENED_CLASS = 'nav--menu__was-opened';
 	const WRAPPER_CLASS = 'nav--menu-wrapper';
@@ -293,7 +280,7 @@ export const setupNavMenu = () => {
 	window.onload = updateMenuOnScreenChange(MEDIA_QUERY);
 };
 
-export const setupModalShell = () => {
+const setupModalShell = () => {
 	const onModalClose = (modal) => {
 		return () => {
 			modal.classList.toggle(MODAL_HIDDEN_CLASS);
@@ -309,10 +296,50 @@ export const setupModalShell = () => {
 	</div>
 	`;
 
-	MAIN_ELEM.innerHTML += modalShellHTML;
+	MAIN_ELEM.appendChild(fragmentFromString(modalShellHTML));
+
 	let MODAL_ELEM = document.getElementsByClassName(MODAL_CLASS)[0];
 	const CLOSE_ELEM = document.getElementsByClassName(MODAL_CLOSE_CLASS)[0];
 	CLOSE_ELEM.addEventListener('click', onModalClose(MODAL_ELEM));
 	//Toggle hidden on during initial page load
 	MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS); 
 };
+
+const setupPrefsBar = () => {
+	// TODO
+}
+
+export const init = () => {
+	setupNavMenu();
+	setupPrefsBar();
+	setupModalShell();
+}
+
+export const refresh = (mspMap, groupBy) => {
+	let cellsHTML = '';
+
+	//Main loop to build initial MSP cells
+	mspMap.forEach((msp, mspID) => {
+		cellsHTML += getMSPCellHTML(msp, mspID);
+	});
+
+	let cellContainer = document.createElement("div");
+	cellContainer.classList.add(CELL_CONTAINER_CLASS);
+	cellContainer.appendChild(fragmentFromString(cellsHTML));
+
+	//Update the actual DOM and add events
+	MAIN_ELEM.appendChild(cellContainer);
+	for (let i = 0; i < cellContainer.children.length; i++) {
+		let cell = cellContainer.children[i];
+		cell.addEventListener('click', onCellClick(Number(cell.id)));
+	}
+
+};
+
+
+
+
+
+
+
+
