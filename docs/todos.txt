@@ -1,10 +1,11 @@
 TODO:
+- Cell grouping
 - Make party roles use nicely formatted internal names instead of notes
-- Images
-- Caching
-- proper support for different dates
+- Search
+- Clean up globals
+- Use this to save file size https://css-tricks.com/deploying-es2015-code-production-today/
 - CSS should be processed and inlined by webpack?
-- pages
-- Proper Default images
+- Images and lazy loading of cells/portraits
+- Proper Default image
+- Caching
 - Spinner
-- Searches, sorting, committee grouping

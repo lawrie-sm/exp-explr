@@ -3,6 +3,7 @@
 import * as utils from './utils';
 import * as controller from './controller';
 
+//TODO: Tidy up the reliance on global state here
 const MAIN_ELEM = document.getElementsByTagName('main')[0];
 const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
 const SML_IMG_PATH = '/img/portraits/';
@@ -364,14 +365,15 @@ export const refresh = (mspMap, groupBy) => {
 	});
 
 	//Grouping
-	let cellContainer = fragmentFromString(`<div class="${CELL_GROUP_CONTAINER_CLASS}"></div>`);
+	let cellContainer = document.createElement("div");
+	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
 
 	let testGroupHTML = `
 	<div class="${CELL_GROUP_CLASS}">
 		${cellsHTML}
 	</div>`;
 
-	cellContainer.appendChild(fragmentFromString(testGroupHTML));
+	cellContainer.appendChild(testGroup);
 
 	//Refresh the actual DOM and add events
 	MAIN_ELEM.appendChild(cellContainer);
