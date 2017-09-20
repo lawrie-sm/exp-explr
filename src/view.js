@@ -1,5 +1,6 @@
 'use strict';
 
+import * as utils from './utils';
 import * as controller from './controller';
 
 const MAIN_ELEM = document.getElementsByTagName('main')[0];
@@ -40,7 +41,7 @@ const getDOBHTML = (msp) => {
 	} else return '';
 };
 
-//Can't just loop through party roles in template string since they are stored weird
+//TODO: Many of the notes in here should not be used, use internal names instead
 const getPartyRolesHTML = (msp, mspID) => {
 	if (msp.partyRoles && msp.partyRoles.length > 0) {
 		let partyRoles = '';
@@ -303,49 +304,61 @@ const setupModalShell = () => {
 	MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS); 
 };
 
-const setupPrefsBar = () => {
+const setupPrefsBar = (date) => {
 	const PREFS_BAR_CLASS ='pref-bar';
 	const PREFS_FORM_ID = 'prefs-form';
 	const DATE_INPUT_ID = 'date-input';
 	const DATE_SUBMIT_ID = 'date-submit';
+	const MIN_DATE = '1999-05-12' // Earliest data on record
+
 
 	const prefsBarHTML = `
-<div class=${PREFS_BAR_CLASS}>
-	<form id="${PREFS_FORM_ID}" onsubmit="return false">
-		<div>
-			<label for="${DATE_INPUT_ID}">Date:</label>
-			<input type="date" id="${DATE_INPUT_ID}" value="2017-01-01" name="${DATE_INPUT_ID}" required>
-			<span class="validity"></span>
-		</div>
-		<div>
-			<input id="${DATE_SUBMIT_ID}" type="submit">
-		</div>
-	</form>
-</div>
-`;
+	<div class=${PREFS_BAR_CLASS}>
+		<form id="${PREFS_FORM_ID}" onsubmit="return false">
+			<div>
+				<label for="${DATE_INPUT_ID}">Date:</label>
+				<input type="date" id="${DATE_INPUT_ID}" value="${utils.dateToStr(date)}" name="${DATE_INPUT_ID}" max="${utils.dateToStr(date)}" min="${MIN_DATE}" required>
+				<span class="validity"></span>
+			</div>
+			<div>
+				<input id="${DATE_SUBMIT_ID}" type="submit">
+			</div>
+		</form>
+	</div>
+	`;
 
-//TODO: Get the 
+	MAIN_ELEM.appendChild(fragmentFromString(prefsBarHTML));
 
-MAIN_ELEM.appendChild(fragmentFromString(prefsBarHTML));
+	const PREFS_FORM = document.getElementById(PREFS_FORM_ID);
+	const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
+	const DATE_SUBMIT = document.getElementById(DATE_SUBMIT_ID);
 
-const PREFS_FORM = document.getElementById(PREFS_FORM_ID);
-const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
-const DATE_SUBMIT = document.getElementById(DATE_SUBMIT_ID);
-DATE_SUBMIT.addEventListener('click', (e) => {
-	controller.refreshView(DATE_INPUT.value);
-});
+
+	DATE_SUBMIT.addEventListener('click', (e) => {
+		controller.refreshView(utils.strToDate(DATE_INPUT.value));
+	});
 
 }
 
 
-export const init = () => {
+export const init = (date) => {
 	setupNavMenu();
-	setupPrefsBar();
+	setupPrefsBar(date);
 	setupModalShell();
 }
 
 export const refresh = (mspMap, groupBy) => {
+
 	let cellsHTML = '';
+	
+	//Remove old container
+	let container = document.getElementsByClassName(CELL_CONTAINER_CLASS)[0];
+
+	if (container)
+	{
+		MAIN_ELEM.removeChild(container);
+	}
+
 
 	//Main loop to build initial MSP cells
 	mspMap.forEach((msp, mspID) => {
@@ -356,7 +369,7 @@ export const refresh = (mspMap, groupBy) => {
 	cellContainer.classList.add(CELL_CONTAINER_CLASS);
 	cellContainer.appendChild(fragmentFromString(cellsHTML));
 
-	//Update the actual DOM and add events
+	//Refresh the actual DOM and add events
 	MAIN_ELEM.appendChild(cellContainer);
 	for (let i = 0; i < cellContainer.children.length; i++) {
 		let cell = cellContainer.children[i];

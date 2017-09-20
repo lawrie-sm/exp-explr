@@ -4,7 +4,7 @@ import * as view from './view';
 
 const CURRENT_DATE = new Date();
 
-//let test_date = new Date(2011, 1, 1);
+//let test_date = new Date(2010, 1, 4);
 
 export const getExpandedCellData = () => {
 	return new Promise((resolve, reject) => {
@@ -15,7 +15,6 @@ export const getExpandedCellData = () => {
 }
 
 export const refreshView = (date) => {
-		console.log('refreshing', date); //TODO: Make Model handle date updates
 		model.getMSPMap(date).then((mspMap) => {
 			view.refresh(mspMap);
 		});
@@ -23,7 +22,7 @@ export const refreshView = (date) => {
 
 /*** Main ***/
 
-view.init();
+view.init(CURRENT_DATE);
 model.getMSPMap(CURRENT_DATE).then((mspMap) => {
 	view.refresh(mspMap);
 });

@@ -1,5 +1,6 @@
 'use strict';
 
+import * as utils from './utils';
 import * as objs from './objs';
 import * as http from './http';
 
@@ -8,21 +9,10 @@ let basic_data_cache = null;
 let expanded_data_cache = null;
 let msp_map = null;
 
-const strToDate = (dateStr) => {
-	let T = dateStr.indexOf('T');
-	dateStr = dateStr.substring(0, T);
-	dateStr = dateStr.replace(/\s+/g, '');
-	let dateArr = dateStr.split('-');
-	let year = dateArr[0],
-		month = dateArr[1],
-		day = dateArr[2];
-	return new Date(year, (month - 1), day);
-};
-
-const dateIsWithinRangeOfSPObj = (date, spObj) => {
-	let startDate = strToDate(spObj.ValidFromDate);
+const dateIsWithinRangeOfSPObj = (date, spObj) => {	
+	let startDate = utils.strToDate(spObj.ValidFromDate);
 	let endDate = (spObj.ValidUntilDate != null) ?
-		strToDate(spObj.ValidUntilDate) : null;
+	utils.strToDate(spObj.ValidUntilDate) : null;
 	return ((date >= startDate && date <= endDate) ||
 		(date >= startDate && endDate == null));
 };
@@ -59,7 +49,8 @@ date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => 
 			if (groupArr && groupIDStr) {
 				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
 				let rank = getRoleRank(role.Name);
-				msp[destArrStr].push(new objs.Role(group.Name, role.Name, rank));
+				let roleName = utils.replaceNewlines(role.Name)
+				msp[destArrStr].push(new objs.Role(group.Name, roleName, rank));
 			} else {
 				msp[destArrStr].push(role.Name);
 			}
@@ -91,8 +82,6 @@ const getMSPsByDate = (date, data) => {
 	let mspMap = new Map();
 	let results = data.regResults.concat(data.constitResults);
 
-
-
 	//Add election location and initial setting of map
 	results.forEach((result) => {
 		if (dateIsWithinRangeOfSPObj(date, result)) {
@@ -118,7 +107,7 @@ const getMSPsByDate = (date, data) => {
 				msp.firstName = fullName[1];
 				msp.lastName = fullName[0];
 				if (!mspDataObj.BirthDateIsProtected) {
-					msp.DOB = strToDate(mspDataObj.BirthDate);
+					msp.DOB = utils.strToDate(mspDataObj.BirthDate);
 				}
 				msp.photoURL = mspDataObj.PhotoURL;
 		}
@@ -135,7 +124,9 @@ const getMSPsByDate = (date, data) => {
 			if (partyRoles) {
 				partyRoles.forEach((role) => {
 					let partyRoleType = data.partyRoles.find(byProp('ID', role.PartyRoleTypeID));
-					msp.partyRoles.push(new objs.PartyRole(partyRoleType.Name, role.Notes));
+					let roleName = partyRoleType.Name;
+					let roleNotes = utils.replaceNewlines(role.Notes)
+					msp.partyRoles.push(new objs.PartyRole(roleName, roleNotes));
 				});
 			}
 		}
@@ -183,7 +174,7 @@ export const getMSPMap = (date) => {
 				resolve(msp_map);
 			});
 		} else {
-			
+			msp_map = getMSPsByDate(date, basic_data_cache);
 			resolve(msp_map);
 		}
 

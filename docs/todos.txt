@@ -1,4 +1,5 @@
 TODO:
+- Make party roles use nicely formatted internal names instead of notes
 - Images
 - Caching
 - proper support for different dates
