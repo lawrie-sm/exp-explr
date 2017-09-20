@@ -91,6 +91,8 @@ const getMSPsByDate = (date, data) => {
 	let mspMap = new Map();
 	let results = data.regResults.concat(data.constitResults);
 
+
+
 	//Add election location and initial setting of map
 	results.forEach((result) => {
 		if (dateIsWithinRangeOfSPObj(date, result)) {
@@ -181,6 +183,7 @@ export const getMSPMap = (date) => {
 				resolve(msp_map);
 			});
 		} else {
+			
 			resolve(msp_map);
 		}
 

@@ -14,6 +14,13 @@ export const getExpandedCellData = () => {
 	});
 }
 
+export const refreshView = (date) => {
+		console.log('refreshing', date); //TODO: Make Model handle date updates
+		model.getMSPMap(date).then((mspMap) => {
+			view.refresh(mspMap);
+		});
+}
+
 /*** Main ***/
 
 view.init();

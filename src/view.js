@@ -24,8 +24,6 @@ const MODAL_HIDDEN_CLASS = 'modal__hidden';
 const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
 const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
 const MODAL_IMG_CLASS ='modal--box-img';
-const PREFS_BAR_CLASS ='pref-bar';
-const PREFS_DATE_INPUT_ID = 'date-input'
 
 const fragmentFromString = (strHTML) => {
 	return document.createRange().createContextualFragment(strHTML);
@@ -306,8 +304,39 @@ const setupModalShell = () => {
 };
 
 const setupPrefsBar = () => {
-	// TODO
+	const PREFS_BAR_CLASS ='pref-bar';
+	const PREFS_FORM_ID = 'prefs-form';
+	const DATE_INPUT_ID = 'date-input';
+	const DATE_SUBMIT_ID = 'date-submit';
+
+	const prefsBarHTML = `
+<div class=${PREFS_BAR_CLASS}>
+	<form id="${PREFS_FORM_ID}" onsubmit="return false">
+		<div>
+			<label for="${DATE_INPUT_ID}">Date:</label>
+			<input type="date" id="${DATE_INPUT_ID}" value="2017-01-01" name="${DATE_INPUT_ID}" required>
+			<span class="validity"></span>
+		</div>
+		<div>
+			<input id="${DATE_SUBMIT_ID}" type="submit">
+		</div>
+	</form>
+</div>
+`;
+
+//TODO: Get the 
+
+MAIN_ELEM.appendChild(fragmentFromString(prefsBarHTML));
+
+const PREFS_FORM = document.getElementById(PREFS_FORM_ID);
+const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
+const DATE_SUBMIT = document.getElementById(DATE_SUBMIT_ID);
+DATE_SUBMIT.addEventListener('click', (e) => {
+	controller.refreshView(DATE_INPUT.value);
+});
+
 }
+
 
 export const init = () => {
 	setupNavMenu();
