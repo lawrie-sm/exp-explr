@@ -7,7 +7,8 @@ const MAIN_ELEM = document.getElementsByTagName('main')[0];
 const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
 const SML_IMG_PATH = '/img/portraits/';
 const CELL_CLASS = 'cell';
-const CELL_CONTAINER_CLASS = 'cell-container';
+const CELL_GROUP_CONTAINER_CLASS = 'cell-group-container';
+const CELL_GROUP_CLASS = 'cell-group';
 const CELL_PARTY_CLASS_ROOT = 'cell__pty-';
 const CELL_MINI_CLASS = 'cell__mini';
 const TXT_BOX_CLASS = 'txtbox';
@@ -349,25 +350,28 @@ export const init = (date) => {
 
 export const refresh = (mspMap, groupBy) => {
 
-	let cellsHTML = '';
-	
 	//Remove old container
-	let container = document.getElementsByClassName(CELL_CONTAINER_CLASS)[0];
-
+	let container = document.getElementsByClassName(CELL_GROUP_CONTAINER_CLASS)[0];
 	if (container)
 	{
 		MAIN_ELEM.removeChild(container);
 	}
 
-
 	//Main loop to build initial MSP cells
+	let cellsHTML = '';
 	mspMap.forEach((msp, mspID) => {
 		cellsHTML += getMSPCellHTML(msp, mspID);
 	});
 
-	let cellContainer = document.createElement("div");
-	cellContainer.classList.add(CELL_CONTAINER_CLASS);
-	cellContainer.appendChild(fragmentFromString(cellsHTML));
+	//Grouping
+	let cellContainer = fragmentFromString(`<div class="${CELL_GROUP_CONTAINER_CLASS}"></div>`);
+
+	let testGroupHTML = `
+	<div class="${CELL_GROUP_CLASS}">
+		${cellsHTML}
+	</div>`;
+
+	cellContainer.appendChild(fragmentFromString(testGroupHTML));
 
 	//Refresh the actual DOM and add events
 	MAIN_ELEM.appendChild(cellContainer);

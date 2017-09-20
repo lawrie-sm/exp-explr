@@ -149,7 +149,11 @@ main {
 	width: 100%;
 }
 
-.cell-container {
+.cell-group-container {
+	margin: 0;
+}
+
+.cell-group {
 	margin: 3% 1%;
 	background-color: var(--col-grey);
 	display: flex;

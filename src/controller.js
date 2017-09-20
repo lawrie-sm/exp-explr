@@ -14,9 +14,9 @@ export const getExpandedCellData = () => {
 	});
 }
 
-export const refreshView = (date) => {
+export const refreshView = (date, groupBy) => {
 		model.getMSPMap(date).then((mspMap) => {
-			view.refresh(mspMap);
+			view.refresh(mspMap, groupBy);
 		});
 }
 
