@@ -28,6 +28,8 @@ const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
 const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
 const MODAL_IMG_CLASS ='modal--box-img';
 
+let selected_date = '';
+
 const fragmentFromString = (strHTML) => {
 	return document.createRange().createContextualFragment(strHTML);
 }
@@ -43,8 +45,8 @@ const getDOBHTML = (msp) => {
 	} else return '';
 };
 
-//TODO: Many of the notes in here should not be used, use internal names instead
 const getPartyRolesHTML = (msp, mspID) => {
+
 	if (msp.partyRoles && msp.partyRoles.length > 0) {
 		let partyRoles = '';
 		partyRoles = msp.partyRoles.map(
@@ -135,16 +137,16 @@ const getModalHTML = (msp, mspID) => {
 
 	let comRoleList = sortByRoleRank(msp.committeeRoles).map((role) =>
 	`<li>
-	${((role.roleName === 'Member') ? '' : role.roleName + ' &ndash;')
-	.replace(/Substitute Member/g, 'Substitute')}
-	${role.groupName}
+		${((role.roleName === 'Member') ? '' : role.roleName + ' &ndash;')
+		.replace(/Substitute Member/g, 'Substitute')}
+		${role.groupName}
 	</li>`)
 	.join('');
 	
 	let cpgRoleList = sortByRoleRank(msp.cpgRoles).map((role) =>
 	`<li>
-	${(role.roleName === 'Member' ? '' : role.roleName + ' &ndash;')}
-	${role.groupName.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
+		${(role.roleName === 'Member' ? '' : role.roleName + ' &ndash;')}
+		${role.groupName.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
 	</li>`)
 	.join('');
 
@@ -196,7 +198,7 @@ const onCellClick = (mspID) => {
 			const MODAL_BOX_CONTENT = document.getElementsByClassName(MODAL_BOX_CONTENT_CLASS)[0];
 			MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS);
 
-			controller.getExpandedCellData().then((mspMap) => {
+			controller.getExpandedCellData(selected_date).then((mspMap) => {
 				let msp = mspMap.get(mspID);
 				MODAL_BOX_CONTENT.innerHTML = getModalHTML(msp, mspID);
 				MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
@@ -273,7 +275,7 @@ const setupNavMenu = () => {
 			DROPDOWN.classList.remove(WAS_OPENED_CLASS);
 			WRAPPER.classList.toggle(WRAPPER_CLASS, mediaQ.matches);
 			WRAPPER.classList.toggle(MOB_WRAPPER_CLASS, !mediaQ.matches);
-		};//
+		};
 	};
 
 	BURGER.addEventListener('click', onBurgerClick());
@@ -335,17 +337,18 @@ const setupPrefsBar = (date) => {
 	const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
 	const DATE_SUBMIT = document.getElementById(DATE_SUBMIT_ID);
 
-
 	DATE_SUBMIT.addEventListener('click', (e) => {
-		controller.refreshView(utils.strToDate(DATE_INPUT.value));
+		selected_date = utils.strToDate(DATE_INPUT.value);
+		controller.refreshView(selected_date);
 	});
 
 }
 
 
 export const init = (date) => {
+	selected_date = date;
 	setupNavMenu();
-	setupPrefsBar(date);
+	setupPrefsBar(selected_date);
 	setupModalShell();
 }
 
@@ -373,13 +376,13 @@ export const refresh = (mspMap, groupBy) => {
 		${cellsHTML}
 	</div>`;
 
-	cellContainer.appendChild(testGroup);
+	cellContainer.appendChild(fragmentFromString(testGroupHTML));
 
 	//Refresh the actual DOM and add events
 	MAIN_ELEM.appendChild(cellContainer);
-	for (let i = 0; i < cellContainer.children.length; i++) {
-		let cell = cellContainer.children[i];
-		cell.addEventListener('click', onCellClick(Number(cell.id)));
+	let cells = document.getElementsByClassName(CELL_CLASS);
+	for (let i = 0; i < cells.length; i++) {
+		cells[i].addEventListener('click', onCellClick(Number(cells[i].id)));
 	}
 
 };

@@ -2,13 +2,12 @@
 import * as model from './model';
 import * as view from './view';
 
+
 const CURRENT_DATE = new Date();
 
-//let test_date = new Date(2010, 1, 4);
-
-export const getExpandedCellData = () => {
+export const getExpandedCellData = (date) => {
 	return new Promise((resolve, reject) => {
-		let mspMap = model.getExpandedMSPMap(CURRENT_DATE).then((mspMap) => {
+		let mspMap = model.getExpandedMSPMap(date).then((mspMap) => {
 			resolve(mspMap);
 		});
 	});

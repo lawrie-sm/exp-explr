@@ -77,7 +77,19 @@ mspMap, arr, valTypeStr, typeArr, typeIDStr, destArr) => {
 		}
 	});
 };
-	
+
+const resetMSPArrays = (mspMap) => {
+ mspMap.forEach((msp) => {
+	for (let prop in msp) {
+		if (Array.isArray(msp[prop])
+		&& prop != 'govtRoles'
+		&& prop != 'partyRoles') {
+			msp[prop] = [];
+		}
+	}
+ });
+}
+
 const getMSPsByDate = (date, data) => {
 	let mspMap = new Map();
 	let results = data.regResults.concat(data.constitResults);
@@ -142,6 +154,8 @@ const getMSPsByDate = (date, data) => {
 
 const updateMSPMapWithExpandedData = (date, data) => {
 
+	resetMSPArrays(msp_map);
+
 	processRoleData(
 	date, msp_map, data.membercpgRoles, data.cpgRoles,
 	'CrossPartyGroupRoleID', data.cpgs, 'CrossPartyGroupID', 'cpgRoles');
@@ -185,6 +199,7 @@ export const getExpandedMSPMap = (date) => {
 	return new Promise((resolve, reject) => {
 
 		if (!expanded_data_cache) {
+			console.log(date);
 			http.getExpandedMSPData().then((data) => {
 				expanded_data_cache = data;
 				updateMSPMapWithExpandedData(date, expanded_data_cache);
@@ -192,6 +207,8 @@ export const getExpandedMSPMap = (date) => {
 			});
 
 		} else {
+			console.log(date);
+			updateMSPMapWithExpandedData(date, expanded_data_cache);
 			resolve(msp_map);
 		}
 
