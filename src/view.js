@@ -5,7 +5,8 @@ import * as controller from './controller';
 
 //TODO: Tidy up the reliance on global state here
 const MAIN_ELEM = document.getElementsByTagName('main')[0];
-const PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
+const SML_PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
+const LRG_PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/125x125';
 const SML_IMG_PATH = '/img/portraits/';
 const CELL_CLASS = 'cell';
 const CELL_GROUP_CONTAINER_CLASS = 'cell-group-container';
@@ -153,7 +154,7 @@ const getModalHTML = (msp, mspID) => {
 	return `
 	<div class="${MODAL_PERSONAL_BOX_CLASS}">
 	
-		<img class="${MODAL_IMG_CLASS}" src="${msp.photoURL}"></img>
+		<img class="${MODAL_IMG_CLASS}" src="${LRG_PLACEHOLDER_IMG_URL}"></img>
 		
 		<h3 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h3>
 		${DOBHTML ? DOBHTML : ''}
@@ -231,7 +232,7 @@ const getMSPCellHTML = (msp, mspID) => {
 	let MSPFragment = `
 		<div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
 			<div class="${PORT_BOX_CLASS}">
-				<img class="${PORT_IMG_CLASS}" src="${PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
+				<img class="${PORT_IMG_CLASS}" src="${SML_PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
 			</div>
 			<div class="${TXT_BOX_CLASS}">
 				<h4 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h4>
@@ -380,10 +381,12 @@ export const refresh = (mspMap, groupBy) => {
 
 	//Refresh the actual DOM and add events
 	MAIN_ELEM.appendChild(cellContainer);
+	
 	let cells = document.getElementsByClassName(CELL_CLASS);
 	for (let i = 0; i < cells.length; i++) {
 		cells[i].addEventListener('click', onCellClick(Number(cells[i].id)));
 	}
+
 
 };
 
