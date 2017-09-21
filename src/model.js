@@ -111,6 +111,8 @@ const getMSPsByDate = (date, data) => {
 		}
 	});
 
+	console.log(data.basicMSPData.length);
+
 	//Add basic MSP data
 	data.basicMSPData.forEach((mspDataObj) => {
 			let msp = mspMap.get(mspDataObj.PersonID);
@@ -185,10 +187,12 @@ export const getMSPMap = (date) => {
 			http.getInitialMSPData().then((data) => {
 				basic_data_cache = data;
 				msp_map = getMSPsByDate(date, basic_data_cache);
+				
 				resolve(msp_map);
 			});
 		} else {
 			msp_map = getMSPsByDate(date, basic_data_cache);
+			console.dir(msp_map);
 			resolve(msp_map);
 		}
 

@@ -6,7 +6,7 @@ import * as controller from './controller';
 //TODO: Tidy up the reliance on global state here
 const MAIN_ELEM = document.getElementsByTagName('main')[0];
 const SML_PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
-const LRG_PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/125x125';
+const LRG_PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/250x250';
 const SML_IMG_PATH = '/img/portraits/';
 const CELL_CLASS = 'cell';
 const CELL_GROUP_CONTAINER_CLASS = 'cell-group-container';
