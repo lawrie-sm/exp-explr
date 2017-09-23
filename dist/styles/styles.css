@@ -328,6 +328,15 @@ main {
 	flex: 1;
 }
 
+#pref-form {
+	display: flex;
+	display: -webkit-flex;
+}
+
+#pref-form > *{
+	padding: 0 0.5%;
+}
+
 /*MEDIUM SCREENS*/
 
 @media (min-width: 640px) {

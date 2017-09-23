@@ -311,11 +311,12 @@ const setupModalShell = () => {
 
 const setupPrefsBar = (date) => {
 	const PREFS_BAR_CLASS ='pref-bar';
-	const PREFS_FORM_ID = 'prefs-form';
+	const PREFS_FORM_ID = 'pref-form';
 	const DATE_INPUT_ID = 'date-input';
-	const DATE_SUBMIT_ID = 'date-submit';
-	const MIN_DATE = '1999-05-12' // Earliest data on record
-
+	const SUBMIT_ID = 'pref-submit';
+	const MIN_DATE = '1999-05-12'; // Earliest data on record
+	const GROUP_BY_SELECT_ID = "group-by";
+	const GROUP_SELECT_ID = "group";
 
 	const prefsBarHTML = `
 	<div class=${PREFS_BAR_CLASS}>
@@ -325,9 +326,23 @@ const setupPrefsBar = (date) => {
 				<input type="date" id="${DATE_INPUT_ID}" value="${utils.dateToStr(date)}" name="${DATE_INPUT_ID}" max="${utils.dateToStr(date)}" min="${MIN_DATE}" required>
 				<span class="validity"></span>
 			</div>
+
+			<label for="${GROUP_BY_SELECT_ID}">Group by:</label>
+			<select name="${GROUP_BY_SELECT_ID}" value="party">
+				<option value="party">Party</option>
+				<option value="front-bench">Front Bench</option>
+				<option value="committee">Committee</option>
+				<option value="cpg">Cross-Party Group</option>
+			</select>
+
+			<select name="${GROUP_SELECT_ID}">
+				<option value="-">-</option>
+			</select>
+
 			<div>
-				<input id="${DATE_SUBMIT_ID}" type="submit">
-			</div>
+			<input id="${SUBMIT_ID}" type="submit">
+		</div>
+
 		</form>
 	</div>
 	`;
@@ -336,7 +351,7 @@ const setupPrefsBar = (date) => {
 
 	const PREFS_FORM = document.getElementById(PREFS_FORM_ID);
 	const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
-	const DATE_SUBMIT = document.getElementById(DATE_SUBMIT_ID);
+	const DATE_SUBMIT = document.getElementById(SUBMIT_ID);
 
 	DATE_SUBMIT.addEventListener('click', (e) => {
 		selected_date = utils.strToDate(DATE_INPUT.value);
