@@ -21,7 +21,11 @@ export const refreshView = (date, groupBy) => {
 
 /*** Main ***/
 
+
+/*TODO: Merge init into view's refresh (conditional on first load) 
+        + just call refreshView itself on first load*/
+
 view.init(CURRENT_DATE);
 model.getMSPMap(CURRENT_DATE).then((mspMap) => {
-	view.refresh(mspMap);
+	view.refresh(mspMap); 
 });

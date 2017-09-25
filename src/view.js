@@ -330,13 +330,9 @@ const setupPrefsBar = (date) => {
 			<label for="${GROUP_BY_SELECT_ID}">Group by:</label>
 			<select name="${GROUP_BY_SELECT_ID}" value="party">
 				<option value="party">Party</option>
-				<option value="front-bench">Front Bench</option>
+				<option value="portfolio">Portfolio</option>
 				<option value="committee">Committee</option>
 				<option value="cpg">Cross-Party Group</option>
-			</select>
-
-			<select name="${GROUP_SELECT_ID}">
-				<option value="-">-</option>
 			</select>
 
 			<div>
