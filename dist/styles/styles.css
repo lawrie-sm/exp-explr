@@ -208,6 +208,18 @@ main {
 	border-left: 4px solid orange;
 }
 
+.cell__pty-SSP {
+	border-left: 4px solid darkred;
+}
+
+.cell__pty-Sol {
+	border-left: 4px solid darkgreen;
+}
+
+.cell__pty-SSCUP {
+	border-left: 4px solid purple;
+}
+
 .cell__pty-NPA {
 	border-left: 4px solid gray;
 }

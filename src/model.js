@@ -111,8 +111,6 @@ const getMSPsByDate = (date, data) => {
 		}
 	});
 
-	console.log(data.basicMSPData.length);
-
 	//Add basic MSP data
 	data.basicMSPData.forEach((mspDataObj) => {
 			let msp = mspMap.get(mspDataObj.PersonID);
@@ -132,14 +130,28 @@ const getMSPsByDate = (date, data) => {
 		let msp = mspMap.get(membershipObj.PersonID);
 		if (msp && dateIsWithinRangeOfSPObj(date, membershipObj)) {
 			let partyObj = data.parties.find(byProp('ID', membershipObj.PartyID));
+
+			//Fix for Dennis Canavan
+			partyObj.Abbreviation = (partyObj.Abbreviation === '*') ? 'Ind' : partyObj.Abbreviation;
+
 			msp.party = new objs.Party(partyObj.ActualName, partyObj.Abbreviation);
+
 			//Note use of membership ID here, to find party role
 			let partyRoles = data.partyMemberRoles.filter(byProp('MemberPartyID', membershipObj.ID, date));
 			if (partyRoles) {
 				partyRoles.forEach((role) => {
+
 					let partyRoleType = data.partyRoles.find(byProp('ID', role.PartyRoleTypeID));
 					let roleName = partyRoleType.Name;
 					let roleNotes = utils.replaceNewlines(role.Notes)
+
+					//HACK - Kezia. Should be able to remove this at some point when they update
+					if ((membershipObj.PersonID === 3812) && 
+					(date > new Date(2017, 7, 29)) &&
+					(roleName === 'Party Leader')) {
+						return 0;
+					}
+
 					msp.partyRoles.push(new objs.PartyRole(roleName, roleNotes));
 				});
 			}
@@ -192,7 +204,6 @@ export const getMSPMap = (date) => {
 			});
 		} else {
 			msp_map = getMSPsByDate(date, basic_data_cache);
-			console.dir(msp_map);
 			resolve(msp_map);
 		}
 
@@ -203,7 +214,6 @@ export const getExpandedMSPMap = (date) => {
 	return new Promise((resolve, reject) => {
 
 		if (!expanded_data_cache) {
-			console.log(date);
 			http.getExpandedMSPData().then((data) => {
 				expanded_data_cache = data;
 				updateMSPMapWithExpandedData(date, expanded_data_cache);
@@ -211,7 +221,6 @@ export const getExpandedMSPMap = (date) => {
 			});
 
 		} else {
-			console.log(date);
 			updateMSPMapWithExpandedData(date, expanded_data_cache);
 			resolve(msp_map);
 		}

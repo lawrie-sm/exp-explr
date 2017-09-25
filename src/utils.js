@@ -1,4 +1,5 @@
-/*This works for both date input and the SP internal dates
+/*
+This works for both HTML date inputs and the SP internal dates
 YYYY-MM-DD or YYYY-MM-DDT:00:00:00
 */
 export const strToDate = (dateStr) => {

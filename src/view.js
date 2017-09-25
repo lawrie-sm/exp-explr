@@ -29,8 +29,6 @@ const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
 const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
 const MODAL_IMG_CLASS ='modal--box-img';
 
-let selected_date = '';
-
 const fragmentFromString = (strHTML) => {
 	return document.createRange().createContextualFragment(strHTML);
 }
@@ -50,24 +48,18 @@ const getPartyRolesHTML = (msp, mspID) => {
 
 	if (msp.partyRoles && msp.partyRoles.length > 0) {
 		let partyRoles = '';
-		partyRoles = msp.partyRoles.map(
-			(e) => {
-				return (e.officialName) ? e.officialName : e.internalName;
-			})[msp.partyRoles.length - 1];
-
-		//HACK -- For Green leaders
-		if (msp.partyRoles.find((e) => {return e.internalName == 'Party Leader'}) &&
-				msp.party.abbreviation === 'Green') {
-			partyRoles = 'Co-Convener; ' + partyRoles;
-		}
-		//HACK -- For Kez/Alex (16/09/17)
-		if (mspID == 3812) {
-			partyRoles = 'Finance Spokesperson';
-		}
-		if (mspID == 5119) {
-			partyRoles = 'Interim Leader; Community, Social Security and Equalities Spokesperson';
-		}
-			partyRoles = partyRoles.replace(/\\r\\n/, ', ');
+		partyRoles = msp.partyRoles.map((e) => {
+			let role = e.internalName.trim();
+			//Co-Conveners
+			if ((role === 'Party Leader') && 
+			(msp.party.abbreviation === 'Green' ||
+			msp.party.abbreviation === 'SSP' ||
+			msp.party.abbreviation === 'Sol')) {
+				role = 'Co-Convener';
+			}
+			return role;
+		}).join(', ');
+		partyRoles = partyRoles.replace(/Party Spokesperson on /g, '');
 		return `<p class="${ROLE_CLASS}">${partyRoles}</p>`;
 	} else return '';
 };
@@ -190,7 +182,7 @@ const getModalHTML = (msp, mspID) => {
 };
 
 //Click function to expand, get and add additional info
-const onCellClick = (mspID) => {
+const onCellClick = (mspID, date) => {
 	return () => {
 		const MODAL_ELEM = document.getElementsByClassName(MODAL_CLASS)[0];
 		if (MODAL_ELEM.classList.contains(MODAL_HIDDEN_CLASS)) {
@@ -199,7 +191,8 @@ const onCellClick = (mspID) => {
 			const MODAL_BOX_CONTENT = document.getElementsByClassName(MODAL_BOX_CONTENT_CLASS)[0];
 			MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS);
 
-			controller.getExpandedCellData(selected_date).then((mspMap) => {
+			controller.getExpandedCellData(date).then((mspMap) => {
+				console.log(date);
 				let msp = mspMap.get(mspID);
 				MODAL_BOX_CONTENT.innerHTML = getModalHTML(msp, mspID);
 				MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
@@ -350,21 +343,19 @@ const setupPrefsBar = (date) => {
 	const DATE_SUBMIT = document.getElementById(SUBMIT_ID);
 
 	DATE_SUBMIT.addEventListener('click', (e) => {
-		selected_date = utils.strToDate(DATE_INPUT.value);
-		controller.refreshView(selected_date);
+		controller.refreshView(utils.strToDate(DATE_INPUT.value));
 	});
 
 }
 
-
 export const init = (date) => {
-	selected_date = date;
 	setupNavMenu();
-	setupPrefsBar(selected_date);
+	setupPrefsBar(date);
 	setupModalShell();
 }
 
-export const refresh = (mspMap, groupBy) => {
+export const refreshCells = (mspMap, date) => {
+
 
 	//Remove old container
 	let container = document.getElementsByClassName(CELL_GROUP_CONTAINER_CLASS)[0];
@@ -395,7 +386,7 @@ export const refresh = (mspMap, groupBy) => {
 	
 	let cells = document.getElementsByClassName(CELL_CLASS);
 	for (let i = 0; i < cells.length; i++) {
-		cells[i].addEventListener('click', onCellClick(Number(cells[i].id)));
+		cells[i].addEventListener('click', onCellClick(Number(cells[i].id), date));
 	}
 
 

@@ -2,7 +2,6 @@
 import * as model from './model';
 import * as view from './view';
 
-
 const CURRENT_DATE = new Date();
 
 export const getExpandedCellData = (date) => {
@@ -13,19 +12,12 @@ export const getExpandedCellData = (date) => {
 	});
 }
 
-export const refreshView = (date, groupBy) => {
+export const refreshView = (date) => {
 		model.getMSPMap(date).then((mspMap) => {
-			view.refresh(mspMap, groupBy);
+			view.refreshCells(mspMap, date);
 		});
 }
 
 /*** Main ***/
-
-
-/*TODO: Merge init into view's refresh (conditional on first load) 
-        + just call refreshView itself on first load*/
-
 view.init(CURRENT_DATE);
-model.getMSPMap(CURRENT_DATE).then((mspMap) => {
-	view.refresh(mspMap); 
-});
+refreshView(CURRENT_DATE);
