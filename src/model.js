@@ -153,8 +153,10 @@ const getMSPsByDate = (date, data) => {
 
 					msp.partyRoles.push(new objs.PartyRole(roleName, roleNotes));
 				});
+			
+			}
 			//Fix for POs
-			} else if (msp.party.abbreviation === 'NPA') {
+			if (msp.party.abbreviation === 'NPA') {
 				msp.partyRoles.push(new objs.PartyRole('Presiding Officer', 'Presiding Officer'));
 			}
 		}
