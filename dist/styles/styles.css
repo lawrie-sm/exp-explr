@@ -145,7 +145,7 @@ main {
 }
 
 .main--nav-spacer {
-	margin-top: 80px;
+	margin-top: 90px;
 	width: 100%;
 }
 
@@ -334,7 +334,7 @@ main {
 	max-height: 178px;
 }
 
-.modal--box-txtbox{
+.modal--box-txtbox {
 	width: 57%;
 	margin: 3%;
 	flex: 1;
