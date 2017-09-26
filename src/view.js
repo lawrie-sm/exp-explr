@@ -192,7 +192,6 @@ const onCellClick = (mspID, date) => {
 			MODAL_ELEM.classList.toggle(MODAL_HIDDEN_CLASS);
 
 			controller.getExpandedCellData(date).then((mspMap) => {
-				console.log(date);
 				let msp = mspMap.get(mspID);
 				MODAL_BOX_CONTENT.innerHTML = getModalHTML(msp, mspID);
 				MODAL_BOX.appendChild(MODAL_BOX_CONTENT);
@@ -328,10 +327,6 @@ const setupPrefsBar = (date) => {
 				<option value="cpg">Cross-Party Group</option>
 			</select>
 
-			<div>
-			<input id="${SUBMIT_ID}" type="submit">
-		</div>
-
 		</form>
 	</div>
 	`;
@@ -342,7 +337,7 @@ const setupPrefsBar = (date) => {
 	const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
 	const DATE_SUBMIT = document.getElementById(SUBMIT_ID);
 
-	DATE_SUBMIT.addEventListener('click', (e) => {
+	DATE_INPUT.addEventListener('change', (e) => {
 		controller.refreshView(utils.strToDate(DATE_INPUT.value));
 	});
 
