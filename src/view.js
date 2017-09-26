@@ -241,6 +241,60 @@ const getMSPCellHTML = (msp, mspID) => {
 	return MSPFragment;
 }
 
+
+const getMSPRanking = (msp) => {
+	// Ranking code here
+}
+
+const getGroupedCellContainer = (mspMap, groupBy) => {
+	
+	let cellContainer = document.createElement("div");	
+	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
+
+	if (groupBy === 'party')
+	{
+		let groups = [];
+		mspMap.forEach((msp, mspID) => {
+			let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
+			if (group) {
+				group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+			}
+			else {
+				groups.push({"name": msp.party.abbreviation, "msps": []})
+				let newGroup = groups[groups.length - 1];
+				newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+			}
+		});
+
+		groups.sort ((a, b) => {
+			return a.msps.length < b.msps.length;
+		});
+
+		groups.forEach((g) => {
+
+			g.msps.sort ((a, b) => {
+				return a.ranking < b.ranking;
+			});
+
+			let groupElem = document.createElement("div");	
+			groupElem.classList.add(CELL_GROUP_CLASS);
+
+			let cellsHTML = '';
+			g.msps.forEach((o) => {
+				cellsHTML += getMSPCellHTML(o.msp, o.mspID);
+			});
+			groupElem.innerHTML = cellsHTML;
+			cellContainer.appendChild(groupElem);
+		});
+
+		console.dir(groups);
+
+	} else {
+		//...
+	}
+		return cellContainer;
+}
+
 const setupNavMenu = () => {
 	const OPEN_CLASS = 'nav--menu__open';
 	const WAS_OPENED_CLASS = 'nav--menu__was-opened';
@@ -362,54 +416,4 @@ export const refreshCells = (mspMap, date, groupBy) => {
 	for (let i = 0; i < cells.length; i++) {
 		cells[i].addEventListener('click', onCellClick(Number(cells[i].id), date));
 	}
-}
-
-const getGroupedCellContainer = (mspMap, groupBy) => {
-	
-	let cellContainer = document.createElement("div");	
-	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
-
-	if (groupBy === 'party')
-	{
-		let groups = [];
-		mspMap.forEach((msp, mspID) => {
-			let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
-			if (group) {
-				group.objs.push({"mspID": mspID, "msp": msp});
-			}
-			else {
-				groups.push({"name": msp.party.abbreviation, "objs": []})
-				let newGroup = groups[groups.length - 1];
-				newGroup.objs.push({"mspID": mspID, "msp": msp});
-			}
-		});
-
-		groups.sort ((a, b) => {
-			return a.objs.length < b.objs.length;
-		});
-
-		//TODO: Sort msps within groups here
-
-		groups.forEach((g) => {
-			let groupElem = document.createElement("div");	
-			groupElem.classList.add(CELL_GROUP_CLASS);
-
-			let cellsHTML = '';
-			g.objs.forEach((o) => {
-				cellsHTML += getMSPCellHTML(o.msp, o.mspID);
-			});
-			
-			groupElem.innerHTML = cellsHTML;
-			cellContainer.appendChild(groupElem);
-		});
-
-		console.dir(groups);
-		
-
-	} else 
-	{
-
-		
-	}
-		return cellContainer;
 }
