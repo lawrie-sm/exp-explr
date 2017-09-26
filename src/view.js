@@ -365,7 +365,6 @@ export const refreshCells = (mspMap, date, groupBy) => {
 }
 
 const getGroupedCellContainer = (mspMap, groupBy) => {
-	console.log(groupBy);
 	
 	let cellContainer = document.createElement("div");	
 	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
@@ -374,28 +373,34 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 	{
 		let groups = [];
 		mspMap.forEach((msp, mspID) => {
-			let group = groups.find((e) => { return (e.name == msp.party.abbreviation) });
+			let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
 			if (group) {
-				group.number++;
-			} else {
-				groups.push( {"name": msp.party.abbreviation, "number": 1} );
+				group.objs.push({"mspID": mspID, "msp": msp});
+			}
+			else {
+				groups.push({"name": msp.party.abbreviation, "objs": []})
+				let newGroup = groups[groups.length - 1];
+				newGroup.objs.push({"mspID": mspID, "msp": msp});
 			}
 		});
 
-		let cellsHTML = '';
-		groups.forEach((g) => {			
+		groups.sort ((a, b) => {
+			return a.objs.length < b.objs.length;
+		});
+
+		//TODO: Sort msps within groups here
+
+		groups.forEach((g) => {
+			let groupElem = document.createElement("div");	
+			groupElem.classList.add(CELL_GROUP_CLASS);
+
 			let cellsHTML = '';
-			mspMap.forEach((msp, mspID) => {
-				if (msp.party.abbreviation == g.name) {
-					cellsHTML += getMSPCellHTML(msp, mspID);
-				}
+			g.objs.forEach((o) => {
+				cellsHTML += getMSPCellHTML(o.msp, o.mspID);
 			});
-
-			let groupElement = document.createElement("div");	
-			groupElement.classList.add(CELL_GROUP_CLASS);
-			groupElement.innerHTML = cellsHTML;
-
-			cellContainer.appendChild(groupElement);
+			
+			groupElem.innerHTML = cellsHTML;
+			cellContainer.appendChild(groupElem);
 		});
 
 		console.dir(groups);
