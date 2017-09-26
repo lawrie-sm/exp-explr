@@ -320,7 +320,7 @@ const setupPrefsBar = (date) => {
 			</div>
 
 			<label for="${GROUP_BY_SELECT_ID}">Group by:</label>
-			<select name="${GROUP_BY_SELECT_ID}" value="party">
+			<select id="${GROUP_BY_SELECT_ID}" name="${GROUP_BY_SELECT_ID}" value="party">
 				<option value="party">Party</option>
 				<option value="portfolio">Portfolio</option>
 				<option value="committee">Committee</option>
@@ -335,10 +335,9 @@ const setupPrefsBar = (date) => {
 
 	const PREFS_FORM = document.getElementById(PREFS_FORM_ID);
 	const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
-	const DATE_SUBMIT = document.getElementById(SUBMIT_ID);
-
-	DATE_INPUT.addEventListener('change', (e) => {
-		controller.refreshView(utils.strToDate(DATE_INPUT.value));
+	const GROUP_BY = document.getElementById(GROUP_BY_SELECT_ID);
+	PREFS_FORM.addEventListener('change', (e) => {
+		controller.refreshView(utils.strToDate(DATE_INPUT.value), GROUP_BY.value);
 	});
 
 }
@@ -349,48 +348,63 @@ export const init = (date) => {
 	setupModalShell();
 }
 
-export const refreshCells = (mspMap, date) => {
-
+export const refreshCells = (mspMap, date, groupBy) => {
 
 	//Remove old container
 	let container = document.getElementsByClassName(CELL_GROUP_CONTAINER_CLASS)[0];
-	if (container)
-	{
-		MAIN_ELEM.removeChild(container);
-	}
+	if (container) { MAIN_ELEM.removeChild(container); }
 
-	//Main loop to build initial MSP cells
-	let cellsHTML = '';
-	mspMap.forEach((msp, mspID) => {
-		cellsHTML += getMSPCellHTML(msp, mspID);
-	});
+	let groupedCellContainer = getGroupedCellContainer(mspMap, groupBy);
 
-	//Grouping
-	let cellContainer = document.createElement("div");
-	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
-
-	let testGroupHTML = `
-	<div class="${CELL_GROUP_CLASS}">
-		${cellsHTML}
-	</div>`;
-
-	cellContainer.appendChild(fragmentFromString(testGroupHTML));
-
-	//Refresh the actual DOM and add events
-	MAIN_ELEM.appendChild(cellContainer);
-	
+	//Refresh the actual DOM and add events to cells
+	MAIN_ELEM.appendChild(groupedCellContainer);
 	let cells = document.getElementsByClassName(CELL_CLASS);
 	for (let i = 0; i < cells.length; i++) {
 		cells[i].addEventListener('click', onCellClick(Number(cells[i].id), date));
 	}
+}
 
+const getGroupedCellContainer = (mspMap, groupBy) => {
+	console.log(groupBy);
+	
+	let cellContainer = document.createElement("div");	
+	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
 
-};
+	if (groupBy === 'party')
+	{
+		let groups = [];
+		mspMap.forEach((msp, mspID) => {
+			let group = groups.find((e) => { return (e.name == msp.party.abbreviation) });
+			if (group) {
+				group.number++;
+			} else {
+				groups.push( {"name": msp.party.abbreviation, "number": 1} );
+			}
+		});
 
+		let cellsHTML = '';
+		groups.forEach((g) => {			
+			let cellsHTML = '';
+			mspMap.forEach((msp, mspID) => {
+				if (msp.party.abbreviation == g.name) {
+					cellsHTML += getMSPCellHTML(msp, mspID);
+				}
+			});
 
+			let groupElement = document.createElement("div");	
+			groupElement.classList.add(CELL_GROUP_CLASS);
+			groupElement.innerHTML = cellsHTML;
 
+			cellContainer.appendChild(groupElement);
+		});
 
+		console.dir(groups);
+		
 
+	} else 
+	{
 
-
-
+		
+	}
+		return cellContainer;
+}

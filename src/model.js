@@ -140,7 +140,6 @@ const getMSPsByDate = (date, data) => {
 			let partyRoles = data.partyMemberRoles.filter(byProp('MemberPartyID', membershipObj.ID, date));
 			if (partyRoles) {
 				partyRoles.forEach((role) => {
-
 					let partyRoleType = data.partyRoles.find(byProp('ID', role.PartyRoleTypeID));
 					let roleName = partyRoleType.Name;
 					let roleNotes = utils.replaceNewlines(role.Notes)
@@ -154,6 +153,9 @@ const getMSPsByDate = (date, data) => {
 
 					msp.partyRoles.push(new objs.PartyRole(roleName, roleNotes));
 				});
+			//Fix for POs
+			} else if (msp.party.abbreviation === 'NPA') {
+				msp.partyRoles.push(new objs.PartyRole('Presiding Officer', 'Presiding Officer'));
 			}
 		}
 	});

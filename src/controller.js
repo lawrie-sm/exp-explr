@@ -12,12 +12,12 @@ export const getExpandedCellData = (date) => {
 	});
 }
 
-export const refreshView = (date) => {
+export const refreshView = (date, groupBy) => {
 		model.getMSPMap(date).then((mspMap) => {
-			view.refreshCells(mspMap, date);
+			view.refreshCells(mspMap, date, groupBy);
 		});
 }
 
 /*** Main ***/
 view.init(CURRENT_DATE);
-refreshView(CURRENT_DATE);
+refreshView(CURRENT_DATE, 'party');
