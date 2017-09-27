@@ -71,6 +71,10 @@ const getGovtRolesHTML = (msp) => {
 	} else return '';
 };
 
+const mspIsMini = (rolesHTML) => {
+	return (rolesHTML && rolesHTML.search('Parliamentary Liaison Officer') == -1 ? true : false); 
+}
+
 const getLocationStr = (msp) => {
 	let location = '';
 	if (msp.constit) {
@@ -215,9 +219,10 @@ const getMSPCellHTML = (msp, mspID) => {
 	}
 
 	let govtRolesHTML = getGovtRolesHTML(msp);
-	let isMini = (govtRolesHTML && govtRolesHTML.search('Parliamentary Liaison Officer') == -1 ?
-	true : false); 
+	let isMini = mspIsMini(govtRolesHTML);
 	
+
+
 	let partyRolesHTML = getPartyRolesHTML(msp, mspID);
 	let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
 	
@@ -243,7 +248,19 @@ const getMSPCellHTML = (msp, mspID) => {
 
 
 const getMSPRanking = (msp) => {
-	// Ranking code here
+	let leader = msp.partyRoles.find((e) => {
+		return (e.internalName === 'Party Leader')
+	});
+
+	if (leader) {
+		return 3;
+	} else if ((msp.govtRoles.length > 0) && mspIsMini(getGovtRolesHTML(msp))) {
+		return 2;
+	} else if (msp.partyRoles.length > 0){
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 const getGroupedCellContainer = (mspMap, groupBy) => {
@@ -267,14 +284,17 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 		});
 
 		groups.sort ((a, b) => {
-			return a.msps.length < b.msps.length;
+			return b.msps.length > a.msps.length;
 		});
 
 		groups.forEach((g) => {
+			
+			//TODO: Sort alphabetically within ranks (either by portfolio or by name)
 
 			g.msps.sort ((a, b) => {
-				return a.ranking < b.ranking;
+				return b.ranking < a.ranking;
 			});
+			g.msps.reverse();
 
 			let groupElem = document.createElement("div");	
 			groupElem.classList.add(CELL_GROUP_CLASS);
@@ -287,7 +307,8 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 			cellContainer.appendChild(groupElem);
 		});
 
-		console.dir(groups);
+		//console.log('Groups:');
+		console.log(groups);
 
 	} else {
 		//...
