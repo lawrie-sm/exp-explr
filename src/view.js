@@ -223,8 +223,6 @@ const getMSPCellHTML = (msp, mspID) => {
 
 	let govtRolesHTML = getGovtRolesHTML(msp);
 	let isMini = mspIsMini(govtRolesHTML);
-	
-
 
 	let partyRolesHTML = getPartyRolesHTML(msp, mspID);
 	let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
@@ -249,24 +247,20 @@ const getMSPCellHTML = (msp, mspID) => {
 	return MSPFragment;
 }
 
-
 const getMSPRanking = (msp) => {
 	
 	let rankArr = [];
-	if (msp.partyRoles.length > 0 ){
+	if (msp.partyRoles.length > 0) {
 		rankArr = msp.partyRoles;
 	}
-	if (msp.govtRoles.length > 0 ){
+	if (msp.govtRoles.length > 0) {
 		rankArr = msp.govtRoles;
 	}
 	if (rankArr.length < 1) {
-		return 1000;
+		return 20;
 	}
 
-	//TODO: Need to ensure proper ranks are stored for party/govt roles in model
-
 	let topRankedRole = sortByRoleRank(rankArr)[0];
-	console.log(topRankedRole.name, topRankedRole.rank);
 	return topRankedRole.rank;
 }
 
@@ -296,6 +290,9 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 
 		groups.forEach((g) => {
 			
+
+			//TODO: Split into sub arrays based on rank and sort alphabetically within
+			//arr.Reduce()? https://stackoverflow.com/questions/14696326/break-array-of-objects-into-separate-arrays-based-on-a-property
 			g.msps.sort ((a, b) => {
 				if (a.msp.lastName > b.msp.lastName) {
 					return 1;
@@ -306,17 +303,9 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 				}
 			});
 
-			/*
 			g.msps.sort ((a, b) => {
-				if (a.ranking < b.ranking) {
-					return 1;
-				} else if (a.ranking > b.ranking) {
-					return -1
-				} else if (a.ranking === b.ranking){
-					return 0;
-				}
+				return a.ranking - b.ranking;
 			});
-			*/
 			
 			let groupElem = document.createElement("div");	
 			groupElem.classList.add(CELL_GROUP_CLASS);
@@ -329,7 +318,6 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 			cellContainer.appendChild(groupElem);
 		});
 
-		//console.log('Groups:');
 		console.log(groups);
 
 	} else {
