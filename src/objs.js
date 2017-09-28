@@ -8,10 +8,10 @@ export function Party(_name, _abbreviation) {
 	this.abbreviation = _abbreviation;
 }
 
-export function PartyRole(_internalName, _officialName, _roleRank) {
-	this.internalName = _internalName;
-	this.officialName = _officialName;
-	this.roleRank = _officialName;
+export function Role(_name, _rank, _altText) {	
+	this.name = _name;
+	this.rank = _rank;
+	this.altText = _altText;
 }
 
 export function Address(_type, _street, _postCode, _region, _town) {
@@ -20,12 +20,6 @@ export function Address(_type, _street, _postCode, _region, _town) {
 	this.postCode = _postCode;
 	this.region = _region;
 	this.town = _town;
-}
-
-export function Role(_groupName, _roleName, _roleRank) {	
-	this.roleName = _roleName;
-	this.groupName = _groupName;
-	this.roleRank = _roleRank;
 }
 
 export function Contact(_type, _value) {	

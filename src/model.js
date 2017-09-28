@@ -31,29 +31,35 @@ const byProp = (typeToCheckStr, valueToFind, date) => {
 };
 
 const getRoleRank = (roleName) => {
-	//TODO: Make this work for party and committee roles
+	//TODO: Make this work for party and govt roles
 	switch(roleName) {
     case 'Convener': return 0; break;
     case 'Co-Convener': return 1; break;
 		case 'Deputy Convener': return 2; break;
 		case 'Member': return 3; break;
-    default: return 10;
+    default: return 100;
 	};
 }
 
 const processRoleData = (
 date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => {
-	arr.forEach((roleObj) => {
+	arr.forEach((roleObj) => { 
 		let msp = mspMap.get(roleObj.PersonID);
 		if (msp && dateIsWithinRangeOfSPObj(date, roleObj)) {
 			let role = roleTypeArr.find(byProp('ID', roleObj[roleIDStr]));
+			let roleName = utils.replaceNewlines(role.Name)
 			let rank = getRoleRank(role.Name);
-			if (groupArr && groupIDStr) {
+			if (groupArr && groupIDStr) { //Committee/CPG
 				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
-				let roleName = utils.replaceNewlines(role.Name)
-				msp[destArrStr].push(new objs.Role(group.Name, roleName, rank));
-			} else {
-				msp[destArrStr].push(role.Name);
+				msp[destArrStr].push(new objs.Role(roleName, rank, group.Name));
+			} else { //Govt
+				//Check for duplicates
+				let dupe = msp[destArrStr].find((e)=> {
+				return e.name === roleName;	
+				});
+				if (!dupe) {
+					msp[destArrStr].push(new objs.Role(roleName, rank, 'SG'));
+				}
 			}
 		}
 	});
@@ -153,13 +159,13 @@ const getMSPsByDate = (date, data) => {
 					}
 
 					let rank = getRoleRank(roleName);
-					msp.partyRoles.push(new objs.PartyRole(roleName, roleNotes, rank));
+					msp.partyRoles.push(new objs.Role(roleName, rank, roleNotes));
 				});
 			
 			}
 			//Fix for POs
 			if (msp.party.abbreviation === 'NPA') {
-				msp.partyRoles.push(new objs.PartyRole('Presiding Officer', 'Presiding Officer'));
+				msp.partyRoles.push(new objs.Role('Presiding Officer', 0, 'Presiding Officer'));
 			}
 		}
 	});

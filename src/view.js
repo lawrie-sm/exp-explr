@@ -47,9 +47,8 @@ const getDOBHTML = (msp) => {
 const getPartyRolesHTML = (msp, mspID) => {
 
 	if (msp.partyRoles && msp.partyRoles.length > 0) {
-		let partyRoles = '';
-		partyRoles = msp.partyRoles.map((e) => {
-			let role = e.internalName.trim();
+		let partyRoles = msp.partyRoles.map((e) => {
+			let role = e.name.trim();
 			//Co-Conveners
 			if ((role === 'Party Leader') && 
 			(msp.party.abbreviation === 'Green' ||
@@ -64,9 +63,13 @@ const getPartyRolesHTML = (msp, mspID) => {
 	} else return '';
 };
 
+//TODO: Combine party/govt functions?
 const getGovtRolesHTML = (msp) => {
 	if (msp.govtRoles && msp.govtRoles.length > 0) {
-		let govtRoles = getUniqueArray(msp.govtRoles).join(', ');
+		let govtRoles = msp.govtRoles.map((e) => {
+			let role = e.name.trim();
+			return role;
+		}).join(', ');
 		return `<p class="${ROLE_CLASS}">${govtRoles}</p>`;
 	} else return '';
 };
@@ -94,7 +97,7 @@ const getUniqueArray = (arr) => {
 
 const sortByRoleRank = (arr) => {
 		return arr.sort((a, b) => {
-			return a.roleRank - b.roleRank
+			return a.rank - b.rank
 	});
 }
 
@@ -134,16 +137,16 @@ const getModalHTML = (msp, mspID) => {
 
 	let comRoleList = sortByRoleRank(msp.committeeRoles).map((role) =>
 	`<li>
-		${((role.roleName === 'Member') ? '' : role.roleName + ' &ndash;')
+		${((role.name === 'Member') ? '' : role.name + ' &ndash;')
 		.replace(/Substitute Member/g, 'Substitute')}
-		${role.groupName}
+		${role.altText}
 	</li>`)
 	.join('');
 	
 	let cpgRoleList = sortByRoleRank(msp.cpgRoles).map((role) =>
 	`<li>
-		${(role.roleName === 'Member' ? '' : role.roleName + ' &ndash;')}
-		${role.groupName.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
+		${(role.name === 'Member' ? '' : role.name + ' &ndash;')}
+		${role.altText.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
 	</li>`)
 	.join('');
 
@@ -248,9 +251,23 @@ const getMSPCellHTML = (msp, mspID) => {
 
 
 const getMSPRanking = (msp) => {
+	
+	let rankArr = [];
+	if (msp.partyRoles.length > 0 ){
+		rankArr = msp.partyRoles;
+	}
+	if (msp.govtRoles.length > 0 ){
+		rankArr = msp.govtRoles;
+	}
+	if (rankArr.length < 1) {
+		return 1000;
+	}
 
-	//TODO: Use Role Rank
+	//TODO: Need to ensure proper ranks are stored for party/govt roles in model
 
+	let topRankedRole = sortByRoleRank(rankArr)[0];
+	console.log(topRankedRole.name, topRankedRole.rank);
+	return topRankedRole.rank;
 }
 
 const getGroupedCellContainer = (mspMap, groupBy) => {
@@ -284,11 +301,12 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 					return 1;
 				} else if (a.msp.lastName < b.msp.lastName) {
 					return -1
-				} else if (a.msp.lastName === b.msp.lastName){
+				} else if (a.msp.lastName === b.msp.lastName) {
 					return 0;
 				}
 			});
 
+			/*
 			g.msps.sort ((a, b) => {
 				if (a.ranking < b.ranking) {
 					return 1;
@@ -298,7 +316,8 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 					return 0;
 				}
 			});
-
+			*/
+			
 			let groupElem = document.createElement("div");	
 			groupElem.classList.add(CELL_GROUP_CLASS);
 
