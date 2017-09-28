@@ -8,9 +8,10 @@ export function Party(_name, _abbreviation) {
 	this.abbreviation = _abbreviation;
 }
 
-export function PartyRole(_internalName, _officialName) {
+export function PartyRole(_internalName, _officialName, _roleRank) {
 	this.internalName = _internalName;
 	this.officialName = _officialName;
+	this.roleRank = _officialName;
 }
 
 export function Address(_type, _street, _postCode, _region, _town) {

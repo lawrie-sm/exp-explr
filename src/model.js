@@ -31,6 +31,7 @@ const byProp = (typeToCheckStr, valueToFind, date) => {
 };
 
 const getRoleRank = (roleName) => {
+	//TODO: Make this work for party and committee roles
 	switch(roleName) {
     case 'Convener': return 0; break;
     case 'Co-Convener': return 1; break;
@@ -46,9 +47,9 @@ date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => 
 		let msp = mspMap.get(roleObj.PersonID);
 		if (msp && dateIsWithinRangeOfSPObj(date, roleObj)) {
 			let role = roleTypeArr.find(byProp('ID', roleObj[roleIDStr]));
+			let rank = getRoleRank(role.Name);
 			if (groupArr && groupIDStr) {
 				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
-				let rank = getRoleRank(role.Name);
 				let roleName = utils.replaceNewlines(role.Name)
 				msp[destArrStr].push(new objs.Role(group.Name, roleName, rank));
 			} else {
@@ -151,7 +152,8 @@ const getMSPsByDate = (date, data) => {
 						return 0;
 					}
 
-					msp.partyRoles.push(new objs.PartyRole(roleName, roleNotes));
+					let rank = getRoleRank(roleName);
+					msp.partyRoles.push(new objs.PartyRole(roleName, roleNotes, rank));
 				});
 			
 			}

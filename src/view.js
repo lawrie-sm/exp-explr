@@ -248,19 +248,9 @@ const getMSPCellHTML = (msp, mspID) => {
 
 
 const getMSPRanking = (msp) => {
-	let leader = msp.partyRoles.find((e) => {
-		return (e.internalName === 'Party Leader')
-	});
 
-	if (leader) {
-		return 3;
-	} else if ((msp.govtRoles.length > 0) && mspIsMini(getGovtRolesHTML(msp))) {
-		return 2;
-	} else if (msp.partyRoles.length > 0){
-		return 1;
-	} else {
-		return 0;
-	}
+	//TODO: Use Role Rank
+
 }
 
 const getGroupedCellContainer = (mspMap, groupBy) => {
@@ -289,12 +279,25 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 
 		groups.forEach((g) => {
 			
-			//TODO: Sort alphabetically within ranks (either by portfolio or by name)
+			g.msps.sort ((a, b) => {
+				if (a.msp.lastName > b.msp.lastName) {
+					return 1;
+				} else if (a.msp.lastName < b.msp.lastName) {
+					return -1
+				} else if (a.msp.lastName === b.msp.lastName){
+					return 0;
+				}
+			});
 
 			g.msps.sort ((a, b) => {
-				return b.ranking < a.ranking;
+				if (a.ranking < b.ranking) {
+					return 1;
+				} else if (a.ranking > b.ranking) {
+					return -1
+				} else if (a.ranking === b.ranking){
+					return 0;
+				}
 			});
-			g.msps.reverse();
 
 			let groupElem = document.createElement("div");	
 			groupElem.classList.add(CELL_GROUP_CLASS);
