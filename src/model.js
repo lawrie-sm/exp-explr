@@ -32,10 +32,12 @@ const byProp = (typeToCheckStr, valueToFind, date) => {
 
 const getRoleRank = (roleName) => {
 
-	//Government
+	//PLOs
 	if (roleName.includes('Parliamentary Liaison Officer')) {
-		return 4;
+		return 9;
 	}
+
+	//Government
 	if (roleName.includes('Deputy First Minister')) {
 		return 1;
 	}
@@ -50,38 +52,41 @@ const getRoleRank = (roleName) => {
 	}
 
 	//Party
-	if (roleName.includes('Deputy Party Spokesperson on')) {
-		return 4;
+	if (roleName.includes('Deputy Party Spokesperson on') || 
+	roleName.includes('Deputy Whip')) {
+		return 8;
 	}
-	if (roleName.includes('Party Spokesperson on')) {
-		return 3;
-	}
-	if (roleName.includes('Chief Whip')) {
-		return 2;
+	if (roleName.includes('Party Spokesperson on') || 
+	roleName.includes('Chief Whip')) {
+		return 7;
 	}
 	if (roleName.includes('Deputy Party Leader')) {
-		return 1;
+		return 6;
 	}
 	if (roleName.includes('Party Leader')) {
-		return 0;
+		return 5;
 	}
 
 	//Committee/CPG
-	if (roleName === 'Convener') {
-		return 0;
-	}
-	if (roleName === 'Co-Convener') {
-		return 1;
-	}
-	if (roleName === 'Deputy Convener') {
-		return 2;
+	if (roleName === 'Substitute Member') {
+		return 13;
 	}
 	if (roleName === 'Member') {
-		return 3;
+		return 12;
 	}
-	if (roleName === 'Substitute Member') {
-		return 4;
+	if (roleName === 'Deputy Convener') {
+		return 11;
 	}
+	if (roleName === 'Co-Convener') {
+		return 10;
+	}
+	if (roleName === 'Convener') {
+		return 9;
+	}
+
+
+
+
 
 
 
