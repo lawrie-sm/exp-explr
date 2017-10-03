@@ -29,6 +29,8 @@ const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
 const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
 const MODAL_IMG_CLASS ='modal--box-img';
 
+const MAX_RANKS = 15;
+
 const fragmentFromString = (strHTML) => {
 	return document.createRange().createContextualFragment(strHTML);
 }
@@ -95,10 +97,24 @@ const getUniqueArray = (arr) => {
 	});
 };
 
-const sortByRoleRank = (arr) => {
+const sortByProp = (arr, propStr) => {
 		return arr.sort((a, b) => {
-			return a.rank - b.rank
+			let aProp = a[propStr];
+			let bProp = b[propStr];
+			if (aProp < bProp) return -1;
+			if (aProp > bProp) return 1;
+			if (aProp === bProp) return 0;
 	});
+}
+
+const sortBySubProp = (arr, subPropStr, propStr) => {
+	return arr.sort((a, b) => {
+		let aProp = a[subPropStr][propStr];
+		let bProp = b[subPropStr][propStr];
+		if (aProp < bProp) return -1;
+		if (aProp > bProp) return 1;
+		if (aProp === bProp) return 0;
+});
 }
 
 const getModalHTML = (msp, mspID) => {
@@ -135,7 +151,7 @@ const getModalHTML = (msp, mspID) => {
 		).join('');
 	}
 
-	let comRoleList = sortByRoleRank(msp.committeeRoles).map((role) =>
+	let comRoleList = sortByProp(msp.committeeRoles, 'rank').map((role) =>
 	`<li>
 		${((role.name === 'Member') ? '' : role.name + ' &ndash;')
 		.replace(/Substitute Member/g, 'Substitute')}
@@ -143,7 +159,7 @@ const getModalHTML = (msp, mspID) => {
 	</li>`)
 	.join('');
 	
-	let cpgRoleList = sortByRoleRank(msp.cpgRoles).map((role) =>
+	let cpgRoleList = sortByProp(msp.cpgRoles, 'rank').map((role) =>
 	`<li>
 		${(role.name === 'Member' ? '' : role.name + ' &ndash;')}
 		${role.altText.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
@@ -260,7 +276,7 @@ const getMSPRanking = (msp) => {
 		return 20;
 	}
 
-	let topRankedRole = sortByRoleRank(rankArr)[0];
+	let topRankedRole = sortByProp(rankArr, 'rank')[0];
 	return topRankedRole.rank;
 }
 
@@ -290,28 +306,28 @@ const getGroupedCellContainer = (mspMap, groupBy) => {
 
 		groups.forEach((g) => {
 			
-
-			//TODO: Split into sub arrays based on rank and sort alphabetically within
-			//arr.Reduce()? https://stackoverflow.com/questions/14696326/break-array-of-objects-into-separate-arrays-based-on-a-property
-			g.msps.sort ((a, b) => {
-				if (a.msp.lastName > b.msp.lastName) {
-					return 1;
-				} else if (a.msp.lastName < b.msp.lastName) {
-					return -1
-				} else if (a.msp.lastName === b.msp.lastName) {
-					return 0;
-				}
-			});
-
-			g.msps.sort ((a, b) => {
-				return a.ranking - b.ranking;
-			});
+			let sortedArray = []
+			for (let i = 0; i < MAX_RANKS; i++) {
+				let rankArr = [];
+				g.msps.forEach((e) => {
+					if (e.ranking === i) {
+						rankArr.push(e);
+					}
+				});
 			
+				if (rankArr.length > 0) {
+					rankArr = sortBySubProp(rankArr, 'msp', 'lastName')
+
+					sortedArray = sortedArray.concat(rankArr);
+					console.log(sortedArray);
+				}
+			}
+
 			let groupElem = document.createElement("div");	
 			groupElem.classList.add(CELL_GROUP_CLASS);
 
 			let cellsHTML = '';
-			g.msps.forEach((o) => {
+			sortedArray.forEach((o) => {
 				cellsHTML += getMSPCellHTML(o.msp, o.mspID);
 			});
 			groupElem.innerHTML = cellsHTML;

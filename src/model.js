@@ -84,15 +84,7 @@ const getRoleRank = (roleName) => {
 		return 9;
 	}
 
-
-
-
-
-
-
-console.log(roleName);
-
-	return 10;
+	return 15;
 }
 
 const processRoleData = (
