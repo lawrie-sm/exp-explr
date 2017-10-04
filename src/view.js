@@ -280,66 +280,50 @@ const getMSPRanking = (msp) => {
 	return topRankedRole.rank;
 }
 
-const getGroupedCellContainer = (mspMap, groupBy) => {
-	
+const getGroupedCellContainerByParty = (mspMap) => {
+
+	let groups = [];
+	mspMap.forEach((msp, mspID) => {
+		let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
+		if (group) {
+			group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+		}
+		else {
+			groups.push({"name": msp.party.abbreviation, "msps": []})
+			let newGroup = groups[groups.length - 1];
+			newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+		}
+	});
+	groups.sort ((a, b) => { return b.msps.length > a.msps.length; });
+
 	let cellContainer = document.createElement("div");	
 	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
 
-	if (groupBy === 'party')
-	{
-		let groups = [];
-		mspMap.forEach((msp, mspID) => {
-			let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
-			if (group) {
-				group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
-			}
-			else {
-				groups.push({"name": msp.party.abbreviation, "msps": []})
-				let newGroup = groups[groups.length - 1];
-				newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
-			}
-		});
-
-		groups.sort ((a, b) => {
-			return b.msps.length > a.msps.length;
-		});
-
-		groups.forEach((g) => {
-			
-			let sortedArray = []
-			for (let i = 0; i < MAX_RANKS; i++) {
-				let rankArr = [];
-				g.msps.forEach((e) => {
-					if (e.ranking === i) {
-						rankArr.push(e);
-					}
-				});
-			
-				if (rankArr.length > 0) {
-					rankArr = sortBySubProp(rankArr, 'msp', 'lastName')
-
-					sortedArray = sortedArray.concat(rankArr);
-					console.log(sortedArray);
+	groups.forEach((g) => {
+		let sortedArray = []
+		for (let i = 0; i < MAX_RANKS; i++) {
+			let rankArr = [];
+			g.msps.forEach((e) => {
+				if (e.ranking === i) {
+					rankArr.push(e);
 				}
-			}
-
-			let groupElem = document.createElement("div");	
-			groupElem.classList.add(CELL_GROUP_CLASS);
-
-			let cellsHTML = '';
-			sortedArray.forEach((o) => {
-				cellsHTML += getMSPCellHTML(o.msp, o.mspID);
 			});
-			groupElem.innerHTML = cellsHTML;
-			cellContainer.appendChild(groupElem);
+			if (rankArr.length > 0) {
+				rankArr = sortBySubProp(rankArr, 'msp', 'lastName');
+				sortedArray = sortedArray.concat(rankArr);
+			}
+		}
+
+		let groupElem = document.createElement("div");	
+		groupElem.classList.add(CELL_GROUP_CLASS);
+		let cellsHTML = '';
+		sortedArray.forEach((o) => {
+			cellsHTML += getMSPCellHTML(o.msp, o.mspID);
 		});
-
-		console.log(groups);
-
-	} else {
-		//...
-	}
-		return cellContainer;
+		groupElem.innerHTML = cellsHTML;
+		cellContainer.appendChild(groupElem);
+	});
+	return cellContainer;
 }
 
 const setupNavMenu = () => {
@@ -452,8 +436,11 @@ export const refreshCells = (mspMap, date, groupBy) => {
 	let container = document.getElementsByClassName(CELL_GROUP_CONTAINER_CLASS)[0];
 	if (container) { MAIN_ELEM.removeChild(container); }
 
-	let groupedCellContainer = getGroupedCellContainer(mspMap, groupBy);
-
+	let groupedCellContainer = '';
+	if (groupBy === 'party') {
+		groupedCellContainer = getGroupedCellContainerByParty(mspMap, groupBy);
+	}
+	
 	//Refresh the actual DOM and add events to cells
 	MAIN_ELEM.appendChild(groupedCellContainer);
 	let cells = document.getElementsByClassName(CELL_CLASS);
