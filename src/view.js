@@ -28,6 +28,8 @@ const MODAL_HIDDEN_CLASS = 'modal__hidden';
 const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
 const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
 const MODAL_IMG_CLASS ='modal--box-img';
+const GROUP_HEADER_CLASS='group-header'
+
 
 const MAX_RANKS = 15;
 
@@ -304,6 +306,11 @@ const getCellContainerHTML = (mspMap, groups) => {
 			cellsHTML += getMSPCellHTML(o.msp, o.mspID);
 		});
 		groupElem.innerHTML = cellsHTML;
+
+		let header = document.createElement('h4');
+		header.classList.add(GROUP_HEADER_CLASS);
+		header.innerHTML = g.name;
+		cellContainer.appendChild(header);
 		cellContainer.appendChild(groupElem);
 	});
 	return cellContainer;
@@ -326,21 +333,52 @@ const getPartyGroupCells = (mspMap) => {
 	return getCellContainerHTML(mspMap, groups);
 }
 
-const getFrontBenchGroupCells = (mspMap) => {
+const getRoleGroupCells = (mspMap, groupBy) => {
 
-	//TODO
+	let arrStr = '';
+	if (groupBy === 'committee') { arrStr = 'committeeRoles'; }
+	if (groupBy === 'cpg') {arrStr = 'cpgRoles'; }
+
+	let groups  = [];
+
+	mspMap.forEach((msp, mspID) => {
+		let roles = msp[arrStr];
+
+		if (roles.length > 0) {
+			roles.forEach((role) => {
+
+				let group = groups.find ((e) => {
+					return (e.name === role.altText)
+				});
+				if (group) {
+					group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+				}
+				else {
+					groups.push({"name": role.altText, "msps": []});
+					let newGroup = groups[groups.length - 1];
+					newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+				}
+
+			});
+		}
+
+	});
 
 	groups.sort ((a, b) => { return b.msps.length > a.msps.length; });
 	return getCellContainerHTML(mspMap, groups);
 }
 
-const getGroupedCellContainer = (mspMap, groupBy) => {
-	if (groupBy === 'party') {
-		return getPartyGroupCells(mspMap);
-	}
-	if (groupBy === 'front-bench') {
-		return getFrontBenchGroupCells(mspMap);
-	}
+const getGroupedCellContainer = (mspMap, groupBy, date) => {
+		return new Promise((resolve, reject) => {
+			if (groupBy === 'party') {
+				resolve(getPartyGroupCells(mspMap));
+			}
+			if (groupBy === 'committee' || groupBy === 'cpg') {
+				controller.getExpandedCellData(date).then((expandedMspMap) => {
+					resolve(getRoleGroupCells(expandedMspMap, groupBy));
+				});
+			}
+	});
 }
 
 const setupNavMenu = () => {
@@ -424,7 +462,8 @@ const setupPrefsBar = (date) => {
 			<label for="${GROUP_BY_SELECT_ID}">Group by:</label>
 			<select id="${GROUP_BY_SELECT_ID}" name="${GROUP_BY_SELECT_ID}" value="party">
 				<option value="party">Party</option>
-				<option value="front-bench">Front Bench</option>
+				<option value="committee">Committee</option>
+				<option value="cpg">CPG</option>
 			</select>
 
 		</form>
@@ -454,18 +493,13 @@ export const refreshCells = (mspMap, date, groupBy) => {
 	let container = document.getElementsByClassName(CELL_GROUP_CONTAINER_CLASS)[0];
 	if (container) { MAIN_ELEM.removeChild(container); }
 
-	let groupedCellContainer = '';
-	if (groupBy === 'party') {
-		groupedCellContainer = getGroupedCellContainer(mspMap, groupBy);
-	}
-	if (groupBy === 'front-bench') {
-		groupedCellContainer = getGroupedCellContainer(mspMap, groupBy);
-	}
-	
-	//Refresh the actual DOM and add events to cells
-	MAIN_ELEM.appendChild(groupedCellContainer);
-	let cells = document.getElementsByClassName(CELL_CLASS);
-	for (let i = 0; i < cells.length; i++) {
-		cells[i].addEventListener('click', onCellClick(Number(cells[i].id), date));
-	}
+	//Need to access cellcontainer async b/c it might need expanded data
+	getGroupedCellContainer(mspMap, groupBy, date).then((cellContainer) => {
+		//Refresh the actual DOM and add events to cells
+		MAIN_ELEM.appendChild(cellContainer);
+		let cells = document.getElementsByClassName(CELL_CLASS);
+		for (let i = 0; i < cells.length; i++) {
+			cells[i].addEventListener('click', onCellClick(Number(cells[i].id), date));
+		}
+	});
 }

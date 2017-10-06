@@ -154,11 +154,16 @@ main {
 }
 
 .cell-group {
-	margin: 3% 1%;
+	margin: 1% 1%;
 	background-color: var(--col-grey);
 	display: flex;
 	display: -webkit-flex;
 	flex-wrap: wrap;
+}
+
+.group-header {
+	text-align: center;
+	padding: 1% 1%;
 }
 
 .cell {
