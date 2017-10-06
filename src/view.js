@@ -280,25 +280,9 @@ const getMSPRanking = (msp) => {
 	return topRankedRole.rank;
 }
 
-const getGroupedCellContainerByParty = (mspMap) => {
-
-	let groups = [];
-	mspMap.forEach((msp, mspID) => {
-		let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
-		if (group) {
-			group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
-		}
-		else {
-			groups.push({"name": msp.party.abbreviation, "msps": []})
-			let newGroup = groups[groups.length - 1];
-			newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
-		}
-	});
-	groups.sort ((a, b) => { return b.msps.length > a.msps.length; });
-
+const getCellContainerHTML = (mspMap, groups) => {
 	let cellContainer = document.createElement("div");	
 	cellContainer.classList.add(CELL_GROUP_CONTAINER_CLASS);
-
 	groups.forEach((g) => {
 		let sortedArray = []
 		for (let i = 0; i < MAX_RANKS; i++) {
@@ -313,7 +297,6 @@ const getGroupedCellContainerByParty = (mspMap) => {
 				sortedArray = sortedArray.concat(rankArr);
 			}
 		}
-
 		let groupElem = document.createElement("div");	
 		groupElem.classList.add(CELL_GROUP_CLASS);
 		let cellsHTML = '';
@@ -324,6 +307,40 @@ const getGroupedCellContainerByParty = (mspMap) => {
 		cellContainer.appendChild(groupElem);
 	});
 	return cellContainer;
+}
+
+const getPartyGroupCells = (mspMap) => {
+	let groups  = [];
+	mspMap.forEach((msp, mspID) => {
+		let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
+		if (group) {
+			group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+		}
+		else {
+			groups.push({"name": msp.party.abbreviation, "msps": []})
+			let newGroup = groups[groups.length - 1];
+			newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+		}
+	});
+	groups.sort ((a, b) => { return b.msps.length > a.msps.length; });
+	return getCellContainerHTML(mspMap, groups);
+}
+
+const getFrontBenchGroupCells = (mspMap) => {
+
+	//TODO
+
+	groups.sort ((a, b) => { return b.msps.length > a.msps.length; });
+	return getCellContainerHTML(mspMap, groups);
+}
+
+const getGroupedCellContainer = (mspMap, groupBy) => {
+	if (groupBy === 'party') {
+		return getPartyGroupCells(mspMap);
+	}
+	if (groupBy === 'front-bench') {
+		return getFrontBenchGroupCells(mspMap);
+	}
 }
 
 const setupNavMenu = () => {
@@ -407,6 +424,7 @@ const setupPrefsBar = (date) => {
 			<label for="${GROUP_BY_SELECT_ID}">Group by:</label>
 			<select id="${GROUP_BY_SELECT_ID}" name="${GROUP_BY_SELECT_ID}" value="party">
 				<option value="party">Party</option>
+				<option value="front-bench">Front Bench</option>
 			</select>
 
 		</form>
@@ -438,7 +456,10 @@ export const refreshCells = (mspMap, date, groupBy) => {
 
 	let groupedCellContainer = '';
 	if (groupBy === 'party') {
-		groupedCellContainer = getGroupedCellContainerByParty(mspMap, groupBy);
+		groupedCellContainer = getGroupedCellContainer(mspMap, groupBy);
+	}
+	if (groupBy === 'front-bench') {
+		groupedCellContainer = getGroupedCellContainer(mspMap, groupBy);
 	}
 	
 	//Refresh the actual DOM and add events to cells
