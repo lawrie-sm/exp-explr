@@ -368,6 +368,12 @@ const getRoleGroupCells = (mspMap, groupBy) => {
 	return getCellContainerHTML(mspMap, groups);
 }
 
+/*
+-Rank differently based on group type (pass in groupBy to getranking?)
+-Display different ranks (pass groupBy into getCellHTML?)
+-Front bench/topic grouping
+*/
+
 const getGroupedCellContainer = (mspMap, groupBy, date) => {
 		return new Promise((resolve, reject) => {
 			if (groupBy === 'party') {
