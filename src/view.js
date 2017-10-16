@@ -249,8 +249,6 @@ const getMSPCellHTML = (msp, mspID, displayRole) => {
 		isMini = mspIsMini(rolesHTML);
 	}
 
-
-
 	let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
 	
 	let MSPFragment = `
@@ -274,17 +272,26 @@ const getMSPCellHTML = (msp, mspID, displayRole) => {
 	return MSPFragment;
 }
 
-const getMSPRanking = (msp) => {
-	
+const getMSPRanking = (msp, arr) => {
 	let rankArr = [];
-	if (msp.partyRoles.length > 0) {
-		rankArr = msp.partyRoles;
-	}
-	if (msp.govtRoles.length > 0) {
-		rankArr = msp.govtRoles;
-	}
-	if (rankArr.length < 1) {
-		return 20;
+
+	if (!arr)
+	{
+
+		if (msp.partyRoles.length > 0) {
+			rankArr = msp.partyRoles;
+		}
+		if (msp.govtRoles.length > 0) {
+			rankArr = msp.govtRoles;
+		}
+		if (rankArr.length < 1) {
+			return 20;
+		}
+	} else {
+		if (arr.length > 0) {
+			rankArr = arr;
+		}
+		else return 20;
 	}
 
 	let topRankedRole = sortByProp(rankArr, 'rank')[0];
@@ -313,7 +320,6 @@ const getCellContainerHTML = (mspMap, groups) => {
 		let cellsHTML = '';
 		sortedArray.forEach((o) => {
 			cellsHTML += getMSPCellHTML(o.msp, o.mspID, o.displayRole);
-			console.log(g);
 		});
 		groupElem.innerHTML = cellsHTML;
 
@@ -370,7 +376,7 @@ const getRoleGroupCells = (mspMap, groupBy) => {
 					group.msps.push({
 						"mspID": mspID,
 						"msp": msp,
-						"ranking": getMSPRanking(msp),
+						"ranking": getMSPRanking(msp, roles),
 						"displayRole": role
 					});
 				}
@@ -380,7 +386,7 @@ const getRoleGroupCells = (mspMap, groupBy) => {
 					newGroup.msps.push({
 						"mspID": mspID,
 						"msp": msp,
-						"ranking": getMSPRanking(msp),
+						"ranking": getMSPRanking(msp, roles),
 						"displayRole": role
 					});
 				}

@@ -98,6 +98,7 @@ date, mspMap, arr, roleTypeArr, roleIDStr, groupArr, groupIDStr, destArrStr) => 
 			if (groupArr && groupIDStr) { //Committee/CPG
 				let group = groupArr.find(byProp('ID', roleObj[groupIDStr]));
 				msp[destArrStr].push(new objs.Role(roleName, rank, group.Name));
+
 			} else { //Govt
 				//Check for duplicates
 				let dupe = msp[destArrStr].find((e)=> {
@@ -196,7 +197,6 @@ const getMSPsByDate = (date, data) => {
 					let partyRoleType = data.partyRoles.find(byProp('ID', role.PartyRoleTypeID));
 					let roleName = partyRoleType.Name;
 					let roleNotes = utils.replaceNewlines(role.Notes)
-
 					//HACK - Kezia. Should be able to remove this at some point when they update
 					if ((membershipObj.PersonID === 3812) && 
 					(date > new Date(2017, 7, 29)) &&
