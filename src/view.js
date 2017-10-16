@@ -226,7 +226,7 @@ const onCellClick = (mspID, date) => {
 	};
 };
 
-const getMSPCellHTML = (msp, mspID) => {
+const getMSPCellHTML = (msp, mspID, displayRole) => {
 	let location = getLocationStr(msp);
 
 	let imgSRC = msp.photoURL;
@@ -239,10 +239,18 @@ const getMSPCellHTML = (msp, mspID) => {
 		imgSRC = '#';
 	}
 
-	let govtRolesHTML = getGovtRolesHTML(msp);
-	let isMini = mspIsMini(govtRolesHTML);
+	let rolesHTML = '';
+	let isMini = false;
+	if (displayRole) {
+		rolesHTML = displayRole.name;
+	}
+	else  {
+		rolesHTML = (getGovtRolesHTML(msp)) ? getGovtRolesHTML(msp) : getPartyRolesHTML(msp, mspID);
+		isMini = mspIsMini(rolesHTML);
+	}
 
-	let partyRolesHTML = getPartyRolesHTML(msp, mspID);
+
+
 	let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
 	
 	let MSPFragment = `
@@ -256,8 +264,9 @@ const getMSPCellHTML = (msp, mspID) => {
 				<span class="${PARTY_CLASS}">(${msp.party.abbreviation})</span>
 				<span class="${LOCATION_CLASS}">(${location})</span>
 				</p>
-				${(govtRolesHTML) ? govtRolesHTML : ''}
-				${(partyRolesHTML) ? partyRolesHTML : ''}
+
+				${rolesHTML}
+
 			</div>
 		</div>
 		`;
@@ -303,7 +312,8 @@ const getCellContainerHTML = (mspMap, groups) => {
 		groupElem.classList.add(CELL_GROUP_CLASS);
 		let cellsHTML = '';
 		sortedArray.forEach((o) => {
-			cellsHTML += getMSPCellHTML(o.msp, o.mspID);
+			cellsHTML += getMSPCellHTML(o.msp, o.mspID, o.displayRole);
+			console.log(g);
 		});
 		groupElem.innerHTML = cellsHTML;
 
@@ -321,12 +331,18 @@ const getPartyGroupCells = (mspMap) => {
 	mspMap.forEach((msp, mspID) => {
 		let group = groups.find((e) => {return (e.name === msp.party.abbreviation) });
 		if (group) {
-			group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+			group.msps.push({
+				"mspID": mspID,
+				"msp": msp,
+				"ranking": getMSPRanking(msp)});
 		}
 		else {
 			groups.push({"name": msp.party.abbreviation, "msps": []})
 			let newGroup = groups[groups.length - 1];
-			newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+			newGroup.msps.push({
+				"mspID": mspID,
+				"msp": msp,
+				"ranking": getMSPRanking(msp)});
 		}
 	});
 	groups.sort ((a, b) => { return b.msps.length > a.msps.length; });
@@ -351,12 +367,22 @@ const getRoleGroupCells = (mspMap, groupBy) => {
 					return (e.name === role.altText)
 				});
 				if (group) {
-					group.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+					group.msps.push({
+						"mspID": mspID,
+						"msp": msp,
+						"ranking": getMSPRanking(msp),
+						"displayRole": role
+					});
 				}
 				else {
 					groups.push({"name": role.altText, "msps": []});
 					let newGroup = groups[groups.length - 1];
-					newGroup.msps.push({"mspID": mspID, "msp": msp, "ranking": getMSPRanking(msp)});
+					newGroup.msps.push({
+						"mspID": mspID,
+						"msp": msp,
+						"ranking": getMSPRanking(msp),
+						"displayRole": role
+					});
 				}
 
 			});
@@ -368,14 +394,8 @@ const getRoleGroupCells = (mspMap, groupBy) => {
 	return getCellContainerHTML(mspMap, groups);
 }
 
-/*
--Rank differently based on group type (pass in groupBy to getranking?)
--Display different ranks (pass groupBy into getCellHTML?)
--Front bench/topic grouping
-*/
-
 const getGroupedCellContainer = (mspMap, groupBy, date) => {
-		return new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 			if (groupBy === 'party') {
 				resolve(getPartyGroupCells(mspMap));
 			}
