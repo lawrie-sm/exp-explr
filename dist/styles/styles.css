@@ -154,11 +154,16 @@ main {
 }
 
 .cell-group {
-	margin: 3% 1%;
+	margin: 1% 1%;
 	background-color: var(--col-grey);
 	display: flex;
 	display: -webkit-flex;
 	flex-wrap: wrap;
+}
+
+.group-header {
+	text-align: center;
+	padding: 1% 1%;
 }
 
 .cell {
@@ -321,23 +326,19 @@ main {
 }
 
 .modal--box-content {
-	display: flex;
-	display: -webkit-flex;
 }
 
 .modal--box-pbox {
-	width: 37%;
-	margin: 3%;
+  margin: 1rem 0;
 }
 
 .modal--box-img {
-	max-height: 178px;
+  margin: 1rem 0;
+  max-height: 178px;
 }
 
 .modal--box-txtbox {
-	width: 57%;
-	margin: 3%;
-	flex: 1;
+  margin: 1rem 0;
 }
 
 #pref-form {
@@ -390,7 +391,25 @@ main {
 	.cell {
 		width: 46%;
 		margin: 1% 2%;
-	}
+  }
+  .modal--box-content {
+    display: flex;
+    display: -webkit-flex;
+  }
+  .modal--box-pbox {
+    width: 37%;
+    margin: 3%;
+  }
+  
+  .modal--box-img {
+    max-height: 178px;
+  }
+  
+  .modal--box-txtbox {
+    width: 57%;
+    margin: 3%;
+    flex: 1;
+  }
 }
 
 
@@ -400,7 +419,7 @@ main {
 @media (min-width: 1024px) {
 	.cell {
 		width: 29%;
-	}
+  }
 }
 
 /* ANIMS */

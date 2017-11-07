@@ -5,16 +5,16 @@ module.exports = {
   entry: ['classlist-polyfill', 'promise-polyfill', 'whatwg-fetch', './src/controller.js'],
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
   },
-	module: {
-		loaders: [
-			{
-				test:/\.js$/,
-				loader: 'babel-loader',
-				query: { presets: ['env'] }
-			}
-		]
-	},
-	plugins: [ new UglifyJSPlugin()]
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        query: { presets: ['env'] },
+      },
+    ],
+  },
+  plugins: [new UglifyJSPlugin()],
 };
