@@ -3,7 +3,7 @@ import * as controller from './controller';
 
 // TODO: Tidy up the reliance on global state here
 const MAIN_ELEM = document.getElementsByTagName('main')[0];
-const IMG_ROOT_URL = 'img/portraits/';
+const IMG_ROOT_URL = '/img/portraits/';
 const CELL_CLASS = 'cell';
 const CELL_GROUP_CONTAINER_CLASS = 'cell-group-container';
 const CELL_GROUP_CLASS = 'cell-group';
@@ -165,9 +165,8 @@ ${role.altText.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
   return `
 <div class="${MODAL_PERSONAL_BOX_CLASS}">
 
-<object class="${MODAL_IMG_CLASS}" data="${imgSRC}" type="image/jpg">
-  <img class="${MODAL_IMG_CLASS}" src="http://via.placeholder.com/170x200" />
-</object>
+<img class="${MODAL_IMG_CLASS}" src="http://via.placeholder.com/170x200" />
+
 
 <h3 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h3>
 ${DOBHTML ? DOBHTML : ''}
@@ -239,9 +238,7 @@ const getMSPCellHTML = (msp, mspID, isMini, displayRole) => {
   const MSPFragment = `
 <div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
 <div class="${PORT_BOX_CLASS}">
-<object class="${PORT_IMG_CLASS}" data="${imgSRC}" type="image/jpg">
-  <img class="${PORT_IMG_CLASS}" src="http://via.placeholder.com/170x200" />
-</object>
+<img class="${PORT_IMG_CLASS}" src="http://via.placeholder.com/170x200" />
 </div>
 <div class="${TXT_BOX_CLASS}">
 <h4 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h4>
