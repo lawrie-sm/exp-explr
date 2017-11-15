@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   entry: ['./src/controller.js'],
   devtool: 'inline-source-map',
-	 devServer: {
+  devServer: {
     contentBase: './dist',
   },
   output: {

@@ -3,9 +3,7 @@ import * as controller from './controller';
 
 // TODO: Tidy up the reliance on global state here
 const MAIN_ELEM = document.getElementsByTagName('main')[0];
-const SML_PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/75x75';
-const LRG_PLACEHOLDER_IMG_URL = 'http://via.placeholder.com/250x250';
-const SML_IMG_PATH = '/img/portraits/';
+const IMG_ROOT_URL = 'img/portraits/';
 const CELL_CLASS = 'cell';
 const CELL_GROUP_CONTAINER_CLASS = 'cell-group-container';
 const CELL_GROUP_CLASS = 'cell-group';
@@ -25,8 +23,8 @@ const MODAL_CLOSE_CLASS = 'modal--close';
 const MODAL_HIDDEN_CLASS = 'modal__hidden';
 const MODAL_CONTENT_TEXT_BOX_CLASS = 'modal--box-txtbox';
 const MODAL_PERSONAL_BOX_CLASS = 'modal--box-pbox';
-const MODAL_IMG_CLASS ='modal--box-img';
-const GROUP_HEADER_CLASS='group-header';
+const MODAL_IMG_CLASS = 'modal--box-img';
+const GROUP_HEADER_CLASS = 'group-header';
 
 
 const MAX_RANKS = 15;
@@ -162,10 +160,14 @@ ${role.altText.replace(/Cross-Party Group in the Scottish Parliament on/g, '')}
 </li>`)
     .join('');
 
+  const imgSRC = IMG_ROOT_URL + msp.firstName.trim() + msp.lastName.trim() + 'MSP.jpg';
+
   return `
 <div class="${MODAL_PERSONAL_BOX_CLASS}">
 
-<img class="${MODAL_IMG_CLASS}" src="${LRG_PLACEHOLDER_IMG_URL}"></img>
+<object class="${MODAL_IMG_CLASS}" data="${imgSRC}" type="image/jpg">
+  <img class="${MODAL_IMG_CLASS}" src="http://via.placeholder.com/170x200" />
+</object>
 
 <h3 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h3>
 ${DOBHTML ? DOBHTML : ''}
@@ -221,17 +223,9 @@ const onCellClick = (mspID, date) => {
 };
 
 const getMSPCellHTML = (msp, mspID, isMini, displayRole) => {
-  let location = getLocationStr(msp);
+  const location = getLocationStr(msp);
 
-  let imgSRC = msp.photoURL;
-  let imgAlt = msp.firstName + ' portrait';
-  if (imgSRC) {
-    let imgID = imgSRC.substring(imgSRC.lastIndexOf('/') + 1);
-    imgID = imgID.replace(/\s+/g, '');
-    imgSRC = SML_IMG_PATH + imgID + '.jpg';
-  } else {
-    imgSRC = '#';
-  }
+  const imgSRC = IMG_ROOT_URL + msp.firstName.trim() + msp.lastName.trim() + 'MSP.jpg';
 
   let rolesHTML = '';
   if (displayRole) {
@@ -240,12 +234,14 @@ const getMSPCellHTML = (msp, mspID, isMini, displayRole) => {
     rolesHTML = (getGovtRolesHTML(msp)) ? getGovtRolesHTML(msp) : getPartyRolesHTML(msp, mspID);
   }
 
-  let cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
+  const cellPartyClass = CELL_PARTY_CLASS_ROOT + msp.party.abbreviation;
 
-  let MSPFragment = `
+  const MSPFragment = `
 <div id="${mspID}" class="${CELL_CLASS} ${cellPartyClass} ${(isMini) ? CELL_MINI_CLASS : ''}">
 <div class="${PORT_BOX_CLASS}">
-<img class="${PORT_IMG_CLASS}" src="${SML_PLACEHOLDER_IMG_URL}" alt="${imgAlt}">
+<object class="${PORT_IMG_CLASS}" data="${imgSRC}" type="image/jpg">
+  <img class="${PORT_IMG_CLASS}" src="http://via.placeholder.com/170x200" />
+</object>
 </div>
 <div class="${TXT_BOX_CLASS}">
 <h4 class="${NAME_CLASS}">${msp.firstName} ${msp.lastName}</h4>
@@ -405,6 +401,7 @@ const getGroupedCellContainer = (mspMap, groupBy, date) => {
   });
 };
 
+/*
 const setupNavMenu = () => {
   const OPEN_CLASS = 'nav--menu__open';
   const WAS_OPENED_CLASS = 'nav--menu__was-opened';
@@ -439,6 +436,7 @@ const setupNavMenu = () => {
   MEDIA_QUERY.addListener(updateMenuOnScreenChange(MEDIA_QUERY));
   window.onload = updateMenuOnScreenChange(MEDIA_QUERY);
 };
+*/
 
 const setupModalShell = () => {
   const onModalClose = (modal) => {
@@ -499,7 +497,7 @@ const setupPrefsBar = (date) => {
 };
 
 export const init = (date) => {
-  setupNavMenu();
+  //setupNavMenu();
   setupPrefsBar(date);
   setupModalShell();
 };

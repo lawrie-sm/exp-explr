@@ -185,13 +185,6 @@ const getMSPsByDate = (date, data) => {
           const partyRoleType = data.partyRoles.find(byProp('ID', role.PartyRoleTypeID));
           const roleName = partyRoleType.Name;
           const roleNotes = utils.replaceNewlines(role.Notes);
-          // HACK - Kezia. Should be able to remove this at some point when they update
-          if ((membershipObj.PersonID === 3812) &&
-					(date > new Date(2017, 7, 29)) &&
-					(roleName === 'Party Leader')) {
-            return 0;
-          }
-
           const rank = getRoleRank(roleName);
           msp.partyRoles.push(new objs.Role(roleName, rank, roleNotes));
         });

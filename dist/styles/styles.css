@@ -268,7 +268,8 @@ main {
 }
 
 .portrait-img {
-	max-width: 180px;
+  height: 100px;
+  width: 84px
 }
 
 .modal {
@@ -402,7 +403,7 @@ main {
   }
   
   .modal--box-img {
-    max-height: 178px;
+    /*TODO*/
   }
   
   .modal--box-txtbox {
