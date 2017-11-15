@@ -483,13 +483,6 @@ const setupPrefsBar = (date) => {
 <span class="validity"></span>
 </div>
 
-<label for="${GROUP_BY_SELECT_ID}">Group by:</label>
-<select id="${GROUP_BY_SELECT_ID}" name="${GROUP_BY_SELECT_ID}" value="party">
-<option value="party">Party</option>
-<option value="committee">Committee</option>
-<option value="cpg">CPG</option>
-</select>
-
 </form>
 </div>
 `;
