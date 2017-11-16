@@ -466,8 +466,8 @@ const setupPrefsBar = (date) => {
   const DATE_INPUT_ID = 'date-input';
   const SUBMIT_ID = 'pref-submit';
   const MIN_DATE = '1999-05-12'; // Earliest data on record
-  const GROUP_BY_SELECT_ID = "group-by";
-  const GROUP_SELECT_ID = "group";
+  //const GROUP_BY_SELECT_ID = "group-by";
+  //const GROUP_SELECT_ID = "group";
 
   const prefsBarHTML = `
 <div class=${PREFS_BAR_CLASS}>
@@ -484,12 +484,14 @@ const setupPrefsBar = (date) => {
 
   MAIN_ELEM.appendChild(fragmentFromString(prefsBarHTML));
 
+  
   const PREFS_FORM = document.getElementById(PREFS_FORM_ID);
   const DATE_INPUT = document.getElementById(DATE_INPUT_ID);
-  const GROUP_BY = document.getElementById(GROUP_BY_SELECT_ID);
+  //const GROUP_BY = document.getElementById(GROUP_BY_SELECT_ID);
   PREFS_FORM.addEventListener('change', (e) => {
-    controller.refreshView(utils.strToDate(DATE_INPUT.value), GROUP_BY.value);
+    controller.refreshView(utils.strToDate(DATE_INPUT.value), 'party'); //HACK: Hardcoded to party
   });
+  
 
 };
 
