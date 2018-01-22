@@ -1,0 +1,7 @@
+TODOS:
+Data import
+Display basic list
+date picker
+grouping picker
+spinner
+portraits
