@@ -48,7 +48,7 @@ function get(url) {
 }
 
 // Main function for returning the data
-function fetchMemberDataFromAPIs() {
+function fetchCoreDataFromAPIs() {
   return new Promise((resolve, reject) => {
     const promiseList = SP_APIS.map((endpoint) => {
       return get(`${SP_API_ROOT}${endpoint}`);
@@ -63,4 +63,4 @@ function fetchMemberDataFromAPIs() {
   });
 }
 
-export default fetchMemberDataFromAPIs;
+export default fetchCoreDataFromAPIs;

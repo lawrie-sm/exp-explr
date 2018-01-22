@@ -2,7 +2,7 @@ import React from 'react';
 
 const MemberList = ({ members }) => (
   <div className="MemberList">
-    <p> T </p>
+    <p> Not much is happening right now. </p>
   </div>
 );
 
