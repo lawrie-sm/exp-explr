@@ -4,7 +4,7 @@ import MyAwesomeReactComponent from './components/MyAwesomeReactComponent';
  
 const App = () => (
   <MuiThemeProvider>
-    <MyAwesomeReactComponent />
+    <MemberListContainer />
   </MuiThemeProvider>
 );
 
