@@ -3,5 +3,5 @@ Data import
 Display basic list
 date picker
 grouping picker
-spinner
+spinner / proper handling of asyc data and component rendering
 portraits

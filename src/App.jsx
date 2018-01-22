@@ -4,7 +4,7 @@ import AppContainer from './containers/AppContainer';
 
 const App = () => (
   <MuiThemeProvider>
-    <AppContainer />
+    <AppContainer debug="True" />
   </MuiThemeProvider>
 );
 

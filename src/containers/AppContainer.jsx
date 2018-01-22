@@ -5,20 +5,24 @@
 
 import React, { Component } from 'react';
 import MemberList from '../components/MemberList';
-import getMemberData from '../api/getMemberData';
+import getMemberDict from '../data/getMemberDict';
 
 class AppContainer extends Component {
   constructor() {
     super();
     this.state = {
-      memberData: undefined,
+      selectedDate: undefined,
+      memberDict: undefined,
     };
   }
 
   componentDidMount() {
-    getMemberData().then((memberData) => {
-      this.setState({ memberData });
-      console.log(memberData)
+    const selectedDate = new Date();
+    getMemberDict().then((memberDict) => {
+      this.setState({
+        memberDict,
+        selectedDate,
+      });
     });
   }
 

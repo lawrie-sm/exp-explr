@@ -1,13 +1,14 @@
 /*
-Makes API calls to the Scottish Parliament
+Makes API calls to the Scottish Parliament.
+Called by getData
 */
 
 // This is the basic URL for all Parliamentary API calls
 const SP_API_ROOT = 'https://data.parliament.scot/api/';
 
-// Hardcoded list of API endpoints
+// Hardcoded list of APIs for appending to root url
 // See https://data.parliament.scot/#/api-list
-const SP_API_ENDPOINTS = [
+const SP_APIS = [
   'members',
   'MemberElectionConstituencyStatuses',
   'MemberElectionregionStatuses',
@@ -42,20 +43,19 @@ function get(url) {
   return new Promise((resolve, reject) => {
     fetch(url, { method: 'get' })
       .then((response) => response.json())
-      .then((data) => resolve(data))
+      .then((data) => resolve(data));
   });
 }
 
 // Main function for returning the data
-function getMemberData() {
+function fetchMemberDataFromAPIs() {
   return new Promise((resolve, reject) => {
-    let promiseList = SP_API_ENDPOINTS.map((endpoint) => {
+    const promiseList = SP_APIS.map((endpoint) => {
       return get(`${SP_API_ROOT}${endpoint}`);
     });
-
     Promise.all(promiseList).then((dataArr) => {
-      let returnData = {};
-      SP_API_ENDPOINTS.forEach((endpoint, i) => {
+      const returnData = {};
+      SP_APIS.forEach((endpoint, i) => {
         returnData[endpoint] = dataArr[i];
       });
       resolve(returnData);
@@ -63,4 +63,4 @@ function getMemberData() {
   });
 }
 
-export default getMemberData;
+export default fetchMemberDataFromAPIs;
