@@ -5,17 +5,49 @@
 
 import fetchMemberDataFromAPIs from './fetchMemberDataFromAPIs';
 
-function processData(memberData, date) {
+// Parses the SP date format into js
+// YYYY-MM-DDThh:mm:ss. Months are not zero indexed
+function parseSPDate(SPDate) {
+  if (SPDate) {
+    const dateRegex = /(\d*)-(\d*)-(\d*)/g;
+    const matches = dateRegex.exec(SPDate);
+    const year = parseInt(matches[1], 10);
+    const month = parseInt(matches[2], 10) - 1;
+    const day = parseInt(matches[3], 10);
+    return new Date(year, month, day);
+  } return SPDate;
+}
+
+function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
+  let fromDate = parseSPDate(fromSPDate);
+  let untilDate = parseSPDate(untilSPDate);
+  // Currently active statuses will have null expiry dates. Set to future.
+  if (!untilDate) untilDate = new Date(9999, 1, 1);
+  return (selectedDate < untilDate && selectedDate > fromDate);
+}
+
+function processData(memberData, selectedDate) {
   let pData = {};
+  console.log(memberData);
 
   // Determine MSPs for the current date by looking
-  // through election results.
+  // through election statuses.
 
-  //'MemberElectionConstituencyStatuses',
-  //'MemberElectionregionStatuses',
+  const cStatuses = memberData.MemberElectionConstituencyStatuses;
+  const rStatuses = memberData.MemberElectionregionStatuses;
+
+  cStatuses.forEach((s) => {
+    if (isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate)) {
+      pData[s.PersonID] = { ConstituencyID: s.ConstituencyID };
+    }
+  });
+
+  console.log(pData);
+  console.log(Object.keys(pData).length);
 
   return (memberData);
 }
+
 
 function getMemberDict(date) {
   return new Promise((resolve, reject) => {
@@ -27,3 +59,4 @@ function getMemberDict(date) {
 }
 
 export default getMemberDict;
+

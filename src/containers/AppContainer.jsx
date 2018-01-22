@@ -18,7 +18,7 @@ class AppContainer extends Component {
 
   componentDidMount() {
     const selectedDate = new Date();
-    getMemberDict().then((memberDict) => {
+    getMemberDict(selectedDate).then((memberDict) => {
       this.setState({
         memberDict,
         selectedDate,
