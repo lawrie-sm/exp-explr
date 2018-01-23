@@ -27,11 +27,6 @@ function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
   return (selectedDate < untilDate && selectedDate > fromDate);
 }
 
-// Finds an SP object by a given PersonID
-function byID(pID) {
-  return (m) => m.PersonID == pID;
-}
-
 // Builds a memberDict given core data from the API
 // The dict uses PersonIDs as keys
 function processData(coreData, selectedDate) {
@@ -40,29 +35,29 @@ function processData(coreData, selectedDate) {
 
   // Determine MSPs for the current date by looking through
   // election statuses. Store the location info while we go.
-  const cStatuses = coreData.MemberElectionConstituencyStatuses;
-  const rStatuses = coreData.MemberElectionregionStatuses;
+  const cStatuses =
+  coreData.MemberElectionConstituencyStatuses.filter((s) => {
+    return isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate);
+  });
+  const rStatuses =
+  coreData.MemberElectionregionStatuses.filter((s) => {
+    return isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate);
+  });
   // Constituencies
   cStatuses.forEach((s) => {
-    if (isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate)) {
-      // The constituency/region ID data is not zero indexed.
-      const constituency = coreData.constituencies[s.ConstituencyID - 1];
-      const region = coreData.regions[constituency.RegionID - 1];
-      memberDict[s.PersonID] = {
-        constituency: constituency.Name,
-        region: region.Name,
-      };
-    }
+    const constituency = coreData.constituencies.find((c) => c.ID == s.ConstituencyID);
+    const region = coreData.regions.find((r) => r.ID == constituency.RegionID);
+    memberDict[s.PersonID] = {
+      constituency: constituency.Name,
+      region: region.Name,
+    };
   });
-
   // Regions
   rStatuses.forEach((s) => {
-    if (isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate)) {
-      const region = coreData.regions[s.RegionID - 1];
-      memberDict[s.PersonID] = {
-        region: region.Name,
-      };
-    }
+    const region = coreData.regions.find((r) => r.ID == s.RegionID);
+    memberDict[s.PersonID] = {
+      region: region.Name,
+    };
   });
 
   // Should have the full 129 MSPs at this stage. Loop through using their personIDs
@@ -70,7 +65,7 @@ function processData(coreData, selectedDate) {
     const member = memberDict[pID];
 
     // Get basic info, such as names and DOBs
-    const basicMemberData = coreData.members.find(byID(pID));
+    const basicMemberData = coreData.members.find((m) => m.PersonID == pID);
     member.birthDate = parseSPDate(basicMemberData.BirthDate);
     member.photoURL = basicMemberData.PhotoURL;
     // Gender: 1 Female, 2 Male, 3 Undisclosed (No API for GenderTypes)
@@ -84,13 +79,13 @@ function processData(coreData, selectedDate) {
     member.name = `${name[1]} ${name[0]}`.trim();
 
     // Get physical addresses
-    const addresses = coreData.addresses.filter(byID(pID));
+    const addresses = coreData.addresses.filter((m) => m.PersonID == pID);
     if (addresses && addresses.length > 0) {
       member.addresses = [];
       addresses.sort((a, b) => a.AddressTypeID < b.AddressTypeID);
       addresses.forEach((address) => {
         const newAddress = {};
-        newAddress.type = coreData.addresstypes[address.AddressTypeID - 1].Name;
+        newAddress.type = coreData.addresstypes.find((a) => a.ID == address.AddressTypeID).Name;
         if (address.Line1) newAddress.line1 = address.Line1;
         if (address.Line2) newAddress.line2 = address.Line2;
         if (address.PostCode) newAddress.postCode = address.PostCode;
@@ -102,8 +97,8 @@ function processData(coreData, selectedDate) {
 
     // Get email addresses. Some addresses are hidden
     // (e.g will specify "Work Email" with blank address)
-    // Don't create array if there are only hidden addresses
-    const emailAddresses = coreData.emailaddresses.filter(byID(pID));
+    // Don't added these, or create array if there are only hidden addresses
+    const emailAddresses = coreData.emailaddresses.filter((m) => m.PersonID == pID);
     if (emailAddresses && emailAddresses.length > 0) {
       emailAddresses.sort((a, b) => a.EmailAddressTypeID < b.EmailAddressTypeID);
       emailAddresses.forEach((emailAddress) => {
@@ -111,7 +106,7 @@ function processData(coreData, selectedDate) {
           if (!member.emailAddresses) member.emailAddresses = [];
           const newEmailAddress = {};
           newEmailAddress.type =
-          coreData.emailaddresstypes[emailAddress.EmailAddressTypeID - 1].Name;
+          coreData.emailaddresstypes.find((e) => e.ID == emailAddress.EmailAddressTypeID).Name;
           newEmailAddress.address = emailAddress.Address;
           member.emailAddresses.push(newEmailAddress);
         }
@@ -119,7 +114,7 @@ function processData(coreData, selectedDate) {
     }
 
     // Get websites
-    const websites = coreData.websites.filter(byID(pID));
+    const websites = coreData.websites.filter((m) => m.PersonID == pID);
     if (websites && websites.length > 0) {
       websites.sort((a, b) => a.WebSiteTypeID < b.WebSiteTypeID);
       websites.forEach((website) => {
@@ -127,9 +122,49 @@ function processData(coreData, selectedDate) {
           if (!member.websites) member.websites = [];
           const newWebsite = {};
           newWebsite.type =
-          coreData.websitetypes[website.WebSiteTypeID - 1].Name;
+          coreData.websitetypes.find((w) => w.ID == website.WebSiteTypeID).Name;
           newWebsite.url = website.WebURL;
           member.websites.push(newWebsite);
+        }
+      });
+    }
+
+    // Parties & Party Roles
+    const partyMemberships = coreData.memberparties.filter((m) => {
+      return isBetweenSPDates(selectedDate, m.ValidFromDate, m.ValidUntilDate);
+    });
+    const partyMembership = partyMemberships.find((m) => m.PersonID == pID);
+    if (partyMembership) {      
+      let memberParty = coreData.parties.find((p) => p.ID == partyMembership.PartyID);
+      member.party = {};
+      member.party.Name = memberParty.ActualName;
+      member.party.Abbreviation = memberParty.Abbreviation;
+      // Roles with multiple portfolios are listed separately with idential names in notes
+      // We will dispense with the inconsistent notes and rely on the internal portfolio listings
+      let roles = coreData.memberpartyroles.filter((r) => {
+        return (r.MemberPartyID === partyMembership.ID &&
+          isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+      });
+      if (roles && roles.length > 0) {
+        member.party.roles = [];
+        roles.forEach((r) => {
+          const newRole = coreData.partyroles.find((pr) => pr.ID == r.PartyRoleTypeID);
+          member.party.roles.push(newRole.Name);
+        });
+      }
+    }
+
+    // Government Roles
+    const govtRoles = coreData.membergovernmentroles.filter((r) => {
+      return (r.PersonID == pID &&
+        isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+    });
+    if (govtRoles && govtRoles.length > 0) {
+      govtRoles.forEach((gr) => {
+        let role = coreData.governmentroles.find((rn) => rn.ID == gr.GovernmentRoleID);
+        if (role) {
+          if (!member.govtRoles) member.govtRoles = [];
+          member.govtRoles.push(role.Name);
         }
       });
     }
@@ -137,12 +172,12 @@ function processData(coreData, selectedDate) {
   });
 
   console.log(memberDict);
-  console.log(Object.keys(memberDict).length);
+  console.log('No. MSP objects: ' + Object.keys(memberDict).length);
 
   return (coreData);
 }
 
-// Promise to fetch data from the API, processes it and return a memberDict
+// Promise to fetch core data from the API, process it, and return a memberDict
 function getMemberDict(date) {
   return new Promise((resolve, reject) => {
     fetchCoreDataFromAPIs().then((coreData) => {
