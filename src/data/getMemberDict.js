@@ -54,6 +54,7 @@ function processData(coreData, selectedDate) {
       };
     }
   });
+
   // Regions
   rStatuses.forEach((s) => {
     if (isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate)) {
@@ -97,25 +98,42 @@ function processData(coreData, selectedDate) {
         if (address.Town) newAddress.town = address.Town;
         member.addresses.push(newAddress);
       });
-
-      // Get email addresses. Some addresses are hidden
-      // (e.g will specify "Work Email" with blank address)
-      // Don't create array if there are only hidden addresses
-      const emailAddresses = coreData.emailaddresses.filter(byID(pID));
-      if (emailAddresses && emailAddresses.length > 0) {
-        emailAddresses.sort((a, b) => a.EmailAddressTypeID < b.EmailAddressTypeID);
-        emailAddresses.forEach((emailAddress) => {
-          if (emailAddress.Address) {
-            if (!member.emailAddresses) member.emailAddresses = [];
-            const newEmailAddress = {};
-            newEmailAddress.type =
-            coreData.emailaddresstypes[emailAddress.EmailAddressTypeID - 1].Name;
-            newEmailAddress.address = emailAddress.Address;
-            member.emailAddresses.push(newEmailAddress);
-          }
-        });
-      }
     }
+
+    // Get email addresses. Some addresses are hidden
+    // (e.g will specify "Work Email" with blank address)
+    // Don't create array if there are only hidden addresses
+    const emailAddresses = coreData.emailaddresses.filter(byID(pID));
+    if (emailAddresses && emailAddresses.length > 0) {
+      emailAddresses.sort((a, b) => a.EmailAddressTypeID < b.EmailAddressTypeID);
+      emailAddresses.forEach((emailAddress) => {
+        if (emailAddress.Address) {
+          if (!member.emailAddresses) member.emailAddresses = [];
+          const newEmailAddress = {};
+          newEmailAddress.type =
+          coreData.emailaddresstypes[emailAddress.EmailAddressTypeID - 1].Name;
+          newEmailAddress.address = emailAddress.Address;
+          member.emailAddresses.push(newEmailAddress);
+        }
+      });
+    }
+
+    // Get websites
+    const websites = coreData.websites.filter(byID(pID));
+    if (websites && websites.length > 0) {
+      websites.sort((a, b) => a.WebSiteTypeID < b.WebSiteTypeID);
+      websites.forEach((website) => {
+        if (website.WebURL) {
+          if (!member.websites) member.websites = [];
+          const newWebsite = {};
+          newWebsite.type =
+          coreData.websitetypes[website.WebSiteTypeID - 1].Name;
+          newWebsite.url = website.WebURL;
+          member.websites.push(newWebsite);
+        }
+      });
+    }
+
   });
 
   console.log(memberDict);

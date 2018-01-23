@@ -8,6 +8,8 @@ const SP_API_ROOT = 'https://data.parliament.scot/api/';
 
 // Hardcoded list of APIs for appending to root url
 // See https://data.parliament.scot/#/api-list
+// NB: 'telephones' (w/ 'telephonetypes') doesn't currrently
+// have any numbers
 const SP_APIS = [
   'members',
   'MemberElectionConstituencyStatuses',
@@ -22,8 +24,6 @@ const SP_APIS = [
   'membergovernmentroles',
   'addresses',
   'addresstypes',
-  'telephones',
-  'telephonetypes',
   'emailaddresses',
   'emailaddresstypes',
   'websites',
