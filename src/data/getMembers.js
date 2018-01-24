@@ -30,7 +30,7 @@ function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
 // Builds a memberDict given core data from the API
 // The dict uses PersonIDs as keys
 function processData(coreData, selectedDate) {
-  let memberDict = {};
+  let memberData = {};
   console.log(coreData);
 
   // Determine MSPs for the current date by looking through
@@ -47,7 +47,7 @@ function processData(coreData, selectedDate) {
   cStatuses.forEach((s) => {
     const constituency = coreData.constituencies.find((c) => c.ID == s.ConstituencyID);
     const region = coreData.regions.find((r) => r.ID == constituency.RegionID);
-    memberDict[s.PersonID] = {
+    memberData[s.PersonID] = {
       constituency: constituency.Name,
       region: region.Name,
     };
@@ -55,14 +55,14 @@ function processData(coreData, selectedDate) {
   // Regions
   rStatuses.forEach((s) => {
     const region = coreData.regions.find((r) => r.ID == s.RegionID);
-    memberDict[s.PersonID] = {
+    memberData[s.PersonID] = {
       region: region.Name,
     };
   });
 
   // Should have the full 129 MSPs at this stage. Loop through using their personIDs
-  Object.keys(memberDict).forEach((pID) => {
-    const member = memberDict[pID];
+  Object.keys(memberData).forEach((pID) => {
+    const member = memberData[pID];
 
     // Get basic info, such as names and DOBs
     const basicMemberData = coreData.members.find((m) => m.PersonID == pID);
@@ -169,16 +169,55 @@ function processData(coreData, selectedDate) {
       });
     }
 
+    // Committees
+    const commRoles = coreData.personcommitteeroles.filter((r) => {
+      return (r.PersonID == pID &&
+        isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+    });
+    if (commRoles && commRoles.length > 0) {
+      commRoles.forEach((cr) => {
+        let role =
+        coreData.committeeroles.find((r) => r.ID == cr.CommitteeRoleID).Name;
+        let committee = coreData.committees.find((comm) => {
+          return (comm.ID == cr.CommitteeID &&
+            isBetweenSPDates(selectedDate, cr.ValidFromDate, cr.ValidUntilDate));
+        });
+
+        if (role && committee) {
+          if (!member.committees) member.committees = [];
+          member.committees.push({ role, name: committee.Name, ID: committee.ID });
+        }
+      });
+    }
+
+    // CPGs
+    const cpgRoles = coreData.membercrosspartyroles.filter((r) => {
+      return (r.PersonID == pID &&
+        isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+    });
+    if (cpgRoles && cpgRoles.length > 0) {
+      cpgRoles.forEach((cpgr) => {
+        let role =
+        coreData.crosspartygrouproles.find((r) => r.ID == cpgr.CrossPartyGroupRoleID).Name;
+        let cpg = coreData.crosspartygroups.find((grp) => {
+          return (grp.ID == cpgr.CrossPartyGroupID &&
+            isBetweenSPDates(selectedDate, cpgr.ValidFromDate, cpgr.ValidUntilDate));
+        });
+        if (role && cpg) {
+          if (!member.cpgs) member.cpgs = [];
+          member.cpgs.push({ role, name: cpg.Name, ID: cpg.ID });
+        }
+      });
+    }
   });
-
-  console.log(memberDict);
-  console.log('No. MSP objects: ' + Object.keys(memberDict).length);
-
+  
+  console.log(memberData);
+  console.log('No. MSP objects: ' + Object.keys(memberData).length);
   return (coreData);
 }
 
 // Promise to fetch core data from the API, process it, and return a memberDict
-function getMemberDict(date) {
+function getMembers(date) {
   return new Promise((resolve, reject) => {
     fetchCoreDataFromAPIs().then((coreData) => {
       let returnData = processData(coreData, date);
@@ -187,5 +226,4 @@ function getMemberDict(date) {
   });
 }
 
-export default getMemberDict;
-
+export default getMembers;

@@ -12,6 +12,6 @@
       "react/no-did-mount-set-state": 0,
       "arrow-parens": 0,
       "arrow-body-style": 1,
-      "eqeqeq": 0
+      "eqeqeq": 1
   }
 }

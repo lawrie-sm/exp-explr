@@ -5,22 +5,22 @@
 
 import React, { Component } from 'react';
 import MemberList from '../components/MemberList';
-import getMemberDict from '../data/getMemberDict';
+import getMembers from '../data/getMembers';
 
 class AppContainer extends Component {
   constructor() {
     super();
     this.state = {
       selectedDate: undefined,
-      memberDict: undefined,
+      members: undefined,
     };
   }
 
   componentDidMount() {
     const selectedDate = new Date();
-    getMemberDict(selectedDate).then((memberDict) => {
+    getMembers(selectedDate).then((members) => {
       this.setState({
-        memberDict,
+        members,
         selectedDate,
       });
     });
@@ -29,7 +29,7 @@ class AppContainer extends Component {
   render() {
     return (
       <div className="AppContainer">
-        <MemberList members={this.state.memberData} />
+        <MemberList members={this.state.members} />
       </div>
     );
   }
