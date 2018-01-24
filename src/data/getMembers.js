@@ -210,7 +210,6 @@ function processData(coreData, selectedDate) {
       });
     }
   });
-  
   console.log(memberData);
   console.log('No. MSP objects: ' + Object.keys(memberData).length);
   return (coreData);
