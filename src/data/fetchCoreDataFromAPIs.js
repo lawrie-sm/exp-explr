@@ -1,6 +1,6 @@
 /*
-Makes API calls to the Scottish Parliament.
-Called by getData
+  Called by the React app. Makes API calls to the Scottish Parliament.
+  Returns the APIs in a coreData array for processing by getMembers.
 */
 
 // This is the basic URL for all Parliamentary API calls
@@ -47,7 +47,7 @@ function get(url) {
   });
 }
 
-// Main function for returning the data
+// Main promise for returning the data
 function fetchCoreDataFromAPIs() {
   return new Promise((resolve, reject) => {
     const promiseList = SP_APIS.map((endpoint) => {

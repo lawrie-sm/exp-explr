@@ -1,9 +1,11 @@
 /*
-  Called by the React app. Returns the MSP dict for a given date
-  <PersonID> : { <MemberObject> }
+  Called by the React app. Returns a list of MSP objects for a given date.
+  Requires coreData from the initial API payload
 */
 
-import fetchCoreDataFromAPIs from './fetchCoreDataFromAPIs';
+// Linter currently disabled to suppress eqeqeq warnings
+
+/* eslint-disable */
 
 // Parses an SP formatted date into a js date
 // YYYY-MM-DDThh:mm:ss. Months are not zero indexed
@@ -27,11 +29,9 @@ function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
   return (selectedDate < untilDate && selectedDate > fromDate);
 }
 
-// Builds a memberDict given core data from the API
-// The dict uses PersonIDs as keys
-function processData(coreData, selectedDate) {
+// Main function
+function getMembers(selectedDate, coreData) {
   let memberData = {};
-  console.log(coreData);
 
   // Determine MSPs for the current date by looking through
   // election statuses. Store the location info while we go.
@@ -46,6 +46,7 @@ function processData(coreData, selectedDate) {
   // Constituencies
   cStatuses.forEach((s) => {
     const constituency = coreData.constituencies.find((c) => c.ID == s.ConstituencyID);
+    // eslint-disable-next-line
     const region = coreData.regions.find((r) => r.ID == constituency.RegionID);
     memberData[s.PersonID] = {
       constituency: constituency.Name,
@@ -210,19 +211,9 @@ function processData(coreData, selectedDate) {
       });
     }
   });
-  console.log(memberData);
-  console.log('No. MSP objects: ' + Object.keys(memberData).length);
-  return (coreData);
-}
-
-// Promise to fetch core data from the API, process it, and return a memberDict
-function getMembers(date) {
-  return new Promise((resolve, reject) => {
-    fetchCoreDataFromAPIs().then((coreData) => {
-      let returnData = processData(coreData, date);
-      resolve(returnData);
-    });
-  });
+  return (memberData);
 }
 
 export default getMembers;
+
+/* eslint-enable */

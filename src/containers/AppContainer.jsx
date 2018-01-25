@@ -5,6 +5,7 @@
 
 import React, { Component } from 'react';
 import MemberList from '../components/MemberList';
+import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
 
 class AppContainer extends Component {
@@ -12,21 +13,25 @@ class AppContainer extends Component {
     super();
     this.state = {
       selectedDate: undefined,
+      coreData: undefined,
       members: undefined,
     };
   }
 
   componentDidMount() {
     const selectedDate = new Date();
-    getMembers(selectedDate).then((members) => {
+    fetchCoreDataFromAPIs().then((coreData) => {
+      const members = getMembers(selectedDate, coreData);
       this.setState({
-        members,
         selectedDate,
+        coreData,
+        members,
       });
     });
   }
 
   render() {
+    console.log(this.state);
     return (
       <div className="AppContainer">
         <MemberList members={this.state.members} />
