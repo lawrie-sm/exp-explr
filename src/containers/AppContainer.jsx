@@ -1,5 +1,5 @@
 /*
-  Container for the member data.
+  Container for the apps data.
   Manages and updates the member list based on pickers.
 */
 
@@ -31,12 +31,16 @@ class AppContainer extends Component {
   }
 
   render() {
-    console.log(this.state);
-    return (
-      <div className="AppContainer">
-        <MemberList members={this.state.members} />
-      </div>
-    );
+    if (this.state.selectedDate && this.state.members) {
+      return (
+        <div className="AppContainer">
+          <MemberList members={this.state.members} />
+        </div>
+      );
+    } else {
+      return 'Loading...';
+    }
+
   }
 }
 

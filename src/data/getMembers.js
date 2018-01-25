@@ -31,7 +31,7 @@ function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
 
 // Main function
 function getMembers(selectedDate, coreData) {
-  let memberData = {};
+  let memberData = [];
 
   // Determine MSPs for the current date by looking through
   // election statuses. Store the location info while we go.
@@ -48,25 +48,27 @@ function getMembers(selectedDate, coreData) {
     const constituency = coreData.constituencies.find((c) => c.ID == s.ConstituencyID);
     // eslint-disable-next-line
     const region = coreData.regions.find((r) => r.ID == constituency.RegionID);
-    memberData[s.PersonID] = {
+    memberData.push({
+      ID: s.PersonID,
       constituency: constituency.Name,
       region: region.Name,
-    };
+    });
   });
   // Regions
   rStatuses.forEach((s) => {
     const region = coreData.regions.find((r) => r.ID == s.RegionID);
-    memberData[s.PersonID] = {
+    memberData.push({
+      ID: s.PersonID,
       region: region.Name,
-    };
+    });
   });
 
   // Should have the full 129 MSPs at this stage. Loop through using their personIDs
-  Object.keys(memberData).forEach((pID) => {
-    const member = memberData[pID];
+  for (let m in memberData) {
+    let member = memberData[m];
 
     // Get basic info, such as names and DOBs
-    const basicMemberData = coreData.members.find((m) => m.PersonID == pID);
+    const basicMemberData = coreData.members.find((m) => m.PersonID == member.ID);
     member.birthDate = parseSPDate(basicMemberData.BirthDate);
     member.photoURL = basicMemberData.PhotoURL;
     // Gender: 1 Female, 2 Male, 3 Undisclosed (No API for GenderTypes)
@@ -80,7 +82,7 @@ function getMembers(selectedDate, coreData) {
     member.name = `${name[1]} ${name[0]}`.trim();
 
     // Get physical addresses
-    const addresses = coreData.addresses.filter((m) => m.PersonID == pID);
+    const addresses = coreData.addresses.filter((m) => m.PersonID == member.ID);
     if (addresses && addresses.length > 0) {
       member.addresses = [];
       addresses.sort((a, b) => a.AddressTypeID < b.AddressTypeID);
@@ -99,7 +101,7 @@ function getMembers(selectedDate, coreData) {
     // Get email addresses. Some addresses are hidden
     // (e.g will specify "Work Email" with blank address)
     // Don't added these, or create array if there are only hidden addresses
-    const emailAddresses = coreData.emailaddresses.filter((m) => m.PersonID == pID);
+    const emailAddresses = coreData.emailaddresses.filter((m) => m.PersonID == member.ID);
     if (emailAddresses && emailAddresses.length > 0) {
       emailAddresses.sort((a, b) => a.EmailAddressTypeID < b.EmailAddressTypeID);
       emailAddresses.forEach((emailAddress) => {
@@ -115,7 +117,7 @@ function getMembers(selectedDate, coreData) {
     }
 
     // Get websites
-    const websites = coreData.websites.filter((m) => m.PersonID == pID);
+    const websites = coreData.websites.filter((m) => m.PersonID == member.ID);
     if (websites && websites.length > 0) {
       websites.sort((a, b) => a.WebSiteTypeID < b.WebSiteTypeID);
       websites.forEach((website) => {
@@ -134,7 +136,7 @@ function getMembers(selectedDate, coreData) {
     const partyMemberships = coreData.memberparties.filter((m) => {
       return isBetweenSPDates(selectedDate, m.ValidFromDate, m.ValidUntilDate);
     });
-    const partyMembership = partyMemberships.find((m) => m.PersonID == pID);
+    const partyMembership = partyMemberships.find((m) => m.PersonID == member.ID);
     if (partyMembership) {      
       let memberParty = coreData.parties.find((p) => p.ID == partyMembership.PartyID);
       member.party = {};
@@ -157,7 +159,7 @@ function getMembers(selectedDate, coreData) {
 
     // Government Roles
     const govtRoles = coreData.membergovernmentroles.filter((r) => {
-      return (r.PersonID == pID &&
+      return (r.PersonID == member.ID &&
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
     if (govtRoles && govtRoles.length > 0) {
@@ -172,7 +174,7 @@ function getMembers(selectedDate, coreData) {
 
     // Committees
     const commRoles = coreData.personcommitteeroles.filter((r) => {
-      return (r.PersonID == pID &&
+      return (r.PersonID == member.ID &&
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
     if (commRoles && commRoles.length > 0) {
@@ -193,7 +195,7 @@ function getMembers(selectedDate, coreData) {
 
     // CPGs
     const cpgRoles = coreData.membercrosspartyroles.filter((r) => {
-      return (r.PersonID == pID &&
+      return (r.PersonID == member.ID &&
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
     if (cpgRoles && cpgRoles.length > 0) {
@@ -210,7 +212,7 @@ function getMembers(selectedDate, coreData) {
         }
       });
     }
-  });
+  }
   return (memberData);
 }
 

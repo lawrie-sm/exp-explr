@@ -1,8 +1,12 @@
 import React from 'react';
+import Reboot from 'material-ui/Reboot';
 import AppContainer from './containers/AppContainer';
 
 const App = () => (
-  <AppContainer debug="True" />
+  <div>
+    <Reboot />
+    <AppContainer debug="True" />
+  </div>
 );
 
 export default App;
