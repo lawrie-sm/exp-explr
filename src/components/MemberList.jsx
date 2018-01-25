@@ -6,6 +6,9 @@
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 import List, { ListItem, ListItemText, ListSubheader } from 'material-ui/List';
+import ExpansionPanel, { ExpansionPanelSummary, ExpansionPanelDetails } from 'material-ui/ExpansionPanel';
+import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import Typography from 'material-ui/Typography';
 import Divider from 'material-ui/Divider';
 
 const styles = theme => ({
@@ -32,12 +35,16 @@ const SubList = ({ subList }) => {
   const memberItems = subList.members.map((m) =>
     <MemberListItem key={m.ID} member={m} />);
   return (
-    <div className={subList.ID} subheader={<div />}>
-      <List>
-        <ListSubheader>{subList.name}</ListSubheader>
-        {memberItems}
-      </List>
-    </div>
+    <ExpansionPanel>
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography className={subList.ID}>{subList.name}</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <List>
+          {memberItems}
+        </List>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
   );
 };
 
