@@ -1,6 +1,7 @@
 /*
-  Called by the React app. Returns a list of MSP objects for a given date.
-  Requires coreData from the initial API payload
+  Called by the React app on startup and when the date is changed.
+  Returns a list of MSP objects for a given date.
+  Requires coreData from fetchCoreDataFromAPIs
 */
 
 // Linter currently disabled to suppress eqeqeq warnings
@@ -140,8 +141,9 @@ function getMembers(selectedDate, coreData) {
     if (partyMembership) {      
       let memberParty = coreData.parties.find((p) => p.ID == partyMembership.PartyID);
       member.party = {};
-      member.party.Name = memberParty.ActualName;
-      member.party.Abbreviation = memberParty.Abbreviation;
+      member.party.name = memberParty.ActualName;
+      member.party.anbbreviation = memberParty.Abbreviation;
+      member.party.ID = memberParty.ID;
       // Roles with multiple portfolios are listed separately with idential names in notes
       // We will dispense with the inconsistent notes and rely on the internal portfolio listings
       let roles = coreData.memberpartyroles.filter((r) => {

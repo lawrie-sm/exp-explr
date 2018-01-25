@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 import MemberList from '../components/MemberList';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
+import getPartyList from '../data/subLists';
 
 class AppContainer extends Component {
   constructor() {
@@ -27,20 +28,23 @@ class AppContainer extends Component {
         coreData,
         members,
       });
+      console.log(this.state);
     });
   }
 
   render() {
+    let r = 'Loading...';
     if (this.state.selectedDate && this.state.members) {
-      return (
+
+      // Do some type picker check...
+      let groupedMembers = getPartyList(this.state.members);
+      r = (
         <div className="AppContainer">
-          <MemberList members={this.state.members} />
+          <MemberList groupedMembers={groupedMembers} />
         </div>
       );
-    } else {
-      return 'Loading...';
     }
-
+    return (r);
   }
 }
 

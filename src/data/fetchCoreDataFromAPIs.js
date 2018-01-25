@@ -1,5 +1,6 @@
 /*
-  Called by the React app. Makes API calls to the Scottish Parliament.
+  Called by the React app on startup.
+  Makes API calls to the Scottish Parliament.
   Returns the APIs in a coreData array for processing by getMembers.
 */
 
