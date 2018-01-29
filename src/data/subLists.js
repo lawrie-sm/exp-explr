@@ -20,7 +20,6 @@ export function getPartyList(memberData) {
       roleTitle = member.party.role.title;
       rank = member.party.role.rank;
     }
-    console.log(member);
     if (!party) {
       const newParty = {
         name: member.party.name,
@@ -44,21 +43,22 @@ export function getCommList(memberData) {
     if (member.committees && member.committees.length > 0) {
       member.committees.forEach((mc) => {
         const committee = commList.find((c) => c.ID === mc.ID);
+        const rank = mc.rank;
         if (!committee) {
           commList.push({
             name: mc.name,
             abbreviation: mc.abbreviation,
             ID: mc.ID,
-            memberInfos: [{ member, roleTitle: mc.role }],
+            memberInfos: [{ member, roleTitle: mc.role, rank: mc.rank }],
           });
         } else {
-          committee.memberInfos.push({ member, roleTitle: mc.role });
+          committee.memberInfos.push({ member, roleTitle: mc.role, rank: mc.rank });
         }
       });
     }
   });
   commList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
-
+  commList.forEach((cl) => cl.memberInfos.sort((a, b) => a.rank - b.rank));
   return commList;
 }
 

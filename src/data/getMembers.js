@@ -235,20 +235,22 @@ function getMembers(selectedDate, coreData) {
         });
         if (role && committee) {
           if (!member.committees) member.committees = [];
-          member.committees.push({
+          let newComm = {
             role: role.Name,
             name: committee.Name,
             abbreviation: committee.ShortName,
             ID: committee.ID,
-          });
+          };
           // Rank the committee memberships
           let rank = 10;
-          const isConv = role.Name.search(/(conv)/gi) == -1 ? false : true;
+          const isConv = role.Name.search(/(convener)/gi) == -1 ? false : true;
           const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
           const isSub = role.Name.search(/(substitute)/gi) == -1 ? false : true;
           if (isConv && !isDeputy) rank = 0;
-          if (isConv && isDeputy) rank = 1;
-          if (!isSub) rank = 2;
+          else if (isConv && isDeputy) rank = 1;
+          else if (!isSub) rank = 2;
+          newComm.rank = rank;
+          member.committees.push(newComm);
         }
       });
     }
