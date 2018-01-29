@@ -65,8 +65,8 @@ function getMembers(selectedDate, coreData) {
   });
 
   // Should have the full 129 MSPs at this stage. Loop through using their personIDs
-  for (let m in memberData) {
-    let member = memberData[m];
+  for (let i = 0; i < memberData.length; i++) {
+    let member = memberData[i];
 
     // Get basic info, such as names and DOBs
     const basicMemberData = coreData.members.find((m) => m.PersonID == member.ID);
@@ -138,7 +138,7 @@ function getMembers(selectedDate, coreData) {
       return isBetweenSPDates(selectedDate, m.ValidFromDate, m.ValidUntilDate);
     });
     const partyMembership = partyMemberships.find((m) => m.PersonID == member.ID);
-    if (partyMembership) {      
+    if (partyMembership) {
       let memberParty = coreData.parties.find((p) => p.ID == partyMembership.PartyID);
       member.party = {};
       member.party.name = memberParty.ActualName;
@@ -153,11 +153,11 @@ function getMembers(selectedDate, coreData) {
       // Party members can have any number of roles of various ranks
       // Only storing the highest rank in each case
       // 0 = Ldr, 1 = Deputy Ldr, 2 = Spox, 3 = Deputy Spox
+      let role = {};
+      role.title = '';
+      role.rank = 10;
       if (roles && roles.length > 0) {
-        let role = {}
-        role.title = '';
         role.portfolios = [];
-        role.rank = 10;
         roles.forEach((r) => {
           const newRole = coreData.partyroles.find((pr) => pr.ID == r.PartyRoleTypeID);
           const captureLeader = /(party leader)/gi;
@@ -167,10 +167,10 @@ function getMembers(selectedDate, coreData) {
           const deputy = !!captureDeputy.exec(newRole.Name);
           const capRole = captureRole.exec(newRole.Name);
           if (capRole) role.portfolios.push(capRole[2]);
-          if (leader && !deputy) role.rank = 0
-          else if (leader && deputy && role.rank > 1) role.rank = 1
-          else if (!leader && deputy && role.rank > 3) role.rank = 3
-          else if (role.rank > 2 && capRole) role.rank = 2
+          if (leader && !deputy) role.rank = 0;
+          else if (leader && deputy && role.rank > 1) role.rank = 1;
+          else if (!leader && deputy && role.rank > 3) role.rank = 3;
+          else if (role.rank > 2 && capRole) role.rank = 2;
         });
         if (role.rank === 0 && role.portfolios.length < 1) {
           role.title = 'Party Leader';
@@ -178,31 +178,48 @@ function getMembers(selectedDate, coreData) {
           role.title = `Party Leader. Spokesperson on ${role.portfolios.join(', ')}`;
         } else if (role.rank === 1 && role.portfolios.length < 1) {
           role.title = 'Deputy Leader';
-        } else if (role.rank === 1 && role.portfolios.length > 0){
+        } else if (role.rank === 1 && role.portfolios.length > 0) {
           role.title = `Deputy Leader. Spokesperson on ${role.portfolios.join(', ')}`;
         } else if (role.rank === 2) {
           role.title = `Spokesperson on ${role.portfolios.join(', ')}`;
         } else if (role.rank === 3) {
           role.title = `Deputy Spokesperson on ${role.portfolios.join(', ')}`;
         }
-        member.party.role = role;
       }
+      member.party.role = role;
     }
 
-    // Government Roles
-    const govtRoles = coreData.membergovernmentroles.filter((r) => {
+    // Government Role
+    const govtRole = coreData.membergovernmentroles.find((r) => {
       return (r.PersonID == member.ID &&
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
-    if (govtRoles && govtRoles.length > 0) {
-      govtRoles.forEach((gr) => {
-        let role = coreData.governmentroles.find((rn) => rn.ID == gr.GovernmentRoleID);
-        if (role) {
-          if (!member.govtRoles) member.govtRoles = [];
-          member.govtRoles.push(role.Name);
-        }
-      });
+    // Government roles are similarly ranked.
+    if (govtRole) {
+      let title = '';
+      let rank = 10;
+      let role = coreData.governmentroles.find((rn) => rn.ID == govtRole.GovernmentRoleID);
+      if (role) {
+        const captureOfficer = /(liaison officer)/gi;
+        const captureMinister = /(minister)/gi;
+        const captureCabSec = /(cabinet secretary)/gi;
+        const captureDeputy = /(deputy)/gi;
+        const captureFirstMinister = /(first minister)/gi;
+        const officer = !!captureOfficer.exec(role.Name);
+        const mini = !!captureMinister.exec(role.Name);
+        const cabSec = !!captureCabSec.exec(role.Name);
+        const dfm = !!captureDeputy.exec(role.Name) && !!captureFirstMinister.exec(role.Name);
+        const fm = !captureDeputy.exec(role.Name) && !!captureFirstMinister.exec(role.Name);
+        if (!officer) {
+          title = role.Name;
+          if (fm) rank = 0;
+          else if (dfm) rank = 1;
+          else if (cabSec) rank = 2;
+          else if (mini) rank = 3;
+      }
+      member.govtRole = { title, rank };
     }
+  }
 
     // Committees
     const commRoles = coreData.personcommitteeroles.filter((r) => {
@@ -215,15 +232,20 @@ function getMembers(selectedDate, coreData) {
         coreData.committeeroles.find((r) => r.ID == cr.CommitteeRoleID).Name;
         let committee = coreData.committees.find((comm) => {
           return (
-              comm.ID == cr.CommitteeID &&
+            comm.ID == cr.CommitteeID &&
               isBetweenSPDates(selectedDate, cr.ValidFromDate, cr.ValidUntilDate) &&
               // Extra level of validation - check the committee itself is valid
               isBetweenSPDates(selectedDate, comm.ValidFromDate, comm.ValidUntilDate)
-            );
+          );
         });
         if (role && committee) {
           if (!member.committees) member.committees = [];
-          member.committees.push({ role, name: committee.Name, abbreviation: committee.ShortName, ID: committee.ID });
+          member.committees.push({
+            role,
+            name: committee.Name,
+            abbreviation: committee.ShortName,
+            ID: committee.ID,
+          });
         }
       });
     }

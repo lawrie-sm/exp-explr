@@ -13,24 +13,37 @@ export function getPartyList(memberData) {
     let party = partyList.find((p) => p.ID === member.party.ID);
     let roleTitle = '';
     if (member.party.role) roleTitle = member.party.role.title;
-    console.log(member);
+    if (member.govtRole) roleTitle = member.govtRole.title;
     if (!party) {
-      partyList.push({
+      const newParty = {
         name: member.party.name,
         abbreviation: member.party.abbreviation,
         ID: member.party.ID,
         memberInfos: [{ member, roleTitle }],
-        // TODO: Icon info
-      });
+      };
+      if (member.govtRole) newParty.isPartyOfGovt = true;
+      else newParty.isPartyOfGovt = false;
+      partyList.push(newParty);
     } else {
       party.memberInfos.push({ member, roleTitle });
+      if (member.govtRole) party.isPartyOfGovt = true;
     }
   });
   partyList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
-  // TODO: Sorting within list by role seniority.
+  partyList.forEach((pl) => {
+    if (!pl.isPartyOfGovt) {
+      pl.memberInfos.sort((a, b) => a.member.party.role.rank - b.member.party.role.rank);
+    } else {
+      pl.memberInfos.sort((a, b) => {
+        let aRank = (a.member.govtRole) ? a.member.govtRole.rank : 10;
+        let bRank = (b.member.govtRole) ? b.member.govtRole.rank : 10;
+        
+        return (aRank - bRank);
+      });
+    }
+  });
   return partyList;
 }
-
 
 export function getCommList(memberData) {
   let commList = [];
