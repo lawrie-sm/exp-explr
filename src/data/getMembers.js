@@ -142,7 +142,7 @@ function getMembers(selectedDate, coreData) {
       let memberParty = coreData.parties.find((p) => p.ID == partyMembership.PartyID);
       member.party = {};
       member.party.name = memberParty.ActualName;
-      member.party.anbbreviation = memberParty.Abbreviation;
+      member.party.abbreviation = memberParty.Abbreviation;
       member.party.ID = memberParty.ID;
       // Roles with multiple portfolios are listed separately with idential names in notes
       // We will dispense with the inconsistent notes and rely on the internal portfolio listings
@@ -150,12 +150,42 @@ function getMembers(selectedDate, coreData) {
         return (r.MemberPartyID === partyMembership.ID &&
           isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
       });
+      // Party members can have any number of roles of various ranks
+      // Only storing the highest rank in each case
+      // 0 = Ldr, 1 = Deputy Ldr, 2 = Spox, 3 = Deputy Spox
       if (roles && roles.length > 0) {
-        member.party.roles = [];
+        let role = {}
+        role.title = '';
+        role.portfolios = [];
+        role.rank = 10;
         roles.forEach((r) => {
           const newRole = coreData.partyroles.find((pr) => pr.ID == r.PartyRoleTypeID);
-          member.party.roles.push(newRole.Name);
+          const captureLeader = /(party leader)/gi;
+          const captureDeputy = /(deputy)/gi;
+          const captureRole = /(party spokesperson on the |party spokesperson on )(.*)/gi;
+          const leader = !!captureLeader.exec(newRole.Name);
+          const deputy = !!captureDeputy.exec(newRole.Name);
+          const capRole = captureRole.exec(newRole.Name);
+          if (capRole) role.portfolios.push(capRole[2]);
+          if (leader && !deputy) role.rank = 0
+          else if (leader && deputy && role.rank > 1) role.rank = 1
+          else if (!leader && deputy && role.rank > 3) role.rank = 3
+          else if (role.rank > 2 && capRole) role.rank = 2
         });
+        if (role.rank === 0 && role.portfolios.length < 1) {
+          role.title = 'Party Leader';
+        } else if (role.rank === 0 && role.portfolios.length > 0) {
+          role.title = `Party Leader. Spokesperson on ${role.portfolios.join(', ')}`;
+        } else if (role.rank === 1 && role.portfolios.length < 1) {
+          role.title = 'Deputy Leader';
+        } else if (role.rank === 1 && role.portfolios.length > 0){
+          role.title = `Deputy Leader. Spokesperson on ${role.portfolios.join(', ')}`;
+        } else if (role.rank === 2) {
+          role.title = `Spokesperson on ${role.portfolios.join(', ')}`;
+        } else if (role.rank === 3) {
+          role.title = `Deputy Spokesperson on ${role.portfolios.join(', ')}`;
+        }
+        member.party.role = role;
       }
     }
 
@@ -190,7 +220,6 @@ function getMembers(selectedDate, coreData) {
               // Extra level of validation - check the committee itself is valid
               isBetweenSPDates(selectedDate, comm.ValidFromDate, comm.ValidUntilDate)
             );
-            
         });
         if (role && committee) {
           if (!member.committees) member.committees = [];

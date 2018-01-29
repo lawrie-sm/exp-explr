@@ -11,16 +11,19 @@ export function getPartyList(memberData) {
   let partyList = [];
   memberData.forEach((member) => {
     let party = partyList.find((p) => p.ID === member.party.ID);
+    let roleTitle = '';
+    if (member.party.role) roleTitle = member.party.role.title;
+    console.log(member);
     if (!party) {
       partyList.push({
         name: member.party.name,
         abbreviation: member.party.abbreviation,
         ID: member.party.ID,
-        memberInfos: [member],
-        // TODO: Icon info and additional member object (roles)
+        memberInfos: [{ member, roleTitle }],
+        // TODO: Icon info
       });
     } else {
-      party.memberInfos.push(member);
+      party.memberInfos.push({ member, roleTitle });
     }
   });
   partyList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
@@ -40,10 +43,10 @@ export function getCommList(memberData) {
             name: mc.name,
             abbreviation: mc.abbreviation,
             ID: mc.ID,
-            memberInfos: [{ member, role: mc.role }],
+            memberInfos: [{ member, roleTitle: mc.role }],
           });
         } else {
-          committee.memberInfos.push({ member, role: mc.role });
+          committee.memberInfos.push({ member, roleTitle: mc.role });
         }
       });
     }

@@ -26,7 +26,7 @@ const styles = theme => ({
 
 const MemberListItem = ({ memberInfo }) => (
   <ListItem button>
-    <ListItemText primary={memberInfo.member.name} secondary={memberInfo.role} />
+    <ListItemText primary={memberInfo.member.name} secondary={memberInfo.roleTitle} />
   </ListItem>
 );
 
