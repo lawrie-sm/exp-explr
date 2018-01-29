@@ -160,18 +160,17 @@ function getMembers(selectedDate, coreData) {
         role.portfolios = [];
         roles.forEach((r) => {
           const newRole = coreData.partyroles.find((pr) => pr.ID == r.PartyRoleTypeID);
-          const captureLeader = /(party leader)/gi;
-          const captureDeputy = /(deputy)/gi;
+          const isLeader = newRole.Name.search(/leader/gi) == -1 ? false : true;
+          const isDeputy = newRole.Name.search(/deputy/gi) == -1 ? false : true;
           const captureRole = /(party spokesperson on the |party spokesperson on )(.*)/gi;
-          const leader = !!captureLeader.exec(newRole.Name);
-          const deputy = !!captureDeputy.exec(newRole.Name);
-          const capRole = captureRole.exec(newRole.Name);
+          const capRole = captureRole.exec(newRole.Name);  
           if (capRole) role.portfolios.push(capRole[2]);
-          if (leader && !deputy) role.rank = 0;
-          else if (leader && deputy && role.rank > 1) role.rank = 1;
-          else if (!leader && deputy && role.rank > 3) role.rank = 3;
+          if (isLeader && !isDeputy) role.rank = 0;
+          else if (isLeader && isDeputy && role.rank > 1) role.rank = 1;
+          else if (!isLeader && isDeputy && role.rank > 3) role.rank = 3;
           else if (role.rank > 2 && capRole) role.rank = 2;
         });
+        // Build an appropriate title using the internal portfolios
         if (role.rank === 0 && role.portfolios.length < 1) {
           role.title = 'Party Leader';
         } else if (role.rank === 0 && role.portfolios.length > 0) {
@@ -194,28 +193,24 @@ function getMembers(selectedDate, coreData) {
       return (r.PersonID == member.ID &&
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
-    // Government roles are similarly ranked.
+    // Government roles are similarly ranked. Only one role per MSP.
     if (govtRole) {
       let title = '';
       let rank = 10;
       let role = coreData.governmentroles.find((rn) => rn.ID == govtRole.GovernmentRoleID);
       if (role) {
-        const captureOfficer = /(liaison officer)/gi;
-        const captureMinister = /(minister)/gi;
-        const captureCabSec = /(cabinet secretary)/gi;
-        const captureDeputy = /(deputy)/gi;
-        const captureFirstMinister = /(first minister)/gi;
-        const officer = !!captureOfficer.exec(role.Name);
-        const mini = !!captureMinister.exec(role.Name);
-        const cabSec = !!captureCabSec.exec(role.Name);
-        const dfm = !!captureDeputy.exec(role.Name) && !!captureFirstMinister.exec(role.Name);
-        const fm = !captureDeputy.exec(role.Name) && !!captureFirstMinister.exec(role.Name);
-        if (!officer) {
+        const isPLO =  role.Name.search(/(liaison officer)/gi) == -1 ? false : true;
+        const isMini = role.Name.search(/(minister)/gi) == -1 ? false : true;
+        const isCabSec = role.Name.search(/(cabinet secretary)/gi) == -1 ? false : true;
+        const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
+        const isFM = role.Name.search(/(first minister)/gi) == -1 ? false : true;
+        // Ignore PLOs
+        if (!isPLO) {
           title = role.Name;
-          if (fm) rank = 0;
-          else if (dfm) rank = 1;
-          else if (cabSec) rank = 2;
-          else if (mini) rank = 3;
+          if (isFM && !isDeputy) rank = 0;
+          else if (isFM && isDeputy) rank = 1;
+          else if (isCabSec) rank = 2;
+          else if (isMini) rank = 3;
       }
       member.govtRole = { title, rank };
     }
@@ -229,7 +224,7 @@ function getMembers(selectedDate, coreData) {
     if (commRoles && commRoles.length > 0) {
       commRoles.forEach((cr) => {
         let role =
-        coreData.committeeroles.find((r) => r.ID == cr.CommitteeRoleID).Name;
+        coreData.committeeroles.find((r) => r.ID == cr.CommitteeRoleID);
         let committee = coreData.committees.find((comm) => {
           return (
             comm.ID == cr.CommitteeID &&
@@ -241,11 +236,19 @@ function getMembers(selectedDate, coreData) {
         if (role && committee) {
           if (!member.committees) member.committees = [];
           member.committees.push({
-            role,
+            role: role.Name,
             name: committee.Name,
             abbreviation: committee.ShortName,
             ID: committee.ID,
           });
+          // Rank the committee memberships
+          let rank = 10;
+          const isConv = role.Name.search(/(conv)/gi) == -1 ? false : true;
+          const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
+          const isSub = role.Name.search(/(substitute)/gi) == -1 ? false : true;
+          if (isConv && !isDeputy) rank = 0;
+          if (isConv && isDeputy) rank = 1;
+          if (!isSub) rank = 2;
         }
       });
     }

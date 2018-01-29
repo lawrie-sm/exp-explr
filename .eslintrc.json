@@ -13,6 +13,7 @@
       "react/no-unused-state": 1,
       "arrow-parens": 0,
       "arrow-body-style": 1,
-      "eqeqeq": 1
+      "eqeqeq": 1,
+      "prefer-destructuring": 1
   }
 }
