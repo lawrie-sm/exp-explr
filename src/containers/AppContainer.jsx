@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import MemberList from '../components/MemberList';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
-import getPartyList from '../data/subLists';
+import { getPartyList, getCommList } from '../data/subLists';
 
 class AppContainer extends Component {
   constructor() {
@@ -37,7 +37,7 @@ class AppContainer extends Component {
     if (this.state.selectedDate && this.state.members) {
 
       // Do some type picker check...
-      let groupedMembers = getPartyList(this.state.members);
+      let groupedMembers = getCommList(this.state.members);
       r = (
         <div className="AppContainer">
           <MemberList groupedMembers={groupedMembers} />

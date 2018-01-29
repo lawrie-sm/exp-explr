@@ -184,13 +184,17 @@ function getMembers(selectedDate, coreData) {
         let role =
         coreData.committeeroles.find((r) => r.ID == cr.CommitteeRoleID).Name;
         let committee = coreData.committees.find((comm) => {
-          return (comm.ID == cr.CommitteeID &&
-            isBetweenSPDates(selectedDate, cr.ValidFromDate, cr.ValidUntilDate));
+          return (
+              comm.ID == cr.CommitteeID &&
+              isBetweenSPDates(selectedDate, cr.ValidFromDate, cr.ValidUntilDate) &&
+              // Extra level of validation - check the committee itself is valid
+              isBetweenSPDates(selectedDate, comm.ValidFromDate, comm.ValidUntilDate)
+            );
+            
         });
-
         if (role && committee) {
           if (!member.committees) member.committees = [];
-          member.committees.push({ role, name: committee.Name, ID: committee.ID });
+          member.committees.push({ role, name: committee.Name, abbreviation: committee.ShortName, ID: committee.ID });
         }
       });
     }
@@ -205,8 +209,12 @@ function getMembers(selectedDate, coreData) {
         let role =
         coreData.crosspartygrouproles.find((r) => r.ID == cpgr.CrossPartyGroupRoleID).Name;
         let cpg = coreData.crosspartygroups.find((grp) => {
-          return (grp.ID == cpgr.CrossPartyGroupID &&
-            isBetweenSPDates(selectedDate, cpgr.ValidFromDate, cpgr.ValidUntilDate));
+          return (
+            grp.ID == cpgr.CrossPartyGroupID &&
+            isBetweenSPDates(selectedDate, cpgr.ValidFromDate, cpgr.ValidUntilDate) &&
+            // Extra level of validation - check the CPG itself is valid
+            isBetweenSPDates(selectedDate, grp.ValidFromDate, grp.ValidUntilDate)
+          );
         });
         if (role && cpg) {
           if (!member.cpgs) member.cpgs = [];

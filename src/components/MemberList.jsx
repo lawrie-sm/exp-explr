@@ -9,7 +9,6 @@ import List, { ListItem, ListItemText, ListSubheader } from 'material-ui/List';
 import ExpansionPanel, { ExpansionPanelSummary, ExpansionPanelDetails } from 'material-ui/ExpansionPanel';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Typography from 'material-ui/Typography';
-import Divider from 'material-ui/Divider';
 
 const styles = theme => ({
   root: {
@@ -25,24 +24,22 @@ const styles = theme => ({
   },
 });
 
-const MemberListItem = ({ member }) => (
+const MemberListItem = ({ memberInfo }) => (
   <ListItem button>
-    <ListItemText primary={member.name} />
+    <ListItemText primary={memberInfo.member.name} secondary={memberInfo.role} />
   </ListItem>
 );
 
 const SubList = ({ subList }) => {
-  const memberItems = subList.members.map((m) =>
-    <MemberListItem key={m.ID} member={m} />);
+  const memberItems = subList.memberInfos.map((mi) =>
+    <MemberListItem key={mi.member.ID} memberInfo={mi} />);
   return (
     <ExpansionPanel>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography className={subList.ID}>{subList.name}</Typography>
+        <Typography className={subList.name}>{subList.name}</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <List>
-          {memberItems}
-        </List>
+        <List> {memberItems} </List>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
