@@ -260,10 +260,17 @@ function getMembers(selectedDate, coreData) {
       return (r.PersonID == member.ID &&
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
+
+    // *******************************************
+    // TODO: Sort by date and ensure, if there are duplicates
+    // only the most recent is used.
+    // Also do renaming.
+    // *******************************************
+
     if (cpgRoles && cpgRoles.length > 0) {
       cpgRoles.forEach((cpgr) => {
         let role =
-        coreData.crosspartygrouproles.find((r) => r.ID == cpgr.CrossPartyGroupRoleID).Name;
+        coreData.crosspartygrouproles.find((r) => r.ID == cpgr.CrossPartyGroupRoleID);
         let cpg = coreData.crosspartygroups.find((grp) => {
           return (
             grp.ID == cpgr.CrossPartyGroupID &&
@@ -274,8 +281,28 @@ function getMembers(selectedDate, coreData) {
         });
         if (role && cpg) {
           if (!member.cpgs) member.cpgs = [];
-          member.cpgs.push({ role, name: cpg.Name, ID: cpg.ID });
-        }
+          if (!member.cpgs.find((tCPG) => tCPG.ID === cpg.ID)) {
+            let newCPG = {
+              role: role.Name,
+              name: cpg.Name,
+              ID: cpg.ID
+            };
+            
+            let rank = 10;
+            const isConv = role.Name.search(/(convener)/gi) == -1 ? false : true;
+            const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
+            const isVice = role.Name.search(/(vice)/gi) == -1 ? false : true;
+            const isTreasurer = role.Name.search(/(treasurer)/gi) == -1 
+            const isSecretary = role.Name.search(/(secretary)/gi) == -1 ? false : true;
+            if (isConv && !isDeputy && !isVice) rank = 0;
+            else if (isConv && isDeputy) rank = 1;
+            else if (isConv && isVice) rank = 2;
+            else if (isTreasurer) rank = 3;
+            else if (isSecretary) rank = 4;
+            newCPG.rank = rank;
+            member.cpgs.push(newCPG);
+          }
+      }
       });
     }
   }

@@ -31,8 +31,10 @@ const MemberListItem = ({ memberInfo }) => (
 );
 
 const SubList = ({ subList }) => {
-  const memberItems = subList.memberInfos.map((mi) =>
-    <MemberListItem key={mi.member.ID} memberInfo={mi} />);
+  const memberItems = subList.memberInfos.map((mi) => {
+
+    return(<MemberListItem key={mi.member.ID} memberInfo={mi} />)
+  });
   return (
     <ExpansionPanel>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
