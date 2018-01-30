@@ -40,33 +40,30 @@ export function getPartyList(memberData, frontBenchOnly) {
   return partyList;
 }
 
-export function getCommList(memberData) {
-  const commList = [];
+export function getGroupList(memberData, groupToDisplay) {
+  let arrToSearch = '';
+  if (groupToDisplay === 'committee') arrToSearch = 'committees';
+  if (groupToDisplay === 'cpg') arrToSearch = 'cpgs';
+  const groupList = [];
   memberData.forEach((member) => {
-    if (member.committees && member.committees.length > 0) {
-      member.committees.forEach((mc) => {
-        const committee = commList.find((c) => c.ID === mc.ID);
+    if (member[arrToSearch] && member[arrToSearch].length > 0) {
+      member[arrToSearch].forEach((mc) => {
+        const group = groupList.find((c) => c.ID === mc.ID);
         const rank = mc.rank;
-        if (!committee) {
-          commList.push({
+        if (!group) {
+          groupList.push({
             name: mc.name,
             abbreviation: mc.abbreviation,
             ID: mc.ID,
             memberInfos: [{ member, roleTitle: mc.role, rank: mc.rank }],
           });
         } else {
-          committee.memberInfos.push({ member, roleTitle: mc.role, rank: mc.rank });
+          group.memberInfos.push({ member, roleTitle: mc.role, rank: mc.rank });
         }
       });
     }
   });
-  commList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
-  commList.forEach((cl) => cl.memberInfos.sort((a, b) => a.rank - b.rank));
-  return commList;
+  groupList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
+  groupList.forEach((cl) => cl.memberInfos.sort((a, b) => a.rank - b.rank));
+  return groupList;
 }
-
-/*
-getCPGList(members) {
-  
-}
-*/
