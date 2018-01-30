@@ -7,7 +7,7 @@
 
 // The default party list, contains all member grouped by largest party
 // Members within the list are sorted by rank
-export function getPartyList(memberData) {
+export function getPartyList(memberData, frontBenchOnly) {
   const partyList = [];
   memberData.forEach((member) => {
     const party = partyList.find((p) => p.ID === member.party.ID);
@@ -20,18 +20,21 @@ export function getPartyList(memberData) {
       roleTitle = member.party.role.title;
       rank = member.party.role.rank;
     }
-    if (!party) {
-      const newParty = {
-        name: member.party.name,
-        abbreviation: member.party.abbreviation,
-        ID: member.party.ID,
-        memberInfos: [{ member, roleTitle, rank }],
-      };
-      partyList.push(newParty);
-    } else {
-      party.memberInfos.push({ member, roleTitle, rank });
+    if ((frontBenchOnly && rank !== 10) || !frontBenchOnly) {
+      if (!party) {
+        const newParty = {
+          name: member.party.name,
+          abbreviation: member.party.abbreviation,
+          ID: member.party.ID,
+          memberInfos: [{ member, roleTitle, rank }],
+        };
+        partyList.push(newParty);
+      } else {
+        party.memberInfos.push({ member, roleTitle, rank });
+      }
     }
   });
+
   partyList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
   partyList.forEach((pl) => pl.memberInfos.sort((a, b) => a.rank - b.rank));
   return partyList;
@@ -64,9 +67,6 @@ export function getCommList(memberData) {
 
 /*
 getCPGList(members) {
-  
-}
-getFrontBenchList(members) {
   
 }
 */

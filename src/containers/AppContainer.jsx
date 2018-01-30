@@ -37,7 +37,7 @@ class AppContainer extends Component {
     if (this.state.selectedDate && this.state.members) {
 
       // Do some type picker check...
-      let groupedMembers = getCommList(this.state.members);
+      let groupedMembers = getPartyList(this.state.members, true);
       r = (
         <div className="AppContainer">
           <MemberList groupedMembers={groupedMembers} />
