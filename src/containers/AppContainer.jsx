@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
 import SelectorTabs from '../components/SelectorTabs';
+import SPDatePicker from '../components/SPDatePicker'
 import { getPartyList, getGroupList } from '../data/subLists';
 
 class AppContainer extends Component {
@@ -31,6 +32,17 @@ class AppContainer extends Component {
     });
   }
 
+  updateDate = (selectedDate) => {
+    console.log('Updating date')
+    const coreData = this.state.coreData;
+    const members = getMembers(selectedDate, coreData);
+    this.setState({
+      selectedDate,
+      coreData,
+      members,
+    });
+  }
+
   render() {
     let r = 'Loading...';
     if (this.state.selectedDate && this.state.members) {
@@ -39,6 +51,10 @@ class AppContainer extends Component {
       const cpgList = getGroupList(this.state.members, 'cpg');
       r = (
         <div className="AppContainer">
+          <SPDatePicker
+            selectedDate={this.state.selectedDate}
+            updateCallback={this.updateDate}
+          />
           <SelectorTabs
             partyList={partyList}
             commList={commList}
