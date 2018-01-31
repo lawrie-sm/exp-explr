@@ -199,7 +199,7 @@ function getMembers(selectedDate, coreData) {
       let rank = 10;
       let role = coreData.governmentroles.find((rn) => rn.ID == govtRole.GovernmentRoleID);
       if (role) {
-        const isPLO =  role.Name.search(/(liaison officer)/gi) == -1 ? false : true;
+        const isPLO = role.Name.search(/(liaison officer)/gi) == -1 ? false : true;
         const isMini = role.Name.search(/(minister)/gi) == -1 ? false : true;
         const isCabSec = role.Name.search(/(cabinet secretary)/gi) == -1 ? false : true;
         const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
@@ -261,30 +261,35 @@ function getMembers(selectedDate, coreData) {
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
 
-    // *******************************************
-    // TODO: Sort by date and ensure, if there are duplicates
-    // only the most recent is used.
-    // Also do renaming.
-    // *******************************************
-
     if (cpgRoles && cpgRoles.length > 0) {
-      cpgRoles.forEach((cpgr) => {
+      // CPG roles appear to contain duplicates
+      // Sort by date so we are adding the latest ones first and can check for dupes
+      cpgRoles.sort((a, b) => parseSPDate(b.ValidFromDate) - parseSPDate(a.ValidFromDate));
+      cpgRoles.forEach((cpgRole) => {
         let role =
-        coreData.crosspartygrouproles.find((r) => r.ID == cpgr.CrossPartyGroupRoleID);
+        coreData.crosspartygrouproles.find((r) => r.ID == cpgRole.CrossPartyGroupRoleID);
         let cpg = coreData.crosspartygroups.find((grp) => {
           return (
-            grp.ID == cpgr.CrossPartyGroupID &&
-            isBetweenSPDates(selectedDate, cpgr.ValidFromDate, cpgr.ValidUntilDate) &&
+            grp.ID == cpgRole.CrossPartyGroupID &&
+            isBetweenSPDates(selectedDate, cpgRole.ValidFromDate, cpgRole.ValidUntilDate) &&
             // Extra level of validation - check the CPG itself is valid
             isBetweenSPDates(selectedDate, grp.ValidFromDate, grp.ValidUntilDate)
           );
         });
         if (role && cpg) {
           if (!member.cpgs) member.cpgs = [];
-          if (!member.cpgs.find((tCPG) => tCPG.ID === cpg.ID)) {
+          // Check we haven't had this one before
+          // Because the role list is sorted, we get the latest ones first
+          let dupeCPGRole = member.cpgs.find((mcpg) => mcpg.ID === cpg.ID);    
+          if (!dupeCPGRole) {
+          let name = cpg.Name;
+          let nameCap = /cross-party group in the scottish parliament on (\w.*)/gi;
+          let capArr = nameCap.exec(cpg.Name);
+          if (capArr && capArr[1]) name = capArr[1];
+          if (!name) name = cpg.Name;
             let newCPG = {
               role: role.Name,
-              name: cpg.Name,
+              name,
               ID: cpg.ID
             };
             
@@ -302,7 +307,7 @@ function getMembers(selectedDate, coreData) {
             newCPG.rank = rank;
             member.cpgs.push(newCPG);
           }
-      }
+        }
       });
     }
   }
