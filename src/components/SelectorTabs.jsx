@@ -40,7 +40,6 @@ class SelectorTabs extends React.Component {
   };
 
   render() {
-    console.log('Tab rerender')
     const { classes, theme } = this.props;
     
     return (

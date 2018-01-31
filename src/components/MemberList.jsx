@@ -24,41 +24,47 @@ const styles = theme => ({
   },
 });
 
-const MemberListItem = ({ memberInfo }) => (
-  <ListItem button>
-    <ListItemText primary={memberInfo.member.name} secondary={memberInfo.roleTitle} />
-  </ListItem>
-);
-
-// TODO: These should check to see if the props have actually
-// changed rather than rerendering each time they get list values
-
-const SubList = ({ subList }) => {
-  console.log('sublist rerender')
-  const memberItems = subList.memberInfos.map((mi) => {
-    return (<MemberListItem key={mi.member.ID} memberInfo={mi} />)
-  });
-  return (
-    <ExpansionPanel>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography className={subList.name}>{subList.name}</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <List> {memberItems} </List>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  );
+class MemberListItem extends React.PureComponent {
+  render() {
+    return (
+      <ListItem button>
+        <ListItemText
+          primary={this.props.memberInfo.member.name}
+          secondary={this.props.memberInfo.roleTitle} 
+        />
+      </ListItem>
+    );
+  }
 };
 
-const MemberList = ({ groupedMembers }) => {
-  console.log('memberlist rerender')
-  const subLists = groupedMembers.map((s) =>
-    <SubList key={s.ID} subList={s} />);
-  return (
-    <div className="MemberList">
-      {subLists}
-    </div>
-  );
-};
+class SubList extends React.PureComponent {
+  render() {
+    const memberItems = this.props.subList.memberInfos.map((mi) => {
+      return (<MemberListItem key={mi.member.ID} memberInfo={mi} />)
+    });
+    return (
+      <ExpansionPanel>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography className={this.props.subList.name}>{this.props.subList.name}</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <List> {memberItems} </List>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    )
+  }
+}
+
+class MemberList extends React.PureComponent {
+  render() {
+    const subLists = this.props.groupedMembers.map((s) =>
+      <SubList key={s.ID} subList={s} />);
+    return (
+      <div className="MemberList">
+        {subLists}
+      </div>
+    );
+  }
+}
 
 export default withStyles(styles)(MemberList);
