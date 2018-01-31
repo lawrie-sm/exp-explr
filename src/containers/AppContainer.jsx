@@ -4,9 +4,9 @@
 */
 
 import React, { Component } from 'react';
-import MemberList from '../components/MemberList';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
+import SelectorTabs from '../components/SelectorTabs';
 import { getPartyList, getGroupList } from '../data/subLists';
 
 class AppContainer extends Component {
@@ -28,18 +28,22 @@ class AppContainer extends Component {
         coreData,
         members,
       });
-      console.log(this.state);
     });
   }
 
   render() {
     let r = 'Loading...';
     if (this.state.selectedDate && this.state.members) {
-      // Do some type picker check...
-      let groupedMembers = getPartyList(this.state.members);
+      const partyList = getPartyList(this.state.members);
+      const commList = getGroupList(this.state.members, 'committee');
+      const cpgList = getGroupList(this.state.members, 'cpg');
       r = (
         <div className="AppContainer">
-          <MemberList groupedMembers={groupedMembers} />
+          <SelectorTabs
+            partyList={partyList}
+            commList={commList}
+            cpgList={cpgList}
+          />
         </div>
       );
     }

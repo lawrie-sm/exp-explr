@@ -30,10 +30,13 @@ const MemberListItem = ({ memberInfo }) => (
   </ListItem>
 );
 
-const SubList = ({ subList }) => {
-  const memberItems = subList.memberInfos.map((mi) => {
+// TODO: These should check to see if the props have actually
+// changed rather than rerendering each time they get list values
 
-    return(<MemberListItem key={mi.member.ID} memberInfo={mi} />)
+const SubList = ({ subList }) => {
+  console.log('sublist rerender')
+  const memberItems = subList.memberInfos.map((mi) => {
+    return (<MemberListItem key={mi.member.ID} memberInfo={mi} />)
   });
   return (
     <ExpansionPanel>
@@ -48,6 +51,7 @@ const SubList = ({ subList }) => {
 };
 
 const MemberList = ({ groupedMembers }) => {
+  console.log('memberlist rerender')
   const subLists = groupedMembers.map((s) =>
     <SubList key={s.ID} subList={s} />);
   return (

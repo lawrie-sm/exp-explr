@@ -65,6 +65,5 @@ export function getGroupList(memberData, groupToDisplay) {
   });
   groupList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
   groupList.forEach((cl) => cl.memberInfos.sort((a, b) => a.rank - b.rank));
-  console.log(groupList);
   return groupList;
 }
