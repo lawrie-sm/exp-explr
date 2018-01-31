@@ -35,9 +35,8 @@ class AppContainer extends Component {
   render() {
     let r = 'Loading...';
     if (this.state.selectedDate && this.state.members) {
-
       // Do some type picker check...
-      let groupedMembers = getGroupList(this.state.members, 'cpg');
+      let groupedMembers = getPartyList(this.state.members);
       r = (
         <div className="AppContainer">
           <MemberList groupedMembers={groupedMembers} />

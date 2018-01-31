@@ -1,11 +1,10 @@
 /*
   Called by the React app on startup and when the date is changed.
-  Returns a list of MSP objects for a given date.
-  Requires coreData from fetchCoreDataFromAPIs
+  Runs through the core data and processes it into an MSP list for
+  a given date. Requires coreData from fetchCoreDataFromAPIs.
 */
 
-// Linter currently disabled to suppress eqeqeq warnings
-
+// Linter disabled to suppress eqeqeq warnings (for ID strings/integers)
 /* eslint-disable */
 
 // Parses an SP formatted date into a js date
@@ -23,7 +22,7 @@ function parseSPDate(SPDate) {
 
 // Determines whether a js Date is between two SP Dates
 function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
-  let fromDate = parseSPDate(fromSPDate);
+  const fromDate = parseSPDate(fromSPDate);
   let untilDate = parseSPDate(untilSPDate);
   // Currently active statuses will have null expiry dates. Set to future.
   if (!untilDate) untilDate = new Date(9999, 0, 1);
@@ -32,7 +31,7 @@ function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
 
 // Main function
 function getMembers(selectedDate, coreData) {
-  let memberData = [];
+  const memberData = [];
 
   // Determine MSPs for the current date by looking through
   // election statuses. Store the location info while we go.
@@ -66,7 +65,7 @@ function getMembers(selectedDate, coreData) {
 
   // Should have the full 129 MSPs at this stage. Loop through using their personIDs
   for (let i = 0; i < memberData.length; i++) {
-    let member = memberData[i];
+    const member = memberData[i];
 
     // Get basic info, such as names and DOBs
     const basicMemberData = coreData.members.find((m) => m.PersonID == member.ID);
@@ -139,31 +138,31 @@ function getMembers(selectedDate, coreData) {
     });
     const partyMembership = partyMemberships.find((m) => m.PersonID == member.ID);
     if (partyMembership) {
-      let memberParty = coreData.parties.find((p) => p.ID == partyMembership.PartyID);
+      const memberParty = coreData.parties.find((p) => p.ID == partyMembership.PartyID);
       member.party = {};
       member.party.name = memberParty.ActualName;
       member.party.abbreviation = memberParty.Abbreviation;
       member.party.ID = memberParty.ID;
       // Roles with multiple portfolios are listed separately with idential names in notes
       // We will dispense with the inconsistent notes and rely on the internal portfolio listings
-      let roles = coreData.memberpartyroles.filter((r) => {
+      const roles = coreData.memberpartyroles.filter((r) => {
         return (r.MemberPartyID === partyMembership.ID &&
           isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
       });
       // Party members can have any number of roles of various ranks
       // Only storing the highest rank in each case
       // 0 = Ldr, 1 = Deputy Ldr, 2 = Spox, 3 = Deputy Spox
-      let role = {};
+      const role = {};
       role.title = '';
       role.rank = 10;
       if (roles && roles.length > 0) {
         role.portfolios = [];
         roles.forEach((r) => {
           const newRole = coreData.partyroles.find((pr) => pr.ID == r.PartyRoleTypeID);
-          const isLeader = newRole.Name.search(/leader/gi) == -1 ? false : true;
-          const isDeputy = newRole.Name.search(/deputy/gi) == -1 ? false : true;
+          const isLeader = newRole.Name.search(/leader/gi) !== -1;
+          const isDeputy = newRole.Name.search(/deputy/gi) !== -1;
           const captureRole = /(party spokesperson on the |party spokesperson on )(.*)/gi;
-          const capRole = captureRole.exec(newRole.Name);  
+          const capRole = captureRole.exec(newRole.Name);
           if (capRole) role.portfolios.push(capRole[2]);
           if (isLeader && !isDeputy) role.rank = 0;
           else if (isLeader && isDeputy && role.rank > 1) role.rank = 1;
@@ -197,13 +196,13 @@ function getMembers(selectedDate, coreData) {
     if (govtRole) {
       let title = '';
       let rank = 10;
-      let role = coreData.governmentroles.find((rn) => rn.ID == govtRole.GovernmentRoleID);
+      const role = coreData.governmentroles.find((rn) => rn.ID == govtRole.GovernmentRoleID);
       if (role) {
-        const isPLO = role.Name.search(/(liaison officer)/gi) == -1 ? false : true;
-        const isMini = role.Name.search(/(minister)/gi) == -1 ? false : true;
-        const isCabSec = role.Name.search(/(cabinet secretary)/gi) == -1 ? false : true;
-        const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
-        const isFM = role.Name.search(/(first minister)/gi) == -1 ? false : true;
+        const isPLO = role.Name.search(/(liaison officer)/gi) !== -1;
+        const isMini = role.Name.search(/(minister)/gi) !== -1;
+        const isCabSec = role.Name.search(/(cabinet secretary)/gi) !== -1;
+        const isDeputy = role.Name.search(/(deputy)/gi) !== -1;
+        const isFM = role.Name.search(/(first minister)/gi) !== -1;
         // Ignore PLOs
         if (!isPLO) {
           title = role.Name;
@@ -211,10 +210,10 @@ function getMembers(selectedDate, coreData) {
           else if (isFM && isDeputy) rank = 1;
           else if (isCabSec) rank = 2;
           else if (isMini) rank = 3;
+        }
+        member.govtRole = { title, rank };
       }
-      member.govtRole = { title, rank };
     }
-  }
 
     // Committees
     const commRoles = coreData.personcommitteeroles.filter((r) => {
@@ -223,9 +222,9 @@ function getMembers(selectedDate, coreData) {
     });
     if (commRoles && commRoles.length > 0) {
       commRoles.forEach((cr) => {
-        let role =
+        const role =
         coreData.committeeroles.find((r) => r.ID == cr.CommitteeRoleID);
-        let committee = coreData.committees.find((comm) => {
+        const committee = coreData.committees.find((comm) => {
           return (
             comm.ID == cr.CommitteeID &&
               isBetweenSPDates(selectedDate, cr.ValidFromDate, cr.ValidUntilDate) &&
@@ -235,7 +234,7 @@ function getMembers(selectedDate, coreData) {
         });
         if (role && committee) {
           if (!member.committees) member.committees = [];
-          let newComm = {
+          const newComm = {
             role: role.Name,
             name: committee.Name,
             abbreviation: committee.ShortName,
@@ -243,9 +242,9 @@ function getMembers(selectedDate, coreData) {
           };
           // Rank the committee memberships
           let rank = 10;
-          const isConv = role.Name.search(/(convener)/gi) == -1 ? false : true;
-          const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
-          const isSub = role.Name.search(/(substitute)/gi) == -1 ? false : true;
+          const isConv = role.Name.search(/(convener)/gi) !== -1;
+          const isDeputy = role.Name.search(/(deputy)/gi) !== -1;
+          const isSub = role.Name.search(/(substitute)/gi) !== -1;
           if (isConv && !isDeputy) rank = 0;
           else if (isConv && isDeputy) rank = 1;
           else if (!isSub) rank = 2;
@@ -260,15 +259,14 @@ function getMembers(selectedDate, coreData) {
       return (r.PersonID == member.ID &&
         isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
-
     if (cpgRoles && cpgRoles.length > 0) {
       // CPG roles appear to contain duplicates
       // Sort by date so we are adding the latest ones first and can check for dupes
       cpgRoles.sort((a, b) => parseSPDate(b.ValidFromDate) - parseSPDate(a.ValidFromDate));
       cpgRoles.forEach((cpgRole) => {
-        let role =
+        const role =
         coreData.crosspartygrouproles.find((r) => r.ID == cpgRole.CrossPartyGroupRoleID);
-        let cpg = coreData.crosspartygroups.find((grp) => {
+        const cpg = coreData.crosspartygroups.find((grp) => {
           return (
             grp.ID == cpgRole.CrossPartyGroupID &&
             isBetweenSPDates(selectedDate, cpgRole.ValidFromDate, cpgRole.ValidUntilDate) &&
@@ -280,25 +278,24 @@ function getMembers(selectedDate, coreData) {
           if (!member.cpgs) member.cpgs = [];
           // Check we haven't had this one before
           // Because the role list is sorted, we get the latest ones first
-          let dupeCPGRole = member.cpgs.find((mcpg) => mcpg.ID === cpg.ID);    
+          const dupeCPGRole = member.cpgs.find((mcpg) => mcpg.ID === cpg.ID);
           if (!dupeCPGRole) {
-          let name = cpg.Name;
-          let nameCap = /cross-party group in the scottish parliament on (\w.*)/gi;
-          let capArr = nameCap.exec(cpg.Name);
-          if (capArr && capArr[1]) name = capArr[1];
-          if (!name) name = cpg.Name;
-            let newCPG = {
+            let cpgName = cpg.Name;
+            const nameCap = /cross-party group in the scottish parliament on (\w.*)/gi;
+            const capArr = nameCap.exec(cpg.Name);
+            if (capArr && capArr[1]) cpgName = capArr[1];
+            if (!cpgName) cpgName = cpg.Name;
+            const newCPG = {
               role: role.Name,
-              name,
-              ID: cpg.ID
+              name: cpgName,
+              ID: cpg.ID,
             };
-            
             let rank = 10;
-            const isConv = role.Name.search(/(convener)/gi) == -1 ? false : true;
-            const isDeputy = role.Name.search(/(deputy)/gi) == -1 ? false : true;
-            const isVice = role.Name.search(/(vice)/gi) == -1 ? false : true;
-            const isTreasurer = role.Name.search(/(treasurer)/gi) == -1 
-            const isSecretary = role.Name.search(/(secretary)/gi) == -1 ? false : true;
+            const isConv = role.Name.search(/(convener)/gi) !== -1;
+            const isDeputy = role.Name.search(/(deputy)/gi) !== -1;
+            const isVice = role.Name.search(/(vice)/gi) !== -1;
+            const isTreasurer = role.Name.search(/(treasurer)/gi) !== -1;
+            const isSecretary = role.Name.search(/(secretary)/gi) !== -1;
             if (isConv && !isDeputy && !isVice) rank = 0;
             else if (isConv && isDeputy) rank = 1;
             else if (isConv && isVice) rank = 2;
