@@ -1,5 +1,4 @@
 import React, { Fragment, Component } from 'react';
-import { Typography } from 'material-ui';
 import { withStyles } from 'material-ui/styles';
 import { TimePicker, DatePicker } from 'material-ui-pickers';
 
@@ -28,9 +27,6 @@ class SPDatePicker extends Component {
     const maxdate = new Date();
     return (
       <div className="SPDatePicker">
-        <Typography type="button">
-          Date
-        </Typography>
         <DatePicker
           keyboard
           clearable

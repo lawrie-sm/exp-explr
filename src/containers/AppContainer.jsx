@@ -5,6 +5,7 @@
 
 import React, { Component } from 'react';
 import Grid from 'material-ui/Grid';
+import { Typography } from 'material-ui';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
 import SelectorTabs from '../components/SelectorTabs';
@@ -55,6 +56,11 @@ class AppContainer extends Component {
       r = (
         <div className="AppContainer">
           <Grid container spacing={24}>
+            <Grid item xs={6}>
+              <Typography type="display1" align="center">
+                <span className="MainHeading">msp-data</span>
+              </Typography>
+            </Grid>
             <Grid item xs={6}>
               <SPDatePicker
                 selectedDate={this.state.selectedDate}

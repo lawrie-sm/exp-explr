@@ -21,7 +21,6 @@ function TabContainer({ children, dir }) {
 const styles = theme => ({
   root: {
     backgroundColor: theme.palette.background.paper,
-    width: 500,
   },
 });
 
@@ -50,6 +49,7 @@ class SelectorTabs extends React.Component {
             indicatorColor="primary"
             textColor="primary"
             fullWidth
+            centered
           >
             <Tab label="Party" />
             <Tab label="Committee" />
