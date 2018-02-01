@@ -16,24 +16,31 @@ class SPDatePicker extends Component {
   }
 
   handleDateChange = (date) => {
+    console.log(this.props);
     this.setState({ selectedDate: date });
-    this.props.updateCallback(date);
+    this.props.updateDate(date);
   }
 
   render() {
     const { selectedDate } = this.state;
+    // Setting the min and max dates to first election and present day
+    const minDate = new Date(1999, 4, 7);
+    const maxdate = new Date();
     return (
-      <Fragment>
-        <div className="picker">
-          <DatePicker
-            keyboard
-            clearable
-            value={selectedDate}
-            onChange={this.handleDateChange}
-            animateYearScrolling={false}
-          />
-        </div>
-      </Fragment>
+      <div className="SPDatePicker">
+        <Typography type="button">
+          Date
+        </Typography>
+        <DatePicker
+          keyboard
+          clearable
+          value={selectedDate}
+          onChange={this.handleDateChange}
+          animateYearScrolling={false}
+          minDate={minDate}
+          maxDate={maxdate}
+        />
+      </div>
     );
   }
 }
