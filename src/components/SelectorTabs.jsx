@@ -2,7 +2,6 @@
   The tab selecter for Party/Front Bench/Committee/CPG
 */
 
-
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 import SwipeableViews from 'react-swipeable-views';

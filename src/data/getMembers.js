@@ -198,7 +198,7 @@ function getMembers(selectedDate, coreData) {
       let rank = 10;
       const role = coreData.governmentroles.find((rn) => rn.ID == govtRole.GovernmentRoleID);
       if (role) {
-        const isPLO = role.Name.search(/(liaison officer)/gi) !== -1;
+        const isPLO = role.Name.search(/(liaison officer|parliamentary aide)/gi) !== -1;
         const isMini = role.Name.search(/(minister)/gi) !== -1;
         const isCabSec = role.Name.search(/(cabinet secretary)/gi) !== -1;
         const isDeputy = role.Name.search(/(deputy)/gi) !== -1;
@@ -281,10 +281,14 @@ function getMembers(selectedDate, coreData) {
           const dupeCPGRole = member.cpgs.find((mcpg) => mcpg.ID === cpg.ID);
           if (!dupeCPGRole) {
             let cpgName = cpg.Name;
-            const nameCap = /cross-party group in the scottish parliament on (\w.*)/gi;
+            const nameCap =/cross-party group in the scottish parliament on (\w.*)/gi;
             const capArr = nameCap.exec(cpg.Name);
             if (capArr && capArr[1]) cpgName = capArr[1];
             if (!cpgName) cpgName = cpg.Name;
+            if (cpgName.substring(0,4) === 'the ') {
+              console.log(cpgName)
+              cpgName = cpgName.slice(4, cpgName.length);
+            }
             const newCPG = {
               role: role.Name,
               name: cpgName,
