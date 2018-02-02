@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /*
   Called by the React app on startup and when the date is changed.
   Runs through the core data and processes it into an MSP list for
@@ -7,26 +9,16 @@
 // Linter disabled to suppress eqeqeq warnings (for ID strings/integers)
 /* eslint-disable */
 
-// Parses an SP formatted date into a js date
-// YYYY-MM-DDThh:mm:ss. Months are not zero indexed
+// Parses an SP formatted date (ISO 8601)
 function parseSPDate(SPDate) {
-  if (SPDate) {
-    const dateRegex = /(\d*)-(\d*)-(\d*)/g;
-    const matches = dateRegex.exec(SPDate);
-    const year = parseInt(matches[1], 10);
-    const month = parseInt(matches[2], 10) - 1;
-    const day = parseInt(matches[3], 10);
-    return new Date(year, month, day);
-  } return SPDate;
+  if (SPDate) return (moment(SPDate, moment.ISO_8601));
+  return SPDate;
 }
 
-// Determines whether a js Date is between two SP Dates
-function isBetweenSPDates(selectedDate, fromSPDate, untilSPDate) {
-  const fromDate = parseSPDate(fromSPDate);
-  let untilDate = parseSPDate(untilSPDate);
-  // Currently active statuses will have null expiry dates. Set to future.
-  if (!untilDate) untilDate = new Date(9999, 0, 1);
-  return (selectedDate < untilDate && selectedDate > fromDate);
+function isBetweenDates(selectedDate, fromSPDate, untilSPDate) {
+  // Currently active statuses may have null expiry dates.
+  if (!untilSPDate) untilSPDate = new moment();
+  return (selectedDate.isBetween(fromSPDate, untilSPDate));
 }
 
 // Main function
@@ -37,11 +29,11 @@ function getMembers(selectedDate, coreData) {
   // election statuses. Store the location info while we go.
   const cStatuses =
   coreData.MemberElectionConstituencyStatuses.filter((s) => {
-    return isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate);
+    return isBetweenDates(selectedDate, s.ValidFromDate, s.ValidUntilDate);
   });
   const rStatuses =
   coreData.MemberElectionregionStatuses.filter((s) => {
-    return isBetweenSPDates(selectedDate, s.ValidFromDate, s.ValidUntilDate);
+    return isBetweenDates(selectedDate, s.ValidFromDate, s.ValidUntilDate);
   });
   // Constituencies
   cStatuses.forEach((s) => {
@@ -134,7 +126,7 @@ function getMembers(selectedDate, coreData) {
 
     // Parties & Party Roles
     const partyMemberships = coreData.memberparties.filter((m) => {
-      return isBetweenSPDates(selectedDate, m.ValidFromDate, m.ValidUntilDate);
+      return isBetweenDates(selectedDate, m.ValidFromDate, m.ValidUntilDate);
     });
     const partyMembership = partyMemberships.find((m) => m.PersonID == member.ID);
     if (partyMembership) {
@@ -147,7 +139,7 @@ function getMembers(selectedDate, coreData) {
       // We will dispense with the inconsistent notes and rely on the internal portfolio listings
       const roles = coreData.memberpartyroles.filter((r) => {
         return (r.MemberPartyID === partyMembership.ID &&
-          isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+          isBetweenDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
       });
       // Party members can have any number of roles of various ranks
       // Only storing the highest rank in each case
@@ -190,7 +182,7 @@ function getMembers(selectedDate, coreData) {
     // Government Role
     const govtRole = coreData.membergovernmentroles.find((r) => {
       return (r.PersonID == member.ID &&
-        isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+        isBetweenDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
     // Government roles are similarly ranked. Only one role per MSP.
     if (govtRole) {
@@ -218,7 +210,7 @@ function getMembers(selectedDate, coreData) {
     // Committees
     const commRoles = coreData.personcommitteeroles.filter((r) => {
       return (r.PersonID == member.ID &&
-        isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+        isBetweenDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
     if (commRoles && commRoles.length > 0) {
       commRoles.forEach((cr) => {
@@ -227,9 +219,9 @@ function getMembers(selectedDate, coreData) {
         const committee = coreData.committees.find((comm) => {
           return (
             comm.ID == cr.CommitteeID &&
-              isBetweenSPDates(selectedDate, cr.ValidFromDate, cr.ValidUntilDate) &&
+              isBetweenDates(selectedDate, cr.ValidFromDate, cr.ValidUntilDate) &&
               // Extra level of validation - check the committee itself is valid
-              isBetweenSPDates(selectedDate, comm.ValidFromDate, comm.ValidUntilDate)
+              isBetweenDates(selectedDate, comm.ValidFromDate, comm.ValidUntilDate)
           );
         });
         if (role && committee) {
@@ -257,7 +249,7 @@ function getMembers(selectedDate, coreData) {
     // CPGs
     const cpgRoles = coreData.membercrosspartyroles.filter((r) => {
       return (r.PersonID == member.ID &&
-        isBetweenSPDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
+        isBetweenDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
     if (cpgRoles && cpgRoles.length > 0) {
       // CPG roles appear to contain duplicates
@@ -269,9 +261,9 @@ function getMembers(selectedDate, coreData) {
         const cpg = coreData.crosspartygroups.find((grp) => {
           return (
             grp.ID == cpgRole.CrossPartyGroupID &&
-            isBetweenSPDates(selectedDate, cpgRole.ValidFromDate, cpgRole.ValidUntilDate) &&
+            isBetweenDates(selectedDate, cpgRole.ValidFromDate, cpgRole.ValidUntilDate) &&
             // Extra level of validation - check the CPG itself is valid
-            isBetweenSPDates(selectedDate, grp.ValidFromDate, grp.ValidUntilDate)
+            isBetweenDates(selectedDate, grp.ValidFromDate, grp.ValidUntilDate)
           );
         });
         if (role && cpg) {
