@@ -1,27 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import { CircularProgress } from 'material-ui/Progress';
-import purple from 'material-ui/colors/purple';
+import { Loader } from 'semantic-ui-react';
 
-const styles = theme => ({
-  progress: {
-    margin: `100px auto`
-  },
-});
+const Spinner = () => (
+  <Loader size="huge" active />
+);
 
-function Spinner(props) {
-  const { classes } = props;
-  return (
-    <div>
-      <CircularProgress
-        className={classes.progress}
-        style={{ color: purple[500] }}
-        thickness={5}
-        size={75}
-      />
-    </div>
-  );
-}
-
-export default withStyles(styles)(Spinner);
+export default (Spinner);
