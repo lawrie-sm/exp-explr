@@ -15,9 +15,8 @@ class SPDatePicker extends Component {
   }
 
   handleDateChange = (date) => {
-    console.log(this.props);
     this.setState({ selectedDate: date });
-    this.props.updateDate(date);
+    this.props.handleDateUpdate(date);
   }
 
   render() {
@@ -26,19 +25,19 @@ class SPDatePicker extends Component {
     const minDate = new Date(1999, 4, 7);
     const maxdate = new Date();
     return (
-      <div className="SPDatePicker">
         <DatePicker
           keyboard
           clearable
+          returnMoment={false}
           value={selectedDate}
           onChange={this.handleDateChange}
           animateYearScrolling={false}
           minDate={minDate}
           maxDate={maxdate}
+          openToYearSelection={true}
         />
-      </div>
     );
   }
 }
 
-export default withStyles(styles, { withTheme: true })(SPDatePicker);
+export default (SPDatePicker);

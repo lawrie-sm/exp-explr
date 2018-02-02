@@ -5,20 +5,22 @@
 
 import React, { Component } from 'react';
 import Grid from 'material-ui/Grid';
+import { CircularProgress } from 'material-ui/Progress';
 import { Typography } from 'material-ui';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
 import SelectorTabs from '../components/SelectorTabs';
 import SPDatePicker from '../components/SPDatePicker';
 import { getPartyList, getGroupList } from '../data/subLists';
+import Spinner from '../components/Spinner';
 
 class AppContainer extends Component {
   constructor() {
     super();
-    this.updateDate = this.updateDate.bind(this);
+    this.handleDateUpdate = this.handleDateUpdate.bind(this);
     this.state = {
+      isLoading: true,
       selectedDate: undefined,
-      coreData: undefined,
       members: undefined,
     };
   }
@@ -28,32 +30,34 @@ class AppContainer extends Component {
     fetchCoreDataFromAPIs().then((coreData) => {
       const members = getMembers(selectedDate, coreData);
       this.setState({
+        isLoading: false,
         selectedDate,
-        coreData,
         members,
       });
     });
   }
 
-  updateDate(selectedDate) {
-    console.log('Updating date');
-    const coreData = this.state.coreData;
-    const members = getMembers(selectedDate, coreData);
-    this.setState({
-      selectedDate,
-      coreData,
-      members,
+  // Handles the click event on updating the date
+  // (We could cache coreData, but it's pretty big
+  // and we need all of it to cover all possible dates)
+  handleDateUpdate(selectedDate) {
+    this.setState({ isLoading: true });
+    fetchCoreDataFromAPIs().then((coreData) => {
+      const members = getMembers(selectedDate, coreData);
+      this.setState({
+        isLoading: false,
+        selectedDate,
+        members,
+      });
     });
   }
 
   render() {
-    let r = 'Loading...';
-    if (this.state.selectedDate && this.state.members) {
-      console.log(this.state);
+    if (!this.state.isLoading) {
       const partyList = getPartyList(this.state.members);
       const commList = getGroupList(this.state.members, 'committee');
       const cpgList = getGroupList(this.state.members, 'cpg');
-      r = (
+      return (
         <div className="AppContainer">
           <Grid container spacing={24}>
             <Grid item xs={6}>
@@ -64,7 +68,7 @@ class AppContainer extends Component {
             <Grid item xs={6}>
               <SPDatePicker
                 selectedDate={this.state.selectedDate}
-                updateDate={this.updateDate}
+                handleDateUpdate={this.handleDateUpdate}
               />
             </Grid>
             <Grid item xs={12}>
@@ -77,8 +81,9 @@ class AppContainer extends Component {
           </Grid>
         </div>
       );
-    }
-    return (r);
+    } return (
+      <Spinner />
+    );
   }
 }
 
