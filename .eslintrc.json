@@ -15,6 +15,7 @@
       "arrow-body-style": 1,
       "eqeqeq": 1,
       "prefer-destructuring": 1,
-      "class-methods-use-this": 0
+      "class-methods-use-this": 0,
+      "react/prefer-stateless-function": 0
   }
 }

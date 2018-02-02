@@ -2,7 +2,7 @@
  For layout purposes
 */
 
-import React, { Component } from 'react';
+import React from 'react';
 import SelectorTabs from './SelectorTabs';
 
 const AppBody = ({ partyData, commData, cpgData }) => (

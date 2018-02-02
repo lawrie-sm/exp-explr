@@ -1,35 +1,38 @@
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
-import SelectorTabContent from './SelectorTabContent';
+import SubListAccordions from './SubListAccordions';
 
 const SelectorTabs = ({ partyData, commData, cpgData }) => {
   const panes = [
     {
       menuItem: partyData.title,
-      render: () => (
-        <Tab.Pane>
-          <SelectorTabContent data={partyData.data} />
-        </Tab.Pane>
-      ),
+      pane: {
+        key: partyData.title,
+        content: <SubListAccordions subLists={partyData.data} />,
+      },
     },
     {
       menuItem: commData.title,
-      render: () => (
-        <Tab.Pane>
-          <SelectorTabContent data={commData.data} />
-        </Tab.Pane>
-      ),
+      pane: {
+        key: commData.title,
+        content: <SubListAccordions subLists={commData.data} />,
+      },
     },
     {
       menuItem: cpgData.title,
-      render: () => (
-        <Tab.Pane>
-          <SelectorTabContent data={cpgData.data} />
-        </Tab.Pane>
-      ),
+      pane: {
+        key: cpgData.title,
+        content: <SubListAccordions subLists={cpgData.data} />,
+      },
     },
   ];
-  return (<Tab menu={{ secondary: true, pointing: true }} panes={panes} />);
+  return (
+    <Tab
+      menu={{ secondary: true, pointing: true }}
+      panes={panes}
+      renderActiveOnly={false}
+    />
+  );
 };
 
 export default SelectorTabs;
