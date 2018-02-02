@@ -1,6 +1,6 @@
 /*
-  Container for the apps data.
-  Manages and updates the member list based on pickers.
+  Deals with high level state (loading) and stores data.
+  Manages and updates the member list based on date picker.
 */
 
 import React, { Component } from 'react';
@@ -8,7 +8,7 @@ import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
 import { getPartyList, getGroupList } from '../data/subLists';
 import Spinner from '../components/Spinner';
-import SelectorTabs from '../components/SelectorTabs';
+import AppBody from '../components/AppBody';
 
 class AppContainer extends Component {
   constructor() {
@@ -27,13 +27,13 @@ class AppContainer extends Component {
   setData(selectedDate, coreData) {
     const members = getMembers(selectedDate, coreData);
     const partyData = { title: 'Party', data: getPartyList(members) };
-    const committeeData = { title: 'Committee', data: getGroupList(members, 'committee') };
+    const commData = { title: 'Committee', data: getGroupList(members, 'committee') };
     const cpgData = { title: 'CPG', data: getGroupList(members, 'cpg') };
     this.setState({
       isLoading: false,
       selectedDate,
       partyData,
-      committeeData,
+      commData,
       cpgData,
     });
   }
@@ -52,7 +52,11 @@ class AppContainer extends Component {
       console.log(this.state);
       return (
         <div className="AppContainer">
-          <SelectorTabs />
+          <AppBody
+            partyData={this.state.partyData}
+            commData={this.state.commData}
+            cpgData={this.state.cpgData}
+          />
         </div>
       );
     } return (
