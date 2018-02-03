@@ -4,6 +4,9 @@
   Returns the APIs in a coreData array for processing by getMembers.
 */
 
+// Variable to cache the data
+let CORE_DATA;
+
 // This is the basic URL for all Parliamentary API calls
 const SP_API_ROOT = 'https://data.parliament.scot/api/';
 

@@ -23,6 +23,8 @@ function isBetweenDates(selectedDate, fromSPDate, untilSPDate) {
 
 // Main function
 function getMembers(selectedDate, coreData) {
+
+  
   const memberData = [];
 
   // Determine MSPs for the current date by looking through
@@ -55,8 +57,13 @@ function getMembers(selectedDate, coreData) {
     });
   });
 
+  console.log('Got Members...')
+  
   // Should have the full 129 MSPs at this stage. Loop through using their personIDs
   for (let i = 0; i < memberData.length; i++) {
+
+    console.log('...')
+
     const member = memberData[i];
 
     // Get basic info, such as names and DOBs
@@ -72,7 +79,7 @@ function getMembers(selectedDate, coreData) {
     // The name is reversed in SP data e.g "Bloggs, Joe"
     const name = basicMemberData.ParliamentaryName.split(',');
     member.name = `${name[1]} ${name[0]}`.trim();
-
+    
     // Get physical addresses
     const addresses = coreData.addresses.filter((m) => m.PersonID == member.ID);
     if (addresses && addresses.length > 0) {

@@ -15,46 +15,56 @@ import AppBody from '../components/AppBody';
 class AppContainer extends Component {
   constructor() {
     super();
-    this.handleDateUpdate = this.handleDateUpdate.bind(this);
+    this.dateUpdateCallback = this.dateUpdateCallback.bind(this);
     this.state = { isLoading: true };
   }
 
   componentDidMount() {
     const selectedDate = moment();
     fetchCoreDataFromAPIs().then((coreData) => {
-      this.setData(selectedDate, coreData);
+      this.setData(selectedDate, coreData).then((data) => {
+        this.setState(data);
+      });
     });
   }
 
   setData(selectedDate, coreData) {
-    const members = getMembers(selectedDate, coreData);
-    const partyData = { title: 'Party', data: getPartyList(members) };
-    const commData = { title: 'Committee', data: getGroupList(members, 'committee') };
-    const cpgData = { title: 'CPG', data: getGroupList(members, 'cpg') };
-    this.setState({
-      isLoading: false,
-      selectedDate,
-      partyData,
-      commData,
-      cpgData,
+    return new Promise((resolve, reject) => {
+      console.log('Got API data, processing members...')
+      const members = getMembers(selectedDate, coreData);
+      console.log('Processing groups...')
+      const partyData = { title: 'Party', data: getPartyList(members) };
+      const commData = { title: 'Committee', data: getGroupList(members, 'committee') };
+      const cpgData = { title: 'CPG', data: getGroupList(members, 'cpg') };
+      console.log('Setting state...')
+      resolve({
+        isLoading: false,
+        selectedDate,
+        partyData,
+        commData,
+        cpgData,
+      });
     });
   }
 
   // Handles the click event on updating the date
-  // (We could cache coreData, but it's pretty big
-  // and we need all of it to cover all possible dates)
-  handleDateUpdate(selectedDate) {
+  dateUpdateCallback(selectedDate) {
     this.setState({ isLoading: true });
     fetchCoreDataFromAPIs().then((coreData) => {
-      this.setData(selectedDate, coreData);
+      this.setData(selectedDate, coreData).then((data) => {
+        this.setState(data);
+      });
     });
   }
   render() {
     if (!this.state.isLoading) {
       console.log(this.state);
+
       return (
         <div className="AppContainer">
           <AppBody
+            selectedDate={this.state.selectedDate}
+            dateUpdateCallback={this.dateUpdateCallback}
             partyData={this.state.partyData}
             commData={this.state.commData}
             cpgData={this.state.cpgData}
