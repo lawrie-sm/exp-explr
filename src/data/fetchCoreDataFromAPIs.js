@@ -54,6 +54,7 @@ function get(url) {
 // Main promise for returning the data
 function fetchCoreDataFromAPIs() {
   return new Promise((resolve, reject) => {
+    // if (CORE_DATA) resolve(CORE_DATA);
     const promiseList = SP_APIS.map((endpoint) => {
       return get(`${SP_API_ROOT}${endpoint}`);
     });
@@ -62,6 +63,7 @@ function fetchCoreDataFromAPIs() {
       SP_APIS.forEach((endpoint, i) => {
         returnData[endpoint] = dataArr[i];
       });
+      // CORE_DATA = returnData;
       resolve(returnData);
     });
   });

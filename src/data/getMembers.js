@@ -24,7 +24,6 @@ function isBetweenDates(selectedDate, fromSPDate, untilSPDate) {
 // Main function
 function getMembers(selectedDate, coreData) {
 
-  
   const memberData = [];
 
   // Determine MSPs for the current date by looking through

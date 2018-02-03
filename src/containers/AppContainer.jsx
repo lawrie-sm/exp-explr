@@ -22,28 +22,21 @@ class AppContainer extends Component {
   componentDidMount() {
     const selectedDate = moment();
     fetchCoreDataFromAPIs().then((coreData) => {
-      this.setData(selectedDate, coreData).then((data) => {
-        this.setState(data);
-      });
+      this.setData(selectedDate, coreData);
     });
   }
 
   setData(selectedDate, coreData) {
-    return new Promise((resolve, reject) => {
-      console.log('Got API data, processing members...')
-      const members = getMembers(selectedDate, coreData);
-      console.log('Processing groups...')
-      const partyData = { title: 'Party', data: getPartyList(members) };
-      const commData = { title: 'Committee', data: getGroupList(members, 'committee') };
-      const cpgData = { title: 'CPG', data: getGroupList(members, 'cpg') };
-      console.log('Setting state...')
-      resolve({
-        isLoading: false,
-        selectedDate,
-        partyData,
-        commData,
-        cpgData,
-      });
+    const members = getMembers(selectedDate, coreData);
+    const partyData = { title: 'Party', data: getPartyList(members) };
+    const commData = { title: 'Committee', data: getGroupList(members, 'committee') };
+    const cpgData = { title: 'CPG', data: getGroupList(members, 'cpg') };
+    this.setState({
+      isLoading: false,
+      selectedDate,
+      partyData,
+      commData,
+      cpgData,
     });
   }
 
@@ -51,11 +44,10 @@ class AppContainer extends Component {
   dateUpdateCallback(selectedDate) {
     this.setState({ isLoading: true });
     fetchCoreDataFromAPIs().then((coreData) => {
-      this.setData(selectedDate, coreData).then((data) => {
-        this.setState(data);
-      });
+      this.setData(selectedDate, coreData);
     });
   }
+
   render() {
     if (!this.state.isLoading) {
       console.log(this.state);
