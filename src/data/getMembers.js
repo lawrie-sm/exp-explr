@@ -4,6 +4,9 @@ import moment from 'moment';
   Called by the React app on startup and when the date is changed.
   Runs through the core data and processes it into an MSP list for
   a given date. Requires coreData from fetchCoreDataFromAPIs.
+
+  This could probably be heavily optimised, but much of this should be
+  done by SQL on the backend.
 */
 
 // Linter disabled to suppress eqeqeq warnings (for ID strings/integers)
@@ -37,7 +40,8 @@ function getMembers(selectedDate, coreData) {
     return isBetweenDates(selectedDate, s.ValidFromDate, s.ValidUntilDate);
   });
   // Constituencies
-  cStatuses.forEach((s) => {
+  for (let i = 0; i < cStatuses.length; i++) {
+    const s = cStatuses[i];
     const constituency = coreData.constituencies.find((c) => c.ID == s.ConstituencyID);
     // eslint-disable-next-line
     const region = coreData.regions.find((r) => r.ID == constituency.RegionID);
@@ -46,15 +50,16 @@ function getMembers(selectedDate, coreData) {
       constituency: constituency.Name,
       region: region.Name,
     });
-  });
+  }
   // Regions
-  rStatuses.forEach((s) => {
+  for (let i = 0; i < rStatuses.length; i++) {
+    const s = rStatuses[i];
     const region = coreData.regions.find((r) => r.ID == s.RegionID);
     memberData.push({
       ID: s.PersonID,
       region: region.Name,
     });
-  });
+  }
 
   console.log('Got Members...')
   
@@ -84,7 +89,8 @@ function getMembers(selectedDate, coreData) {
     if (addresses && addresses.length > 0) {
       member.addresses = [];
       addresses.sort((a, b) => a.AddressTypeID < b.AddressTypeID);
-      addresses.forEach((address) => {
+      for (let i = 0; i < addresses.length; i++) {
+        const address = addresses[i];
         const newAddress = {};
         newAddress.type = coreData.addresstypes.find((a) => a.ID == address.AddressTypeID).Name;
         if (address.Line1) newAddress.line1 = address.Line1;
@@ -93,7 +99,7 @@ function getMembers(selectedDate, coreData) {
         if (address.Region) newAddress.region = address.Region;
         if (address.Town) newAddress.town = address.Town;
         member.addresses.push(newAddress);
-      });
+      }
     }
 
     // Get email addresses. Some addresses are hidden
@@ -102,7 +108,8 @@ function getMembers(selectedDate, coreData) {
     const emailAddresses = coreData.emailaddresses.filter((m) => m.PersonID == member.ID);
     if (emailAddresses && emailAddresses.length > 0) {
       emailAddresses.sort((a, b) => a.EmailAddressTypeID < b.EmailAddressTypeID);
-      emailAddresses.forEach((emailAddress) => {
+      for (let i = 0; i < emailAddresses.length; i++) {
+        const emailAddress = emailAddresses[i];
         if (emailAddress.Address) {
           if (!member.emailAddresses) member.emailAddresses = [];
           const newEmailAddress = {};
@@ -111,14 +118,15 @@ function getMembers(selectedDate, coreData) {
           newEmailAddress.address = emailAddress.Address;
           member.emailAddresses.push(newEmailAddress);
         }
-      });
+      }
     }
 
     // Get websites
     const websites = coreData.websites.filter((m) => m.PersonID == member.ID);
     if (websites && websites.length > 0) {
       websites.sort((a, b) => a.WebSiteTypeID < b.WebSiteTypeID);
-      websites.forEach((website) => {
+      for (let i = 0; i < websites.length; i++) {
+        const website = websites[i];
         if (website.WebURL) {
           if (!member.websites) member.websites = [];
           const newWebsite = {};
@@ -127,7 +135,7 @@ function getMembers(selectedDate, coreData) {
           newWebsite.url = website.WebURL;
           member.websites.push(newWebsite);
         }
-      });
+      }
     }
 
     // Parties & Party Roles
@@ -155,7 +163,8 @@ function getMembers(selectedDate, coreData) {
       role.rank = 10;
       if (roles && roles.length > 0) {
         role.portfolios = [];
-        roles.forEach((r) => {
+        for (let i = 0; i < roles.length; i++) {
+          const r = roles[i]
           const newRole = coreData.partyroles.find((pr) => pr.ID == r.PartyRoleTypeID);
           const isLeader = newRole.Name.search(/leader/gi) !== -1;
           const isDeputy = newRole.Name.search(/deputy/gi) !== -1;
@@ -166,7 +175,7 @@ function getMembers(selectedDate, coreData) {
           else if (isLeader && isDeputy && role.rank > 1) role.rank = 1;
           else if (!isLeader && isDeputy && role.rank > 3) role.rank = 3;
           else if (role.rank > 2 && capRole) role.rank = 2;
-        });
+        }
         // Build an appropriate title using the internal portfolios
         if (role.rank === 0 && role.portfolios.length < 1) {
           role.title = 'Party Leader';
@@ -219,7 +228,8 @@ function getMembers(selectedDate, coreData) {
         isBetweenDates(selectedDate, r.ValidFromDate, r.ValidUntilDate));
     });
     if (commRoles && commRoles.length > 0) {
-      commRoles.forEach((cr) => {
+      for (let i = 0; i < commRoles.length; i++) {
+        const cr = commRoles[i];
         const role =
         coreData.committeeroles.find((r) => r.ID == cr.CommitteeRoleID);
         const committee = coreData.committees.find((comm) => {
@@ -249,7 +259,7 @@ function getMembers(selectedDate, coreData) {
           newComm.rank = rank;
           member.committees.push(newComm);
         }
-      });
+      }
     }
 
     // CPGs
@@ -261,7 +271,8 @@ function getMembers(selectedDate, coreData) {
       // CPG roles appear to contain duplicates
       // Sort by date so we are adding the latest ones first and can check for dupes
       cpgRoles.sort((a, b) => parseSPDate(b.ValidFromDate) - parseSPDate(a.ValidFromDate));
-      cpgRoles.forEach((cpgRole) => {
+      for (let i = 0; i < cpgRoles.length; i++) {
+        const cpgRole = cpgRoles[i];
         const role =
         coreData.crosspartygrouproles.find((r) => r.ID == cpgRole.CrossPartyGroupRoleID);
         const cpg = coreData.crosspartygroups.find((grp) => {
@@ -307,7 +318,7 @@ function getMembers(selectedDate, coreData) {
             member.cpgs.push(newCPG);
           }
         }
-      });
+      }
     }
   }
   return (memberData);
