@@ -10,13 +10,15 @@ import getMembers from '../data/getMembers';
 import { getPartyList, getGroupList } from '../data/subLists';
 import Spinner from '../components/Spinner';
 import AppBody from '../components/AppBody';
+import MemberModal from '../components/MemberModal';
 
 
 class AppContainer extends Component {
   constructor() {
     super();
     this.dateUpdateCallback = this.dateUpdateCallback.bind(this);
-    this.state = { isLoading: true };
+    this.openModalCallback = this.openModalCallback.bind(this);
+    this.state = { isLoading: true, modalIsOpen: false };
   }
 
   componentDidMount() {
@@ -27,13 +29,15 @@ class AppContainer extends Component {
   }
 
   setData(selectedDate, coreData) {
-    const members = getMembers(selectedDate, coreData);
-    const partyData = { title: 'Party', data: getPartyList(members) };
-    const commData = { title: 'Committee', data: getGroupList(members, 'committee') };
-    const cpgData = { title: 'CPG', data: getGroupList(members, 'cpg') };
+    const memberData = getMembers(selectedDate, coreData);
+    const partyData = { title: 'Party', data: getPartyList(memberData) };
+    const commData = { title: 'Committee', data: getGroupList(memberData, 'committee') };
+    const cpgData = { title: 'CPG', data: getGroupList(memberData, 'cpg') };
     this.setState({
       isLoading: false,
+      modalIsOpen: false,
       selectedDate,
+      memberData,
       partyData,
       commData,
       cpgData,
@@ -48,15 +52,24 @@ class AppContainer extends Component {
     });
   }
 
+  openModalCallback(mspID) {
+    console.log('Opened');
+    this.setState({ modalIsOpen: true });
+  }
+
   render() {
     if (!this.state.isLoading) {
       console.log(this.state);
 
       return (
         <div className="AppContainer">
+          <MemberModal
+            modalIsOpen={this.state.modalIsOpen}
+          />
           <AppBody
             selectedDate={this.state.selectedDate}
             dateUpdateCallback={this.dateUpdateCallback}
+            openModalCallback={this.openModalCallback}
             partyData={this.state.partyData}
             commData={this.state.commData}
             cpgData={this.state.cpgData}

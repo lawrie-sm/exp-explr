@@ -4,6 +4,8 @@
   a given date. Requires coreData from fetchCoreDataFromAPIs.
 */
 
+/* eslint-disable */
+
 import moment from 'moment';
 
 // Parses an SP formatted date (ISO 8601)
@@ -344,3 +346,5 @@ function getMembers(selectedDate, coreData) {
 }
 
 export default getMembers;
+
+/* eslint-enable */

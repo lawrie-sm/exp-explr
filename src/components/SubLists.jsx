@@ -7,12 +7,13 @@ import { Accordion, Icon } from 'semantic-ui-react';
 import MemberList from './MemberList';
 
 class SubLists extends Component {
+
   render() {
     const subListPanels = this.props.subLists.map((subList) => {
       return ({
         title: subList.name,
         content: {
-          content: <MemberList memberInfos={subList.memberInfos} />,
+          content: <MemberList memberInfos={subList.memberInfos} openModalCallback={this.props.openModalCallback} />,
           key: subList.ID,
         },
       });
