@@ -35,7 +35,6 @@ class MemberModal extends React.Component {
             </Modal.Description>
           </Modal.Content>
         </Modal>
-      
     );
   }
 }
