@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Modal, Transition } from 'semantic-ui-react';
+import { Header, Modal, Image, Transition } from 'semantic-ui-react';
 import MemberModalContent from './MemberModalContent';
 
 // Make this a controlled modal class with
@@ -18,14 +18,30 @@ class MemberModal extends React.Component {
   }
 
   render() {
+    const member = this.props.selectedMember;
+    if (!member) return <Modal open={this.props.modalIsOpen} onClose={this.onClose} />
+    console.log(member);
+    const title = member.party.name;
+    let location = member.region;
+    if (member.constituency) location = `${member.constituency}, ${member.region}`;
     return (
-      <Transition visible={this.props.modalIsOpen} animation='scale' duration={250}>
         <Modal open={this.props.modalIsOpen} onClose={this.onClose}>
-          <MemberModalContent selectedMember={this.props.selectedMember} />
+          <Modal.Content image>
+          <Image wrapped size='medium' src='http://via.placeholder.com/480x480' />
+            <Modal.Description>
+              <Header>{member.name}</Header>
+              {member.party.name}
+              {location}
+            </Modal.Description>
+          </Modal.Content>
         </Modal>
-      </Transition>
+      
     );
   }
+}
+
+const EmptyModal = () => {
+
 }
 
 export default MemberModal;

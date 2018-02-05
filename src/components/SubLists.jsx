@@ -1,5 +1,5 @@
 /*
-  A series of accordions for each sublist (party, cpg, committee)
+  Accordion for each sublist (party, cpg, committee)
 */
 
 import React, { Component } from 'react';
@@ -18,7 +18,12 @@ class SubLists extends Component {
         },
       });
     });
-    return (<Accordion defaultActiveIndex={-1} panels={subListPanels} />);
+    return (
+      <Accordion
+        defaultActiveIndex={-1}
+        panels={subListPanels}
+      />
+    );
   }
 }
 

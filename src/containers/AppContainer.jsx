@@ -55,8 +55,8 @@ class AppContainer extends Component {
   }
 
   // Modal callback uses the onClick data to get MSP ID
-  openModalCallback(e, data) {
-    const selectedMember = this.state.memberData.find((m) => m.ID == data.content.id);
+  openModalCallback(id) {
+    const selectedMember = this.state.memberData.find((m) => m.ID == id);
     this.setState({ modalIsOpen: true, selectedMember });
   }
 
