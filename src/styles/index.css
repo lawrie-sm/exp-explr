@@ -1,3 +1,7 @@
 html, body {
   font-family: 'Lato', Sans Serif
 }
+
+.list > .item {
+  cursor:pointer;
+}

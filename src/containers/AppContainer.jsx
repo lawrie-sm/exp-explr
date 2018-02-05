@@ -18,6 +18,7 @@ class AppContainer extends Component {
     super();
     this.dateUpdateCallback = this.dateUpdateCallback.bind(this);
     this.openModalCallback = this.openModalCallback.bind(this);
+    this.closeModalCallback = this.closeModalCallback.bind(this);
     this.state = { isLoading: true, modalIsOpen: false };
   }
 
@@ -36,6 +37,7 @@ class AppContainer extends Component {
     this.setState({
       isLoading: false,
       modalIsOpen: false,
+      selectedMember: undefined,
       selectedDate,
       memberData,
       partyData,
@@ -52,19 +54,25 @@ class AppContainer extends Component {
     });
   }
 
-  openModalCallback(mspID) {
-    console.log('Opened');
-    this.setState({ modalIsOpen: true });
+  // Modal callback uses the onClick data to get MSP ID
+  openModalCallback(e, data) {
+    const selectedMember = this.state.memberData.find((m) => m.ID == data.content.id);
+    this.setState({ modalIsOpen: true, selectedMember });
+  }
+
+  closeModalCallback() {
+    this.setState({ modalIsOpen: false });
   }
 
   render() {
     if (!this.state.isLoading) {
-      console.log(this.state);
 
       return (
         <div className="AppContainer">
           <MemberModal
             modalIsOpen={this.state.modalIsOpen}
+            selectedMember={this.state.selectedMember}
+            closeModalCallback={this.closeModalCallback}
           />
           <AppBody
             selectedDate={this.state.selectedDate}
