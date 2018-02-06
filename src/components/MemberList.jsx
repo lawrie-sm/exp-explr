@@ -10,7 +10,7 @@ const MemberList = ({ memberInfos, openModalCallback }) => {
   const memberList = memberInfos.map((mi) => {
     return (
       <List.Item key={mi.member.ID} onClick={() => openModalCallback(mi.member.ID)}>
-        <Image avatar src="http://via.placeholder.com/24x24" />
+        <Image avatar src={mi.member.imgURLs.small} />
         <List.Content>
           <List.Header>{mi.member.name}</List.Header>
           <List.Description>{mi.roleTitle}</List.Description>

@@ -8,6 +8,8 @@
 
 import moment from 'moment';
 
+const IMG_URL_ROOT_SMALL = './img/members/small/'
+
 // Parses an SP formatted date (ISO 8601)
 function parseSPDate(SPDate) {
   if (SPDate) return (moment(SPDate, moment.ISO_8601));
@@ -80,6 +82,10 @@ function getMembers(selectedDate, coreData) {
       } else member.gender = 'Undisclosed';
       const name = info.ParliamentaryName.split(',');
       member.name = `${name[1]} ${name[0]}`.trim();
+      // Add image URLs based on name
+      const imgName = `${member.name.replace(/\s+/g, '')}.jpg`
+      member.imgURLs = {};
+      member.imgURLs.small = `${IMG_URL_ROOT_SMALL}${imgName}`
     }
   }
 
