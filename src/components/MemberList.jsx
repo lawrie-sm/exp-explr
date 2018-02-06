@@ -5,18 +5,11 @@
 
 import React from 'react';
 import { Image, List } from 'semantic-ui-react';
+import MemberListItem from './MemberListItem';
 
-const MemberList = ({ memberInfos, openModalCallback }) => {
+const MemberList = ({ memberInfos, openModalCallback}) => {
   const memberList = memberInfos.map((mi) => {
-    return (
-      <List.Item key={mi.member.ID} onClick={() => openModalCallback(mi.member.ID)}>
-        <Image avatar src={mi.member.imgURLs.small} />
-        <List.Content>
-          <List.Header>{mi.member.name}</List.Header>
-          <List.Description>{mi.roleTitle}</List.Description>
-        </List.Content>
-      </List.Item>
-    );
+    return (<MemberListItem key={mi.member.ID} member={mi.member} openModalCallback={openModalCallback} />);
   });
   return (
     <List
