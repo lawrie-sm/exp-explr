@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Modal, Image, Transition } from 'semantic-ui-react';
+import { Header, List, Divider, Modal, Image, Transition } from 'semantic-ui-react';
 import MemberModalContent from './MemberModalContent';
 
 // Make this a controlled modal class with
@@ -21,26 +21,31 @@ class MemberModal extends React.Component {
     const member = this.props.selectedMember;
     if (!member) return <Modal open={this.props.modalIsOpen} onClose={this.onClose} />
     console.log(member);
-    const title = member.party.name;
-    let location = member.region;
-    if (member.constituency) location = `${member.constituency}, ${member.region}`;
+    let location = member.constituency || member.region;
+    let roleTitle = '';
+    if (member.govtRole) roleTitle = member.govtRole.title;
+    else if (member.party.role) roleTitle = member.party.role.title;
+
+    //let commRoles = member.
+
     return (
-        <Modal open={this.props.modalIsOpen} onClose={this.onClose}>
-          <Modal.Content image>
+      <Modal open={this.props.modalIsOpen} onClose={this.onClose}>
+        <Modal.Content image>
           <Image wrapped size='medium' src='http://via.placeholder.com/480x480' />
-            <Modal.Description>
-              <Header>{member.name}</Header>
-              {member.party.name}
-              {location}
-            </Modal.Description>
-          </Modal.Content>
-        </Modal>
+          <Modal.Description>
+            <Header dividing>
+              {member.name} ({member.party.abbreviation}) ({location})
+            </Header>
+            <List>
+              {(roleTitle) ? <List.Item>{roleTitle}</List.Item> : ''}
+            </List>
+            <Divider hidden />
+
+          </Modal.Description>
+        </Modal.Content>
+      </Modal>
     );
   }
-}
-
-const EmptyModal = () => {
-
 }
 
 export default MemberModal;
