@@ -11,10 +11,16 @@ class MemberModal extends React.Component {
   constructor() {
     super();
     this.onClose = this.onClose.bind(this);
+    this.handleError = this.handleError.bind(this);
+    this.state = { imgHasErrored: false };
   }
 
   onClose() {
     this.props.closeModalCallback();
+  }
+
+  handleError(member) {
+    this.setState({ imgHasErrored: true });
   }
 
   render() {
@@ -25,13 +31,18 @@ class MemberModal extends React.Component {
     let roleTitle = '';
     if (member.govtRole) roleTitle = member.govtRole.title;
     else if (member.party.role) roleTitle = member.party.role.title;
-
-    //let commRoles = member.
+    let imgURL = 'http://via.placeholder.com/150x150';
+    if (!this.state.imgHasErrored) imgURL = member.imgURLs.small;
 
     return (
       <Modal open={this.props.modalIsOpen} onClose={this.onClose}>
         <Modal.Content image>
-          <Image wrapped size='medium' src='http://via.placeholder.com/480x480' />
+          <Image
+            wrapped
+            size="medium"
+            src={imgURL}
+            onError={() => this.handleError(member)}
+          />
           <Modal.Description>
             <Header dividing>
               {member.name} ({member.party.abbreviation}) ({location})
