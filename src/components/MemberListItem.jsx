@@ -3,7 +3,7 @@ import React from 'react';
 import { Image, List } from 'semantic-ui-react';
 
 
-class MemberList extends React.Component {
+class MemberListItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = { imgHasErrored: false };
@@ -15,7 +15,7 @@ class MemberList extends React.Component {
   }
 
   render() {
-    const member = this.props.member;
+    const member = this.props.memberInfo.member;
     let imgURL = 'http://via.placeholder.com/50x50';
     if (!this.state.imgHasErrored) imgURL = member.imgURLs.small;
     return (
@@ -27,11 +27,11 @@ class MemberList extends React.Component {
         />
         <List.Content>
           <List.Header>{member.name}</List.Header>
-          <List.Description>{member.roleTitle}</List.Description>
+          <List.Description>{this.props.memberInfo.roleTitle}</List.Description>
         </List.Content>
       </List.Item>
     );
   }
 }
 
-export default MemberList;
+export default MemberListItem;

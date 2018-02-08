@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Header, List, Divider, Modal, Image, Transition } from 'semantic-ui-react';
 import MemberModalContent from './MemberModalContent';
 
@@ -16,6 +16,7 @@ class MemberModal extends React.Component {
   }
 
   onClose() {
+    this.setState({ imgHasErrored: false });
     this.props.closeModalCallback();
   }
 
@@ -26,30 +27,34 @@ class MemberModal extends React.Component {
   render() {
     const member = this.props.selectedMember;
     if (!member) return <Modal open={this.props.modalIsOpen} onClose={this.onClose} />
-    console.log(member);
+    let imgURL = 'http://via.placeholder.com/150x150';
+    if (!this.state.imgHasErrored) imgURL = member.imgURLs.small;
     let location = member.constituency || member.region;
     let roleTitle = '';
     if (member.govtRole) roleTitle = member.govtRole.title;
     else if (member.party.role) roleTitle = member.party.role.title;
-    let imgURL = 'http://via.placeholder.com/150x150';
-    if (!this.state.imgHasErrored) imgURL = member.imgURLs.small;
+    const commRoles = <MemberRolesList header="Committees" roles={member.committees} />;
+    const cpgRoles = <MemberRolesList header="Cross-Party Groups" roles={member.cpgs} />;
 
     return (
       <Modal open={this.props.modalIsOpen} onClose={this.onClose}>
         <Modal.Content image>
           <Image
             wrapped
-            size="medium"
+            size="small"
             src={imgURL}
             onError={() => this.handleError(member)}
           />
           <Modal.Description>
             <Header dividing>
-              {member.name} ({member.party.abbreviation}) ({location})
+              {member.name}
+              <Header.Subheader>
+                {member.party.name}, {location}
+              </Header.Subheader>
+              {(roleTitle) ? <Header.Subheader><b>{roleTitle}</b></Header.Subheader> : ''}
             </Header>
-            <List>
-              {(roleTitle) ? <List.Item>{roleTitle}</List.Item> : ''}
-            </List>
+            {commRoles}
+            {cpgRoles}
             <Divider hidden />
 
           </Modal.Description>
@@ -58,5 +63,21 @@ class MemberModal extends React.Component {
     );
   }
 }
+
+const MemberRolesList = ({header, roles}) => {
+  if (!roles || roles.length == 0) return null;
+  const listItems = roles.map((r) => (
+    <List.Item key={r.ID}>{r.name} &#8211; {r.role}</List.Item>
+  ));
+  return (
+    <List>
+        <List.Item>
+          <List.Header> {header} </List.Header>
+        </List.Item>
+        {listItems}
+    </List>
+  );
+}
+
 
 export default MemberModal;

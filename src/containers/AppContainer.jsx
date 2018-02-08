@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
-import { getPartyList, getGroupList } from '../data/subLists';
+import { getPartyList, getGroupList, getFrontBench } from '../data/subLists';
 import Spinner from '../components/Spinner';
 import AppBody from '../components/AppBody';
 import MemberModal from '../components/MemberModal';

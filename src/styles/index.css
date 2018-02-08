@@ -2,6 +2,6 @@ html, body {
   font-family: 'Lato', Sans Serif
 }
 
-.list > .item {
+.animated.list > .item {
   cursor:pointer;
 }

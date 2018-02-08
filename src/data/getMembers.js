@@ -176,7 +176,9 @@ function getMembers(selectedDate, coreData) {
       const isDeputy = roleInfo.Name.search(/deputy/gi) !== -1;
       const captureRole = /(party spokesperson on the |party spokesperson on )(.*)/gi;
       const capRole = captureRole.exec(roleInfo.Name);
-      if (capRole) member.party.role.portfolios.push(capRole[2]);
+      if (capRole && !member.party.role.portfolios.includes(capRole[2])) {
+        member.party.role.portfolios.push(capRole[2]);
+      }
       if (isLeader && !isDeputy && member.party.role.rank > 0) member.party.role.rank = 0;
       else if (isLeader && isDeputy && member.party.role.rank > 1) member.party.role.rank = 1;
       else if (!isLeader && isDeputy && member.party.role.rank > 3) member.party.role.rank = 3;
@@ -239,9 +241,13 @@ function getMembers(selectedDate, coreData) {
       });
       if (committee) {
         if (!member.committees) member.committees = [];
+        let name = committee.Name.trim();
+        if (name.slice(name.length - 10, name.length) === ' Committee'){
+          name = name.slice(0, name.length - 10);
+        }
         const newComm = {
           role: roleInfo.Name,
-          name: committee.Name,
+          name,
           abbreviation: committee.ShortName,
           validFromDate,
           ID: committee.ID,
@@ -306,15 +312,17 @@ function getMembers(selectedDate, coreData) {
           };
           let rank = 10;
           const isConv = role.Name.search(/(convener)/gi) !== -1;
+          const isCoCo = role.Name.search(/(co-convener)/gi) !== -1;
           const isDeputy = role.Name.search(/(deputy)/gi) !== -1;
           const isVice = role.Name.search(/(vice)/gi) !== -1;
           const isTreasurer = role.Name.search(/(treasurer)/gi) !== -1;
           const isSecretary = role.Name.search(/(secretary)/gi) !== -1;
-          if (isConv && !isDeputy && !isVice) rank = 0;
-          else if (isConv && isDeputy) rank = 1;
-          else if (isConv && isVice) rank = 2;
-          else if (isTreasurer) rank = 3;
-          else if (isSecretary) rank = 4;
+          if (isConv && !isDeputy && !isVice && !isCoCo) rank = 0;
+          else if (isCoCo) rank = 1;
+          else if (isConv && isDeputy) rank = 2;
+          else if (isConv && isVice) rank = 3;
+          else if (isTreasurer) rank = 4;
+          else if (isSecretary) rank = 5;
           newCPG.rank = rank;
           if (!isReplacing) member.cpgs.push(newCPG);
           else member.cpgs.splice(dupeCPGIndex, 1, newCPG);
@@ -327,9 +335,11 @@ function getMembers(selectedDate, coreData) {
   let memberList = Object.values(memberData);
   for (let i = 0; i < memberList.length; i++) {
     const member = memberList[i];
-    if (member.addresses) member.addresses.sort((a, b) => a.AddressTypeID < b.AddressTypeID);
-    if (member.emailAddresses) member.emailAddresses.sort((a, b) => a.EmailAddress < b.EmailAddressTypeID);
-    if (member.websites) member.websites.sort((a, b) => a.WebSiteTypeID < b.WebSiteTypeID);
+    if (member.addresses) member.addresses.sort((a, b) => a.AddressTypeID - b.AddressTypeID);
+    if (member.emailAddresses) member.emailAddresses.sort((a, b) => a.EmailAddress - b.EmailAddressTypeID);
+    if (member.websites) member.websites.sort((a, b) => a.WebSiteTypeID - b.WebSiteTypeID);
+    if (member.committees) member.committees.sort((a, b) => a.rank - b.rank);
+    if (member.cpgs) member.cpgs.sort((a, b) => a.rank - b.rank);
     if (member.party.role) {
       const role = member.party.role;
       if (role.rank === 0 && role.portfolios.length < 1) {

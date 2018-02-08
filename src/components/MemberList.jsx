@@ -9,7 +9,7 @@ import MemberListItem from './MemberListItem';
 
 const MemberList = ({ memberInfos, openModalCallback}) => {
   const memberList = memberInfos.map((mi) => {
-    return (<MemberListItem key={mi.member.ID} member={mi.member} openModalCallback={openModalCallback} />);
+    return (<MemberListItem key={mi.member.ID} memberInfo={mi} openModalCallback={openModalCallback} />);
   });
   return (
     <List
