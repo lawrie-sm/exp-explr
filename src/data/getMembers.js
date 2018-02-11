@@ -356,7 +356,11 @@ function getMembers(selectedDate, coreData) {
         role.title = `Deputy Spokesperson on ${role.portfolios.join(', ')}`;
       }
     }
+
+    if (member.name === 'Roseanna Cunningham' || member.name === 'Nicola Sturgeon') console.log(member);
+
   }
+
 
   return (memberList);
 }

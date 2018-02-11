@@ -16,7 +16,7 @@ class MemberListItem extends React.Component {
 
   render() {
     const member = this.props.memberInfo.member;
-    let imgURL = 'http://via.placeholder.com/50x50';
+    let imgURL = 'img/members/no-portrait.jpg';
     if (!this.state.imgHasErrored) imgURL = member.imgURLs.small;
     return (
       <List.Item key={member.ID} onClick={() => this.props.openModalCallback(member.ID)}>

@@ -27,7 +27,7 @@ class MemberModal extends React.Component {
   render() {
     const member = this.props.selectedMember;
     if (!member) return <Modal open={this.props.modalIsOpen} onClose={this.onClose} />
-    let imgURL = 'http://via.placeholder.com/150x150';
+    let imgURL = 'img/members/no-portrait.jpg';
     if (!this.state.imgHasErrored) imgURL = member.imgURLs.small;
     let location = member.constituency || member.region;
     let roleTitle = '';
