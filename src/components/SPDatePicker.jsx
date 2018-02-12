@@ -1,4 +1,9 @@
-import React, { Fragment } from 'react';
+/*
+  This date picker uses react-datepicker.
+  Dates are limited to the term of the Scottish Parliament.
+*/
+
+import React from 'react';
 import { Header } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -13,10 +18,8 @@ class SPDatePicker extends React.Component {
 
   handleChange(date) {
     this.props.dateUpdateCallback(date);
-    this.setState({ startDate: date });
+    this.setState({ selectedDate: date });
   }
-
-  // Data is available from 1999-05-12
 
   render() {
     return (

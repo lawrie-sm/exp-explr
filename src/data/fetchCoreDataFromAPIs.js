@@ -2,18 +2,16 @@
   Called by the React app on startup.
   Makes API calls to the Scottish Parliament.
   Returns the APIs in a coreData array for processing by getMembers.
+  Caching should be done by service worker.
+
+  See https://data.parliament.scot/#/api-list
+  NB: 'telephones' (w/ 'telephonetypes') doesn't currently
+  have any numbers (2/18).
+
 */
 
-// Variable to cache the data
-let CORE_DATA;
-
-// This is the basic URL for all Parliamentary API calls
 const SP_API_ROOT = 'https://data.parliament.scot/api/';
 
-// Hardcoded list of APIs for appending to root url
-// See https://data.parliament.scot/#/api-list
-// NB: 'telephones' (w/ 'telephonetypes') doesn't currrently
-// have any numbers
 const SP_APIS = [
   'members',
   'MemberElectionConstituencyStatuses',
@@ -47,24 +45,26 @@ function get(url) {
   return new Promise((resolve, reject) => {
     fetch(url, { method: 'get' })
       .then((response) => response.json())
-      .then((data) => resolve(data));
+      .then((data) => {
+        if (data) resolve(data);
+        else reject(new Error(`Could not access ${url}`));
+      });
   });
 }
 
 // Main promise for returning the data
 function fetchCoreDataFromAPIs() {
   return new Promise((resolve, reject) => {
-    // if (CORE_DATA) resolve(CORE_DATA);
-    const promiseList = SP_APIS.map((endpoint) => {
-      return get(`${SP_API_ROOT}${endpoint}`);
-    });
+    const promiseList = SP_APIS.map((endpoint) => (
+      get(`${SP_API_ROOT}${endpoint}`)
+    ));
     Promise.all(promiseList).then((dataArr) => {
       const returnData = {};
       SP_APIS.forEach((endpoint, i) => {
         returnData[endpoint] = dataArr[i];
       });
-      // CORE_DATA = returnData;
-      resolve(returnData);
+      if (returnData) resolve(returnData);
+      else reject(new Error('Could not access SP APIs.'));
     });
   });
 }

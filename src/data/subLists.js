@@ -52,7 +52,6 @@ export function getGroupList(memberData, groupToDisplay) {
       for (let g = 0; g < member[arrToSearch].length; g++) {
         const memberGroupInfo = member[arrToSearch][g];
         const group = groupList.find((c) => c.ID === memberGroupInfo.ID);
-        const rank = memberGroupInfo.rank;
         if (!group) {
           groupList.push({
             name: memberGroupInfo.name,

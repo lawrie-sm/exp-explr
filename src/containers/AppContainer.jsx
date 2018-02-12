@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
 import getMembers from '../data/getMembers';
-import { getPartyList, getGroupList, getFrontBench } from '../data/subLists';
+import { getPartyList, getGroupList } from '../data/subLists';
 import Spinner from '../components/Spinner';
 import AppBody from '../components/AppBody';
 import MemberModal from '../components/MemberModal';
@@ -26,7 +26,6 @@ class AppContainer extends Component {
     const selectedDate = moment();
     fetchCoreDataFromAPIs().then((coreData) => {
       this.setData(selectedDate, coreData);
-      console.log(coreData);
     });
   }
 
@@ -57,7 +56,7 @@ class AppContainer extends Component {
 
   // Modal callback uses the onClick data to get MSP ID
   openModalCallback(id) {
-    const selectedMember = this.state.memberData.find((m) => m.ID == id);
+    const selectedMember = this.state.memberData.find((m) => m.ID === id);
     this.setState({ modalIsOpen: true, selectedMember });
   }
 

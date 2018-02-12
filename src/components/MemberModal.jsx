@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react';
-import { Header, List, Divider, Modal, Image, Transition } from 'semantic-ui-react';
-import MemberModalContent from './MemberModalContent';
+/*
+  This modal opens when a member is clicked. It displays
+  CPG and Committee info about the member in question, as well
+  as a larger image.
+*/
 
-// Make this a controlled modal class with
-// a handleclose method with a callback to container for setting
-// state to closed.
-// https://react.semantic-ui.com/modules/modal#modal-example-controlled
+import React from 'react';
+import { Header, List, Divider, Modal, Image } from 'semantic-ui-react';
 
 class MemberModal extends React.Component {
   constructor() {
@@ -20,22 +20,21 @@ class MemberModal extends React.Component {
     this.props.closeModalCallback();
   }
 
-  handleError(member) {
+  handleError() {
     this.setState({ imgHasErrored: true });
   }
 
   render() {
     const member = this.props.selectedMember;
-    if (!member) return <Modal open={this.props.modalIsOpen} onClose={this.onClose} />
+    if (!member) return <Modal open={this.props.modalIsOpen} onClose={this.onClose} />;
     let imgURL = 'img/members/no-portrait.jpg';
     if (!this.state.imgHasErrored) imgURL = member.imgURLs.small;
-    let location = member.constituency || member.region;
+    const location = member.constituency || member.region;
     let roleTitle = '';
     if (member.govtRole) roleTitle = member.govtRole.title;
     else if (member.party.role) roleTitle = member.party.role.title;
     const commRoles = <MemberRolesList header="Committees" roles={member.committees} />;
     const cpgRoles = <MemberRolesList header="Cross-Party Groups" roles={member.cpgs} />;
-
     return (
       <Modal open={this.props.modalIsOpen} onClose={this.onClose}>
         <Modal.Content image>
@@ -43,7 +42,7 @@ class MemberModal extends React.Component {
             wrapped
             size="small"
             src={imgURL}
-            onError={() => this.handleError(member)}
+            onError={() => this.handleError()}
           />
           <Modal.Description>
             <Header dividing>
@@ -64,20 +63,20 @@ class MemberModal extends React.Component {
   }
 }
 
-const MemberRolesList = ({header, roles}) => {
-  if (!roles || roles.length == 0) return null;
+const MemberRolesList = ({ header, roles }) => {
+  if (!roles || roles.length === 0) return null;
   const listItems = roles.map((r) => (
     <List.Item key={r.ID}>{r.name} &#8211; {r.role}</List.Item>
   ));
   return (
     <List>
-        <List.Item>
-          <List.Header> {header} </List.Header>
-        </List.Item>
-        {listItems}
+      <List.Item>
+        <List.Header> {header} </List.Header>
+      </List.Item>
+      {listItems}
     </List>
   );
-}
+};
 
 
 export default MemberModal;

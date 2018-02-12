@@ -1,3 +1,8 @@
+/*
+  Uses standard semantic-ui-react tabs.
+  Each tab contains a series of lists, depending on the context.
+*/
+
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import SubLists from './SubLists';

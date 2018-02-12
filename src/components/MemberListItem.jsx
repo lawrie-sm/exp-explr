@@ -1,5 +1,7 @@
 /*
-  Individual list items withing each sublist
+  Individual list items withing each sublist.
+  Includes the members name, avatar and context-specific description.
+  The click handler returns the member's ID for the modal.
 */
 
 import React from 'react';
@@ -12,7 +14,7 @@ class MemberListItem extends React.Component {
     this.handleError = this.handleError.bind(this);
   }
 
-  handleError(member) {
+  handleError() {
     this.setState({ imgHasErrored: true });
   }
 
@@ -25,7 +27,7 @@ class MemberListItem extends React.Component {
         <Image
           avatar
           src={imgURL}
-          onError={() => this.handleError(member)}
+          onError={() => this.handleError()}
         />
         <List.Content>
           <List.Header>{member.name}</List.Header>

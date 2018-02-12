@@ -1,16 +1,19 @@
 /*
-  Individual member lists within each accordion
-  The list items return an MSP id from the onClick event
+  Individual lists of members, for a particular party or committee
 */
 
 import React from 'react';
-import { Image, List } from 'semantic-ui-react';
+import { List } from 'semantic-ui-react';
 import MemberListItem from './MemberListItem';
 
-const MemberList = ({ memberInfos, openModalCallback}) => {
-  const memberList = memberInfos.map((mi) => {
-    return (<MemberListItem key={mi.member.ID} memberInfo={mi} openModalCallback={openModalCallback} />);
-  });
+const MemberList = ({ memberInfos, openModalCallback }) => {
+  const memberList = memberInfos.map((mi) => (
+    <MemberListItem
+      key={mi.member.ID}
+      memberInfo={mi}
+      openModalCallback={openModalCallback}
+    />
+  ));
   return (
     <List
       animated

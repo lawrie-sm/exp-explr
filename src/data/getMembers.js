@@ -4,11 +4,9 @@
   a given date. Requires coreData from fetchCoreDataFromAPIs.
 */
 
-/* eslint-disable */
-
 import moment from 'moment';
 
-const IMG_URL_ROOT_SMALL = './img/members/small/'
+const IMG_URL_ROOT_SMALL = './img/members/small/';
 
 // Parses an SP formatted date (ISO 8601)
 function parseSPDate(SPDate) {
@@ -25,35 +23,35 @@ function isBetweenDates(selectedDate, fromSPDate, untilSPDate) {
 
 // Main function
 function getMembers(selectedDate, coreData) {
-
   const memberData = {};
 
   // Determine MSPs for the current date by looking through
   // election statuses. Store the location info while we go.
   const cStatuses =
-  coreData.MemberElectionConstituencyStatuses.filter((s) => {
-    return isBetweenDates(
+  coreData.MemberElectionConstituencyStatuses.filter((s) => (
+    isBetweenDates(
       selectedDate,
       parseSPDate(s.ValidFromDate),
       parseSPDate(s.ValidUntilDate),
-    );
-  });
+    )
+  ));
   const rStatuses =
-  coreData.MemberElectionregionStatuses.filter((s) => {
-    return isBetweenDates(
+  coreData.MemberElectionregionStatuses.filter((s) => (
+    isBetweenDates(
       selectedDate,
       parseSPDate(s.ValidFromDate),
       parseSPDate(s.ValidUntilDate),
-    );
-  });
+    )
+  ));
   // Constituencies
   for (let i = 0; i < cStatuses.length; i++) {
     const s = cStatuses[i];
-    const constituency = coreData.constituencies.find((c) => c.ID == s.ConstituencyID);
+    const constituency =
+    coreData.constituencies.find((c) => c.ID === parseInt(s.ConstituencyID, 10));
     // eslint-disable-next-line
     const region = coreData.regions.find((r) => r.ID == constituency.RegionID);
     memberData[s.PersonID] = {
-      ID: s.PersonID,
+      ID: parseInt(s.PersonID, 10),
       constituency: constituency.Name,
       region: region.Name,
     };
@@ -61,9 +59,9 @@ function getMembers(selectedDate, coreData) {
   // Regions
   for (let i = 0; i < rStatuses.length; i++) {
     const s = rStatuses[i];
-    const region = coreData.regions.find((r) => r.ID == s.RegionID);
+    const region = coreData.regions.find((r) => r.ID === parseInt(s.RegionID, 10));
     memberData[s.PersonID] = {
-      ID: s.PersonID,
+      ID: parseInt(s.PersonID, 10),
       region: region.Name,
     };
   }
@@ -83,9 +81,9 @@ function getMembers(selectedDate, coreData) {
       const name = info.ParliamentaryName.split(',');
       member.name = `${name[1]} ${name[0]}`.trim();
       // Add image URLs based on name
-      const imgName = `${member.name.replace(/\s+/g, '')}.jpg`
+      const imgName = `${member.name.replace(/\s+/g, '')}.jpg`;
       member.imgURLs = {};
-      member.imgURLs.small = `${IMG_URL_ROOT_SMALL}${imgName}`
+      member.imgURLs.small = `${IMG_URL_ROOT_SMALL}${imgName}`;
     }
   }
 
@@ -113,7 +111,8 @@ function getMembers(selectedDate, coreData) {
       if (!member.emailAddresses) member.emailAddresses = [];
       const newEmailAddress = {};
       newEmailAddress.type =
-      coreData.emailaddresstypes.find((e) => e.ID == eAddress.EmailAddressTypeID).Name;
+      coreData.emailaddresstypes.find((e) =>
+        e.ID === parseInt(eAddress.EmailAddressTypeID, 10)).Name;
       newEmailAddress.address = eAddress.Address;
       member.emailAddresses.push(newEmailAddress);
     }
@@ -127,7 +126,7 @@ function getMembers(selectedDate, coreData) {
       if (!member.websites) member.websites = [];
       const newWebsite = {};
       newWebsite.type =
-      coreData.websitetypes.find((w) => w.ID == website.WebSiteTypeID).Name;
+      coreData.websitetypes.find((w) => w.ID === parseInt(website.WebSiteTypeID, 10)).Name;
       newWebsite.url = website.WebURL;
       member.websites.push(newWebsite);
     }
@@ -143,7 +142,7 @@ function getMembers(selectedDate, coreData) {
         parseSPDate(mInfo.ValidFromDate),
         parseSPDate(mInfo.ValidUntilDate),
       )) {
-      const partyInfo = coreData.parties.find((p) => p.ID == mInfo.PartyID);
+      const partyInfo = coreData.parties.find((p) => p.ID === parseInt(mInfo.PartyID, 10));
       member.party = {};
       member.party.name = partyInfo.ActualName;
       member.party.abbreviation = partyInfo.Abbreviation;
@@ -157,7 +156,8 @@ function getMembers(selectedDate, coreData) {
   for (let i = 0; i < coreData.memberpartyroles.length; i++) {
     const pRole = coreData.memberpartyroles[i];
     const member =
-    Object.values(memberData).find((m) => m.party.membershipID == pRole.MemberPartyID);
+    Object.values(memberData).find((m) =>
+      m.party.membershipID === parseInt(pRole.MemberPartyID, 10));
     const validFromDate = parseSPDate(pRole.ValidFromDate);
     if (member &&
       isBetweenDates(
@@ -171,7 +171,8 @@ function getMembers(selectedDate, coreData) {
         member.party.role.rank = 10;
         member.party.role.validFromDate = validFromDate;
       }
-      const roleInfo = coreData.partyroles.find((r) => r.ID == pRole.PartyRoleTypeID);
+      const roleInfo = coreData.partyroles.find((r) =>
+        r.ID === parseInt(pRole.PartyRoleTypeID, 10));
       const isLeader = roleInfo.Name.search(/leader/gi) !== -1;
       const isDeputy = roleInfo.Name.search(/deputy/gi) !== -1;
       const captureRole = /(party spokesperson on the |party spokesperson on )(.*)/gi;
@@ -197,7 +198,8 @@ function getMembers(selectedDate, coreData) {
         validFromDate,
         parseSPDate(gRole.ValidUntilDate),
       )) {
-      const roleInfo = coreData.governmentroles.find((rn) => rn.ID == gRole.GovernmentRoleID);
+      const roleInfo = coreData.governmentroles.find((rn) =>
+        rn.ID === parseInt(gRole.GovernmentRoleID, 10));
       const govtRole = {};
       govtRole.title = '';
       govtRole.rank = 10;
@@ -229,20 +231,20 @@ function getMembers(selectedDate, coreData) {
         validFromDate,
         parseSPDate(cRole.ValidUntilDate),
       )) {
-      const roleInfo = coreData.committeeroles.find((r) => r.ID == cRole.CommitteeRoleID);
-      const committee = coreData.committees.find((comm) => {
-        return (
-          comm.ID == cRole.CommitteeID &&
-            isBetweenDates(
-              selectedDate,
-              parseSPDate(comm.ValidFromDate),
-              parseSPDate(comm.ValidUntilDate),
-            ));
-      });
+      const roleInfo = coreData.committeeroles.find((r) =>
+        r.ID === parseInt(cRole.CommitteeRoleID, 10));
+      const committee = coreData.committees.find((comm) => (
+        comm.ID === parseInt(cRole.CommitteeID, 10) &&
+        isBetweenDates(
+          selectedDate,
+          parseSPDate(comm.ValidFromDate),
+          parseSPDate(comm.ValidUntilDate),
+        )
+      ));
       if (committee) {
         if (!member.committees) member.committees = [];
         let name = committee.Name.trim();
-        if (name.slice(name.length - 10, name.length) === ' Committee'){
+        if (name.slice(name.length - 10, name.length) === ' Committee') {
           name = name.slice(0, name.length - 10);
         }
         const newComm = {
@@ -276,34 +278,35 @@ function getMembers(selectedDate, coreData) {
         validFromDate,
         parseSPDate(cpgRole.ValidUntilDate),
       )) {
-      const cpg = coreData.crosspartygroups.find((grp) => {
-        return (
-          grp.ID == cpgRole.CrossPartyGroupID &&
-          isBetweenDates(
-            selectedDate,
-            parseSPDate(grp.ValidFromDate),
-            parseSPDate(grp.ValidUntilDate),
-          ));
-      });
+      const cpg = coreData.crosspartygroups.find((grp) => (
+        grp.ID === parseInt(cpgRole.CrossPartyGroupID, 10) &&
+        isBetweenDates(
+          selectedDate,
+          parseSPDate(grp.ValidFromDate),
+          parseSPDate(grp.ValidUntilDate),
+        )
+      ));
       if (cpg) {
         if (!member.cpgs) member.cpgs = [];
 
         // Add new CPG role if a later one doesn't exist
-        const dupeCPGIndex = member.cpgs.findIndex((currCPG) => currCPG.ID == cpg.ID);
+        const dupeCPGIndex = member.cpgs.findIndex((currCPG) =>
+          currCPG.ID === parseInt(cpg.ID, 10));
         let isReplacing = false;
         if (dupeCPGIndex !== -1) {
           isReplacing =
           !!(member.cpgs[dupeCPGIndex].validFromDate.isBefore(parseSPDate(cpg.ValidFromDate)));
         }
         if (dupeCPGIndex === -1 || isReplacing) {
-          let role =
-          coreData.crosspartygrouproles.find((r) => r.ID == cpgRole.CrossPartyGroupRoleID);
+          const role =
+          coreData.crosspartygrouproles.find((r) =>
+            r.ID === parseInt(cpgRole.CrossPartyGroupRoleID, 10));
           let cpgName = cpg.Name;
           const nameCap = /cross-party group in the scottish parliament on (\w.*)/gi;
           const capArr = nameCap.exec(cpg.Name);
           if (capArr && capArr[1]) cpgName = capArr[1];
           if (!cpgName) cpgName = cpg.Name;
-          if (cpgName.substring(0,4) === 'the ') cpgName = cpgName.slice(4, cpgName.length);
+          if (cpgName.substring(0, 4) === 'the ') cpgName = cpgName.slice(4, cpgName.length);
           const newCPG = {
             role: role.Name,
             name: cpgName,
@@ -332,14 +335,24 @@ function getMembers(selectedDate, coreData) {
   }
 
   // Make the dict an array, sort info arrays, and add party titles.
-  let memberList = Object.values(memberData);
+  const memberList = Object.values(memberData);
   for (let i = 0; i < memberList.length; i++) {
     const member = memberList[i];
-    if (member.addresses) member.addresses.sort((a, b) => a.AddressTypeID - b.AddressTypeID);
-    if (member.emailAddresses) member.emailAddresses.sort((a, b) => a.EmailAddress - b.EmailAddressTypeID);
-    if (member.websites) member.websites.sort((a, b) => a.WebSiteTypeID - b.WebSiteTypeID);
-    if (member.committees) member.committees.sort((a, b) => a.rank - b.rank);
-    if (member.cpgs) member.cpgs.sort((a, b) => a.rank - b.rank);
+    if (member.addresses) {
+      member.addresses.sort((a, b) => a.AddressTypeID - b.AddressTypeID);
+    }
+    if (member.emailAddresses) {
+      member.emailAddresses.sort((a, b) => a.EmailAddress - b.EmailAddressTypeID);
+    }
+    if (member.websites) {
+      member.websites.sort((a, b) => a.WebSiteTypeID - b.WebSiteTypeID);
+    }
+    if (member.committees) {
+      member.committees.sort((a, b) => a.rank - b.rank);
+    }
+    if (member.cpgs) {
+      member.cpgs.sort((a, b) => a.rank - b.rank);
+    }
     if (member.party.role) {
       const role = member.party.role;
       if (role.rank === 0 && role.portfolios.length < 1) {
@@ -363,5 +376,3 @@ function getMembers(selectedDate, coreData) {
 }
 
 export default getMembers;
-
-/* eslint-enable */
