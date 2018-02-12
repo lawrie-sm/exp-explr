@@ -1,11 +1,6 @@
-TODOS:
-Data import
-Display basic list
-date picker
-grouping picker
-spinner / proper handling of asyc data and component rendering
-portraits
+TODO:
 
+- Unit testing + coverage badge
 
-Simepl, good, Date Picker:
-https://github.com/Hacker0x01/react-datepicker
+- Clean up all warnings
+

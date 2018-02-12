@@ -26,6 +26,7 @@ class AppContainer extends Component {
     const selectedDate = moment();
     fetchCoreDataFromAPIs().then((coreData) => {
       this.setData(selectedDate, coreData);
+      console.log(coreData);
     });
   }
 
@@ -66,7 +67,6 @@ class AppContainer extends Component {
 
   render() {
     if (!this.state.isLoading) {
-
       return (
         <div className="AppContainer">
           <MemberModal

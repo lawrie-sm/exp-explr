@@ -5,3 +5,32 @@ html, body {
 .animated.list > .item {
   cursor:pointer;
 }
+
+.TopBar {
+  padding: 10px 15px;
+  padding-top: 10px;
+}
+
+h1.ui.header {
+  display: inline;
+}
+
+h4.ui.header {
+  display: inline;
+  color: rgba(34,36,38,.75);
+}
+
+.DateWrapper {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.DateWrapper > div {
+  display: inline-block;
+}
+
+.react-datepicker__input-container > input {
+  border: 1px solid rgba(34,36,38,.15);
+  border-radius: 2px;
+  padding: 5px;
+}

@@ -2,7 +2,12 @@ import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import SubLists from './SubLists';
 
-const SelectorTabs = ({ partyData, commData, cpgData, openModalCallback }) => {
+const SelectorTabs = ({
+  partyData,
+  commData,
+  cpgData,
+  openModalCallback,
+}) => {
   const panes = [
     {
       menuItem: partyData.title,
