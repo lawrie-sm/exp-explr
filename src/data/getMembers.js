@@ -2,6 +2,8 @@
   Called by the React app on startup and when the date is changed.
   Runs through the core data and processes it into an MSP list for
   a given date. Requires coreData from fetchCoreDataFromAPIs.
+
+  NB: Much of this could be DRYer, but it would harm readability.
 */
 
 import moment from 'moment';
@@ -10,63 +12,66 @@ const IMG_URL_ROOT_SMALL = './img/members/small/';
 
 // Parses an SP formatted date (ISO 8601)
 function parseSPDate(SPDate) {
-  if (SPDate) return (moment(SPDate, moment.ISO_8601));
-  return SPDate;
+  if (SPDate) {
+    const parsedDate = moment(SPDate, moment.ISO_8601, true);
+    if (parsedDate.isValid()) return parsedDate;
+    return null;
+  } return null;
 }
 
+// Checks if a date is between a range, including checking for nulls
 function isBetweenDates(selectedDate, fromSPDate, untilSPDate) {
-  // Currently active statuses may have null expiry dates.
   let until = untilSPDate;
   if (!until) until = moment();
   return (selectedDate.isBetween(fromSPDate, until));
 }
 
-// Main function
-function getMembers(selectedDate, coreData) {
-  const memberData = {};
+// Gets election statuses based on date
+function filterByDate(selectedDate, arrToFilter) {
+  return (
+    arrToFilter.filter((s) => (
+      isBetweenDates(
+        selectedDate,
+        parseSPDate(s.ValidFromDate),
+        parseSPDate(s.ValidUntilDate),
+      )
+    ))
+  );
+}
 
-  // Determine MSPs for the current date by looking through
-  // election statuses. Store the location info while we go.
-  const cStatuses =
-  coreData.MemberElectionConstituencyStatuses.filter((s) => (
-    isBetweenDates(
-      selectedDate,
-      parseSPDate(s.ValidFromDate),
-      parseSPDate(s.ValidUntilDate),
-    )
-  ));
-  const rStatuses =
-  coreData.MemberElectionregionStatuses.filter((s) => (
-    isBetweenDates(
-      selectedDate,
-      parseSPDate(s.ValidFromDate),
-      parseSPDate(s.ValidUntilDate),
-    )
-  ));
-  // Constituencies
+// Gets an array of members based on constituency statuses
+function getConstituencyMembers(cStatuses, coreData) {
+  const members = [];
   for (let i = 0; i < cStatuses.length; i++) {
     const s = cStatuses[i];
     const constituency =
     coreData.constituencies.find((c) => c.ID === parseInt(s.ConstituencyID, 10));
-    // eslint-disable-next-line
-    const region = coreData.regions.find((r) => r.ID == constituency.RegionID);
-    memberData[s.PersonID] = {
+    const region = coreData.regions.find((r) => r.ID === parseInt(constituency.RegionID, 10));
+    members[s.PersonID] = {
       ID: parseInt(s.PersonID, 10),
       constituency: constituency.Name,
       region: region.Name,
     };
   }
-  // Regions
+  return members;
+}
+
+// Same for regional members
+function getRegionalMembers(rStatuses, coreData) {
+  const members = [];
   for (let i = 0; i < rStatuses.length; i++) {
     const s = rStatuses[i];
     const region = coreData.regions.find((r) => r.ID === parseInt(s.RegionID, 10));
-    memberData[s.PersonID] = {
+    members[s.PersonID] = {
       ID: parseInt(s.PersonID, 10),
       region: region.Name,
     };
   }
+  return members;
+}
 
-  // Get basic info, such as names and DOBs
+// This and the following functions add info to memberData from coreData
+function getBasicInfo(memberData, coreData) {
   for (let i = 0; i < coreData.members.length; i++) {
     const info = coreData.members[i];
     const member = memberData[info.PersonID];
@@ -86,8 +91,9 @@ function getMembers(selectedDate, coreData) {
       member.imgURLs.small = `${IMG_URL_ROOT_SMALL}${imgName}`;
     }
   }
+}
 
-  // Get physical addresses
+function getPhysicalAddresses(memberData, coreData) {
   for (let i = 0; i < coreData.addresses.length; i++) {
     const address = coreData.addresses[i];
     const member = memberData[address.PersonID];
@@ -102,8 +108,9 @@ function getMembers(selectedDate, coreData) {
       member.addresses.push(newAddress);
     }
   }
+}
 
-  // Get email addresses. Some addresses are hidden and are not added
+function getEmailAddresses(memberData, coreData) {
   for (let i = 0; i < coreData.emailaddresses.length; i++) {
     const eAddress = coreData.emailaddresses[i];
     const member = memberData[eAddress.PersonID];
@@ -117,8 +124,9 @@ function getMembers(selectedDate, coreData) {
       member.emailAddresses.push(newEmailAddress);
     }
   }
+}
 
-  // Get websites
+function getWebsites(memberData, coreData) {
   for (let i = 0; i < coreData.websites.length; i++) {
     const website = coreData.websites[i];
     const member = memberData[website.PersonID];
@@ -131,8 +139,9 @@ function getMembers(selectedDate, coreData) {
       member.websites.push(newWebsite);
     }
   }
+}
 
-  // Party info - roles are dealt with separately
+function getPartyInfoAndRoles(selectedDate, memberData, coreData) {
   for (let i = 0; i < coreData.memberparties.length; i++) {
     const mInfo = coreData.memberparties[i];
     const member = memberData[mInfo.PersonID];
@@ -151,8 +160,6 @@ function getMembers(selectedDate, coreData) {
       member.party.membershipID = mInfo.ID;
     }
   }
-
-  // Party role portfolios and ranks, titles will be built later
   for (let i = 0; i < coreData.memberpartyroles.length; i++) {
     const pRole = coreData.memberpartyroles[i];
     const member =
@@ -186,8 +193,9 @@ function getMembers(selectedDate, coreData) {
       else if (member.party.role.rank > 2 && capRole) member.party.role.rank = 2;
     }
   }
+}
 
-  // Government roles
+function getGovtRoles(selectedDate, memberData, coreData) {
   for (let i = 0; i < coreData.membergovernmentroles.length; i++) {
     const gRole = coreData.membergovernmentroles[i];
     const member = memberData[gRole.PersonID];
@@ -219,8 +227,10 @@ function getMembers(selectedDate, coreData) {
       member.govtRole = govtRole;
     }
   }
+}
 
-  // Committees
+// Both Committee and CPG roles can contain duplicates
+function getCommitteeRoles(selectedDate, memberData, coreData) {
   for (let i = 0; i < coreData.personcommitteeroles.length; i++) {
     const cRole = coreData.personcommitteeroles[i];
     const member = memberData[cRole.PersonID];
@@ -243,31 +253,43 @@ function getMembers(selectedDate, coreData) {
       ));
       if (committee) {
         if (!member.committees) member.committees = [];
-        let name = committee.Name.trim();
-        if (name.slice(name.length - 10, name.length) === ' Committee') {
-          name = name.slice(0, name.length - 10);
+        // Add new Committee role if a later one doesn't exist
+        const dupeCommIndex = member.committees.findIndex((currComm) =>
+          currComm.ID === parseInt(committee.ID, 10));
+        let isReplacing = false;
+        if (dupeCommIndex !== -1) {
+          isReplacing =
+          !!(member.committees[dupeCommIndex].validFromDate.isBefore(parseSPDate(committee.ValidFromDate)));
         }
-        const newComm = {
-          role: roleInfo.Name,
-          name,
-          abbreviation: committee.ShortName,
-          validFromDate,
-          ID: committee.ID,
-        };
-        let rank = 10;
-        const isConv = roleInfo.Name.search(/(convener)/gi) !== -1;
-        const isDeputy = roleInfo.Name.search(/(deputy)/gi) !== -1;
-        const isSub = roleInfo.Name.search(/(substitute)/gi) !== -1;
-        if (isConv && !isDeputy) rank = 0;
-        else if (isConv && isDeputy) rank = 1;
-        else if (!isSub) rank = 2;
-        newComm.rank = rank;
-        member.committees.push(newComm);
+        if (dupeCommIndex === -1 || isReplacing) {
+          let name = committee.Name.trim();
+          if (name.slice(name.length - 10, name.length) === ' Committee') {
+            name = name.slice(0, name.length - 10);
+          }
+          const newComm = {
+            role: roleInfo.Name,
+            name,
+            abbreviation: committee.ShortName,
+            validFromDate,
+            ID: committee.ID,
+          };
+          let rank = 10;
+          const isConv = roleInfo.Name.search(/(convener)/gi) !== -1;
+          const isDeputy = roleInfo.Name.search(/(deputy)/gi) !== -1;
+          const isSub = roleInfo.Name.search(/(substitute)/gi) !== -1;
+          if (isConv && !isDeputy) rank = 0;
+          else if (isConv && isDeputy) rank = 1;
+          else if (!isSub) rank = 2;
+          newComm.rank = rank;
+          if (!isReplacing) member.committees.push(newComm);
+          else member.cpgs.splice(dupeCommIndex, 1, newComm);
+        }
       }
     }
   }
+}
 
-  // CPGs. These values contain duplicates so need to check dates.
+function getcpgRoles(selectedDate, memberData, coreData) {
   for (let i = 0; i < coreData.membercrosspartyroles.length; i++) {
     const cpgRole = coreData.membercrosspartyroles[i];
     const member = memberData[cpgRole.PersonID];
@@ -288,8 +310,6 @@ function getMembers(selectedDate, coreData) {
       ));
       if (cpg) {
         if (!member.cpgs) member.cpgs = [];
-
-        // Add new CPG role if a later one doesn't exist
         const dupeCPGIndex = member.cpgs.findIndex((currCPG) =>
           currCPG.ID === parseInt(cpg.ID, 10));
         let isReplacing = false;
@@ -333,8 +353,9 @@ function getMembers(selectedDate, coreData) {
       }
     }
   }
+}
 
-  // Make the dict an array, sort info arrays, and add party titles.
+function createMemberListAndAddTitles(memberData) {
   const memberList = Object.values(memberData);
   for (let i = 0; i < memberList.length; i++) {
     const member = memberList[i];
@@ -370,9 +391,52 @@ function getMembers(selectedDate, coreData) {
       }
     }
   }
+  return memberList;
+}
 
+// Main function
+function getMembers(selectedDate, coreData) {
+  const memberData = {};
+
+  // Election statuses are used to determine current members
+  const cStatuses = filterByDate(selectedDate, coreData.MemberElectionConstituencyStatuses);
+  const rStatuses = filterByDate(selectedDate, coreData.MemberElectionregionStatuses);
+  Object.assign(memberData, getConstituencyMembers(cStatuses, coreData));
+  Object.assign(memberData, getRegionalMembers(rStatuses, coreData));
+
+  // Populate the member list with info from coreData
+  console.log(coreData);
+  console.log(memberData);
+  getBasicInfo(memberData, coreData);
+  getPhysicalAddresses(memberData, coreData);
+  getEmailAddresses(memberData, coreData);
+  getWebsites(memberData, coreData);
+  getPartyInfoAndRoles(selectedDate, memberData, coreData);
+  getGovtRoles(selectedDate, memberData, coreData);
+  getCommitteeRoles(selectedDate, memberData, coreData);
+  getcpgRoles(selectedDate, memberData, coreData);
+
+  // Make the dict into an array for the app. Add final party titles at this point.
+  const memberList = createMemberListAndAddTitles(memberData);
 
   return (memberList);
 }
 
-export default getMembers;
+// Most of these are exported for testing purposes
+export {
+  parseSPDate,
+  isBetweenDates,
+  filterByDate,
+  getConstituencyMembers,
+  getRegionalMembers,
+  getBasicInfo,
+  getPhysicalAddresses,
+  getEmailAddresses,
+  getWebsites,
+  getPartyInfoAndRoles,
+  getGovtRoles,
+  getCommitteeRoles,
+  getcpgRoles,
+  createMemberListAndAddTitles,
+  getMembers,
+};

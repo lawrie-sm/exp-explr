@@ -53,7 +53,7 @@ function get(url) {
 }
 
 // Main promise for returning the data
-function fetchCoreDataFromAPIs() {
+function fetchCoreData() {
   return new Promise((resolve, reject) => {
     const promiseList = SP_APIS.map((endpoint) => (
       get(`${SP_API_ROOT}${endpoint}`)
@@ -69,4 +69,4 @@ function fetchCoreDataFromAPIs() {
   });
 }
 
-export default fetchCoreDataFromAPIs;
+export { fetchCoreData, SP_APIS };

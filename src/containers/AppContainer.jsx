@@ -5,8 +5,8 @@
 
 import React, { Component } from 'react';
 import moment from 'moment';
-import fetchCoreDataFromAPIs from '../data/fetchCoreDataFromAPIs';
-import getMembers from '../data/getMembers';
+import { fetchCoreData } from '../data/fetchCoreData';
+import { getMembers } from '../data/getMembers';
 import { getPartyList, getGroupList } from '../data/subLists';
 import Spinner from '../components/Spinner';
 import AppBody from '../components/AppBody';
@@ -24,7 +24,7 @@ class AppContainer extends Component {
 
   componentDidMount() {
     const selectedDate = moment();
-    fetchCoreDataFromAPIs().then((coreData) => {
+    fetchCoreData().then((coreData) => {
       this.setData(selectedDate, coreData);
     });
   }
@@ -44,12 +44,14 @@ class AppContainer extends Component {
       commData,
       cpgData,
     });
+    //console.log(coreData);
+    //console.log(memberData);
   }
 
   // Handles the click event on updating the date
   dateUpdateCallback(selectedDate) {
     this.setState({ isLoading: true });
-    fetchCoreDataFromAPIs().then((coreData) => {
+    fetchCoreData().then((coreData) => {
       this.setData(selectedDate, coreData);
     });
   }
