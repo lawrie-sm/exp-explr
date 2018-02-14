@@ -1,10 +1,10 @@
 /*
-  Uses standard semantic-ui-react tabs.
+  Tab and datepicker menu
   Each tab contains a series of lists, depending on the context.
 */
 
 import React from 'react';
-import { Tab } from 'semantic-ui-react';
+import { Tab, Menu } from 'semantic-ui-react';
 import SubLists from './SubLists';
 import SPDatePicker from './SPDatePicker';
 
@@ -39,8 +39,13 @@ const SelectorTabs = ({
       },
     },
     {
-      menuItem: <SPDatePicker selectedDate={selectedDate} dateUpdateCallback={dateUpdateCallback} />,
-      pane: null,
+      menuItem: (
+        <SPDatePicker
+          key="DatePicker"
+          selectedDate={selectedDate}
+          dateUpdateCallback={dateUpdateCallback}
+        />
+      ),
     },
   ];
   return (

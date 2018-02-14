@@ -15,17 +15,23 @@ class SPDatePicker extends React.Component {
     this.state = { selectedDate: props.selectedDate };
     this.handleChange = this.handleChange.bind(this);
     this.toggleCalendar = this.toggleCalendar.bind(this);
+    this.onClickOutside = this.onClickOutside.bind(this);
+  }
+
+  onClickOutside(e) {
+    if (e) e.preventDefault();
+    this.setState({ isOpen: !this.state.isOpen });
+  }
+
+  toggleCalendar(e) {
+    if (e) e.preventDefault();
+    this.setState({ isOpen: !this.state.isOpen });
   }
 
   handleChange(date) {
     this.props.dateUpdateCallback(date);
     this.setState({ selectedDate: date });
-    this.toggleCalendar()
-  }
-
-  toggleCalendar(e) {
-    e && e.preventDefault();
-    this.setState({ isOpen: !this.state.isOpen })
+    this.toggleCalendar();
   }
 
   render() {
@@ -37,6 +43,7 @@ class SPDatePicker extends React.Component {
           minDate={moment({ year: 1999, month: 4, date: 12 })}
           maxDate={moment()}
           onChange={this.handleChange}
+          onClickOutside={this.onClickOutside}
           withPortal
           showMonthDropdown
           showYearDropdown
@@ -48,11 +55,10 @@ class SPDatePicker extends React.Component {
     return (
       <div className="DateWrapper">
         <Button
-          primary
           className="example-custom-input"
           onClick={this.toggleCalendar}
         >
-          {this.state.selectedDate.format("DD-MM-YYYY")}
+          {this.state.selectedDate.format('DD-MM-YY')}
         </Button>
         {calender}
 

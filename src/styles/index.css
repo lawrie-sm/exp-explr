@@ -2,6 +2,8 @@ html, body {
   font-family: 'Lato', Sans Serif
 }
 
+
+
 .animated.list > .item {
   cursor:pointer;
 }
@@ -28,8 +30,7 @@ h4.ui.header {
 
 .DateWrapper {
   margin: 5px;
-  margin-right: 20px;
-  margin-left: auto;
+  margin-left: auto
 }
 
 .DateWrapper > div {
@@ -37,9 +38,21 @@ h4.ui.header {
 }
 
 .react-datepicker__input-container > input {
-  border: 1px solid rgba(34,36,38,.15);
+  border: 1px solid rgba(122, 135, 148, 0.15);
   border-radius: 2px;
   padding: 5px;
+}
+
+.react-datepicker {
+  font-family: 'Lato', Sans Serif !important;
+}
+
+.react-datepicker__current-month {
+  margin-bottom: 8px;
+}
+
+.react-datepicker__day {
+  font-weight: normal;
 }
 
 /* Hide avatars on small screens */
