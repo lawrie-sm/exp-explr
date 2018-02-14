@@ -50,6 +50,7 @@ const SelectorTabs = ({
   ];
   return (
     <Tab
+      className="SelectorTabs"
       menu={{ secondary: true, pointing: true }}
       panes={panes}
       renderActiveOnly={false}

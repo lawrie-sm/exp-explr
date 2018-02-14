@@ -2,24 +2,13 @@ html, body {
   font-family: 'Lato', Sans Serif
 }
 
-
-
 .animated.list > .item {
   cursor:pointer;
 }
 
 .TopBar {
-  padding: 10px 15px;
-  padding-top: 10px;
-}
-
-h1.ui.header {
-  display: inline;
-}
-
-h4.ui.header {
-  display: inline;
-  color: rgba(34,36,38,.75);
+  padding-left: 15px;
+  padding-top: 15px;
 }
 
 /* Flexbox for tab menu items, right align the date */
@@ -31,16 +20,6 @@ h4.ui.header {
 .DateWrapper {
   margin: 5px;
   margin-left: auto
-}
-
-.DateWrapper > div {
-  display: inline-block;
-}
-
-.react-datepicker__input-container > input {
-  border: 1px solid rgba(122, 135, 148, 0.15);
-  border-radius: 2px;
-  padding: 5px;
 }
 
 .react-datepicker {

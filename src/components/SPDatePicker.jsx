@@ -55,6 +55,7 @@ class SPDatePicker extends React.Component {
     return (
       <div className="DateWrapper">
         <Button
+          primary
           className="example-custom-input"
           onClick={this.toggleCalendar}
         >
