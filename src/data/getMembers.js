@@ -7,6 +7,7 @@
 */
 
 import moment from 'moment';
+import { values } from 'lodash';
 
 const IMG_URL_ROOT_SMALL = './img/members/small/';
 
@@ -115,7 +116,7 @@ function getPartyInfoAndRoles(selectedDate, memberData, coreData) {
   for (let i = 0; i < coreData.memberpartyroles.length; i++) {
     const pRole = coreData.memberpartyroles[i];
     const member =
-    Object.values(memberData).find((m) =>
+    values(memberData).find((m) =>
       m.party.membershipID === parseInt(pRole.MemberPartyID, 10));
     const validFromDate = parseSPDate(pRole.ValidFromDate);
     if (member &&
@@ -210,8 +211,9 @@ function getCommitteeRoles(selectedDate, memberData, coreData) {
           currComm.ID === parseInt(committee.ID, 10));
         let isReplacing = false;
         if (dupeCommIndex !== -1) {
-          isReplacing =
-          !!(member.committees[dupeCommIndex].validFromDate.isBefore(parseSPDate(committee.ValidFromDate)));
+          const oldDate = parseSPDate(committee.ValidFromDate);
+          const thisDate = member.committees[dupeCommIndex].validFromDate;
+          isReplacing = !!(thisDate.isBefore(oldDate));
         }
         if (dupeCommIndex === -1 || isReplacing) {
           let name = committee.Name.trim();
@@ -266,8 +268,9 @@ function getcpgRoles(selectedDate, memberData, coreData) {
           currCPG.ID === parseInt(cpg.ID, 10));
         let isReplacing = false;
         if (dupeCPGIndex !== -1) {
-          isReplacing =
-          !!(member.cpgs[dupeCPGIndex].validFromDate.isBefore(parseSPDate(cpg.ValidFromDate)));
+          const oldDate = parseSPDate(cpg.ValidFromDate);
+          const thisDate = member.cpgs[dupeCPGIndex].validFromDate;
+          isReplacing = !!(thisDate.isBefore(oldDate));
         }
         if (dupeCPGIndex === -1 || isReplacing) {
           const role =
@@ -308,18 +311,9 @@ function getcpgRoles(selectedDate, memberData, coreData) {
 }
 
 function createMemberListAndAddTitles(memberData) {
-  const memberList = Object.values(memberData);
+  const memberList = values(memberData);
   for (let i = 0; i < memberList.length; i++) {
     const member = memberList[i];
-    if (member.addresses) {
-      member.addresses.sort((a, b) => a.AddressTypeID - b.AddressTypeID);
-    }
-    if (member.emailAddresses) {
-      member.emailAddresses.sort((a, b) => a.EmailAddress - b.EmailAddressTypeID);
-    }
-    if (member.websites) {
-      member.websites.sort((a, b) => a.WebSiteTypeID - b.WebSiteTypeID);
-    }
     if (member.committees) {
       member.committees.sort((a, b) => a.rank - b.rank);
     }

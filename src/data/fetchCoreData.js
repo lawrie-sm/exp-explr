@@ -30,8 +30,6 @@ const SP_APIS = [
   'personcommitteeroles',
   'committeeroles',
   'committees',
-  'committeetypelinks',
-  'committeetypes',
 ];
 
 // Returns a promise for calling the API using fetch

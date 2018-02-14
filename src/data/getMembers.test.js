@@ -1,6 +1,7 @@
 /* eslint-env jest */
 
 import moment from 'moment';
+import { keys, values } from 'lodash';
 import {
   parseSPDate,
   filterByDate,
@@ -13,7 +14,6 @@ import {
   getCommitteeRoles,
   getcpgRoles,
   createMemberListAndAddTitles,
-  getMembers,
 } from './getMembers';
 
 
@@ -131,7 +131,7 @@ it('Adding basic info works', () => {
   const expected = {
     1001: {
       ID: 1001,
-      birthDate: moment({ year: 1970, month: 0, date: 1 }),
+      birthDate: parseSPDate('1970-01-01T00:00:00'),
       name: 'John Smith',
       gender: 'Male',
       imgURLs: { small: './img/members/small/JohnSmith.jpg' },
@@ -145,16 +145,242 @@ it('Adding basic info works', () => {
     },
   };
   getBasicInfo(memberData, coreData);
-  const IDs = Object.keys(memberData);
-  for (let i = 0; i < IDs.length; i++) {
-    const id = IDs[i];
-    // Need to use moment's 'isSame' here
-    expect(memberData[id].name).toEqual(expected[id].name);
-    expect(memberData[id].gender).toEqual(expected[id].gender);
-    expect(memberData[id].imgURLs).toEqual(expected[id].imgURLs);
-    expect(memberData[id].photoURL).toEqual(expected[id].photoURL);
-    if (memberData[id].birthDate) {
-      expect(memberData[id].birthDate.isSame(expected[id].birthDate)).toBeTruthy();
-    }
-  }
+  expect(memberData).toMatchObject(expected);
 });
+
+it('Adding party info and roles works', () => {
+  const memberData = {
+    1001: { ID: 1001 },
+    1002: { ID: 1002 },
+  };
+  const selectedDate = moment({ year: 2018, month: 0, date: 1 });
+  const coreData = {
+    parties: [
+      {
+        ID: 1,
+        Abbreviation: 'FP',
+        ActualName: 'Fun Party',
+      },
+    ],
+    partyroles: [
+      {
+        ID: 50,
+        Name: 'Party Spokesperson on Laughs',
+      },
+    ],
+    memberparties: [
+      {
+        ID: 991,
+        PartyID: 1,
+        PersonID: 1001,
+        ValidFromDate: '2015-01-01T00:00:00',
+        ValidUntilDate: null,
+      },
+      {
+        ID: 992,
+        PartyID: 1,
+        PersonID: 1002,
+        ValidFromDate: '2015-01-01T00:00:00',
+        ValidUntilDate: null,
+      },
+    ],
+    memberpartyroles: [
+      {
+        MemberPartyID: 991,
+        PartyRoleTypeID: 50,
+        ValidFromDate: '2017-01-01T00:00:00',
+        ValidUntilDate: null,
+      },
+    ],
+  };
+  const expected = {
+    1001: {
+      ID: 1001,
+      party: {
+        ID: 1,
+        abbreviation: 'FP',
+        membershipID: 991,
+        name: 'Fun Party',
+        role: {
+          portfolios: ['Laughs'],
+          rank: 2,
+          validFromDate: parseSPDate('2017-01-01T00:00:00'),
+        },
+      },
+    },
+    1002: {
+      ID: 1002,
+      party: {
+        ID: 1,
+        abbreviation: 'FP',
+        membershipID: 992,
+        name: 'Fun Party',
+      },
+    },
+  };
+  getPartyInfoAndRoles(selectedDate, memberData, coreData);
+  expect(memberData).toMatchObject(expected);
+});
+
+it('Adding government roles works', () => {
+  const memberData = {
+    1001: { ID: 1001 },
+  };
+  const selectedDate = moment({ year: 2018, month: 0, date: 1 });
+  const coreData = {
+    membergovernmentroles: [
+      {
+        GovernmentRoleID: 25,
+        ID: 200,
+        PersonID: 1001,
+        ValidFromDate: '2011-06-24T00:00:00',
+        ValidUntilDate: null,
+      },
+    ],
+    governmentroles: [
+      {
+        ID: 25,
+        Name: 'Cabinet Secretary for Good Times',
+      },
+    ],
+  };
+  const expected = {
+    1001: {
+      ID: 1001,
+      govtRole: {
+        rank: 2,
+        title: 'Cabinet Secretary for Good Times',
+        validFromDate: parseSPDate('2011-06-24T00:00:00'),
+      },
+    },
+  };
+  getGovtRoles(selectedDate, memberData, coreData);
+  expect(memberData).toMatchObject(expected);
+});
+
+it('Adding committee roles works', () => {
+  const memberData = {
+    1001: { ID: 1001 },
+  };
+  const selectedDate = moment({ year: 2018, month: 0, date: 1 });
+  const coreData = {
+    committees: [
+      {
+        ID: 1,
+        Name: 'Silly Committee',
+        ShortName: 'SC',
+        ValidFromDate: '2012-01-01T00:00:00',
+        ValidUntilDate: null,
+      },
+    ],
+    committeeroles: [{ ID: 3, Name: 'Convener' }],
+    personcommitteeroles: [
+      {
+        CommitteeID: 1,
+        CommitteeRoleID: 3,
+        PersonID: 1001,
+        ValidFromDate: '2015-01-01T00:00:00',
+        ValidUntilDate: null,
+      },
+    ],
+  };
+  const expected = {
+    1001: {
+      ID: 1001,
+      committees: [
+        {
+          ID: 1,
+          name: 'Silly',
+          abbreviation: 'SC',
+          rank: 0,
+          role: 'Convener',
+          validFromDate: parseSPDate('2015-01-01T00:00:00'),
+        },
+      ],
+    },
+  };
+  getCommitteeRoles(selectedDate, memberData, coreData);
+  expect(memberData).toMatchObject(expected);
+});
+
+it('Adding cpg roles works', () => {
+  const memberData = {
+    1001: { ID: 1001 },
+  };
+  const selectedDate = moment({ year: 2018, month: 0, date: 1 });
+  const coreData = {
+    crosspartygroups: [
+      {
+        ID: 1,
+        Name: 'Cross-Party Group in the Scottish Parliament on Wasting Time',
+        ValidFromDate: '2012-01-01T00:00:00',
+        ValidUntilDate: null,
+      },
+    ],
+    crosspartygrouproles: [{ ID: 2, Name: 'Member' }],
+    membercrosspartyroles: [
+      {
+        CrossPartyGroupID: 1,
+        CrossPartyGroupRoleID: 2,
+        PersonID: 1001,
+        ValidFromDate: '2015-01-01T00:00:00',
+        ValidUntilDate: null,
+      },
+    ],
+  };
+  const expected = {
+    1001: {
+      ID: 1001,
+      cpgs: [
+        {
+          ID: 1,
+          name: 'Wasting Time',
+          rank: 10,
+          role: 'Member',
+          validFromDate: parseSPDate('2015-01-01T00:00:00'),
+        },
+      ],
+    },
+  };
+  getcpgRoles(selectedDate, memberData, coreData);
+  expect(memberData).toMatchObject(expected);
+});
+
+it('Creating the member list and party titles works', () => {
+  const memberData = {
+    1001: {
+      ID: 1001,
+      party: {
+        ID: 1,
+        abbreviation: 'FP',
+        membershipID: 991,
+        name: 'Fun Party',
+        role: {
+          portfolios: ['Laughs'],
+          rank: 2,
+          validFromDate: parseSPDate('2017-01-01T00:00:00'),
+        },
+      },
+    },
+  };
+  const expected = [
+    {
+      ID: 1001,
+      party: {
+        ID: 1,
+        abbreviation: 'FP',
+        membershipID: 991,
+        name: 'Fun Party',
+        role: {
+          title: 'Spokesperson on Laughs',
+          portfolios: ['Laughs'],
+          rank: 2,
+          validFromDate: parseSPDate('2017-01-01T00:00:00'),
+        },
+      },
+    },
+  ];
+  const memberList = createMemberListAndAddTitles(memberData);
+  expect(memberList).toMatchObject(expected);
+});
+
