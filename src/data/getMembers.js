@@ -93,54 +93,6 @@ function getBasicInfo(memberData, coreData) {
   }
 }
 
-function getPhysicalAddresses(memberData, coreData) {
-  for (let i = 0; i < coreData.addresses.length; i++) {
-    const address = coreData.addresses[i];
-    const member = memberData[address.PersonID];
-    if (member) {
-      if (!member.addresses) member.addresses = [];
-      const newAddress = {};
-      if (address.Line1) newAddress.line1 = address.Line1;
-      if (address.Line2) newAddress.line2 = address.Line2;
-      if (address.PostCode) newAddress.postCode = address.PostCode;
-      if (address.Region) newAddress.region = address.Region;
-      if (address.Town) newAddress.town = address.Town;
-      member.addresses.push(newAddress);
-    }
-  }
-}
-
-function getEmailAddresses(memberData, coreData) {
-  for (let i = 0; i < coreData.emailaddresses.length; i++) {
-    const eAddress = coreData.emailaddresses[i];
-    const member = memberData[eAddress.PersonID];
-    if (member && eAddress.Address) {
-      if (!member.emailAddresses) member.emailAddresses = [];
-      const newEmailAddress = {};
-      newEmailAddress.type =
-      coreData.emailaddresstypes.find((e) =>
-        e.ID === parseInt(eAddress.EmailAddressTypeID, 10)).Name;
-      newEmailAddress.address = eAddress.Address;
-      member.emailAddresses.push(newEmailAddress);
-    }
-  }
-}
-
-function getWebsites(memberData, coreData) {
-  for (let i = 0; i < coreData.websites.length; i++) {
-    const website = coreData.websites[i];
-    const member = memberData[website.PersonID];
-    if (member && website.WebURL) {
-      if (!member.websites) member.websites = [];
-      const newWebsite = {};
-      newWebsite.type =
-      coreData.websitetypes.find((w) => w.ID === parseInt(website.WebSiteTypeID, 10)).Name;
-      newWebsite.url = website.WebURL;
-      member.websites.push(newWebsite);
-    }
-  }
-}
-
 function getPartyInfoAndRoles(selectedDate, memberData, coreData) {
   for (let i = 0; i < coreData.memberparties.length; i++) {
     const mInfo = coreData.memberparties[i];
@@ -408,9 +360,6 @@ function getMembers(selectedDate, coreData) {
   console.log(coreData);
   console.log(memberData);
   getBasicInfo(memberData, coreData);
-  getPhysicalAddresses(memberData, coreData);
-  getEmailAddresses(memberData, coreData);
-  getWebsites(memberData, coreData);
   getPartyInfoAndRoles(selectedDate, memberData, coreData);
   getGovtRoles(selectedDate, memberData, coreData);
   getCommitteeRoles(selectedDate, memberData, coreData);
@@ -430,9 +379,6 @@ export {
   getConstituencyMembers,
   getRegionalMembers,
   getBasicInfo,
-  getPhysicalAddresses,
-  getEmailAddresses,
-  getWebsites,
   getPartyInfoAndRoles,
   getGovtRoles,
   getCommitteeRoles,

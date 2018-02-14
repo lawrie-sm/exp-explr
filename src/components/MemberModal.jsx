@@ -54,6 +54,7 @@ class MemberModal extends React.Component {
             </Header>
             {commRoles}
             {cpgRoles}
+            {(!member.committees && !member.cpgs) ? '(No Committee or CPG roles)' : ''}
             <Divider hidden />
 
           </Modal.Description>
