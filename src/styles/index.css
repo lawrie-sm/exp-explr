@@ -20,9 +20,16 @@ h4.ui.header {
   color: rgba(34,36,38,.75);
 }
 
+/* Flexbox for tab menu items, right align the date */
+
+.ui.pointing.secondary.menu {
+  display: flex;
+}
+
 .DateWrapper {
-  margin-top: 8px;
-  margin-bottom: 0;
+  margin: 5px;
+  margin-right: 20px;
+  margin-left: auto;
 }
 
 .DateWrapper > div {

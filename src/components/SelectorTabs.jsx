@@ -6,12 +6,15 @@
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import SubLists from './SubLists';
+import SPDatePicker from './SPDatePicker';
 
 const SelectorTabs = ({
   partyData,
   commData,
   cpgData,
+  selectedDate,
   openModalCallback,
+  dateUpdateCallback,
 }) => {
   const panes = [
     {
@@ -34,6 +37,10 @@ const SelectorTabs = ({
         key: cpgData.title,
         content: <SubLists subLists={cpgData.data} openModalCallback={openModalCallback} />,
       },
+    },
+    {
+      menuItem: <SPDatePicker selectedDate={selectedDate} dateUpdateCallback={dateUpdateCallback} />,
+      pane: null,
     },
   ];
   return (

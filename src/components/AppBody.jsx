@@ -14,16 +14,14 @@ class AppBody extends React.PureComponent {
       <div className="AppBody">
         <div className="TopBar">
           <Header as="h1">MSP Data</Header>
-          <SPDatePicker
-            selectedDate={this.props.selectedDate}
-            dateUpdateCallback={this.props.dateUpdateCallback}
-          />
         </div>
         <SelectorTabs
           partyData={this.props.partyData}
           commData={this.props.commData}
           cpgData={this.props.cpgData}
+          selectedDate={this.props.selectedDate}
           openModalCallback={this.props.openModalCallback}
+          dateUpdateCallback={this.props.dateUpdateCallback}
         />
       </div>
     );
