@@ -72,38 +72,3 @@ export function getGroupList(memberData, groupToDisplay) {
   groupList.forEach((gl) => gl.memberInfos.sort((a, b) => a.rank - b.rank));
   return groupList;
 }
-
-// This function works, but there is a need to combine individial party portfolios into broader
-// categories, (e.g Communities & Social Security) including with ministers.
-export function getFrontBench(memberData) {
-  const fbList = [];
-  for (let i = 0; i < memberData.length; i++) {
-    const member = memberData[i];
-    if (member.party.role && member.party.role.portfolios) {
-      for (let p = 0; p < member.party.role.portfolios.length; p++) {
-        const memberPortfolio = member.party.role.portfolios[p];
-        const portfolio = fbList.find((port) => port.name === memberPortfolio);
-        if (!portfolio) {
-          fbList.push({
-            name: memberPortfolio,
-            ID: i,
-            memberInfos: [{
-              member,
-              roleTitle: member.party.role.title,
-              rank: member.party.role.rank,
-            }],
-          });
-        } else {
-          portfolio.memberInfos.push({
-            member,
-            roleTitle: member.party.role.title,
-            rank: member.party.role.rank,
-          });
-        }
-      }
-    }
-  }
-  fbList.sort((a, b) => a.memberInfos.length < b.memberInfos.length);
-  fbList.forEach((fb) => fb.memberInfos.sort((a, b) => a.rank - b.rank));
-  return fbList;
-}

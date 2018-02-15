@@ -351,8 +351,6 @@ function getMembers(selectedDate, coreData) {
   Object.assign(memberData, getRegionalMembers(rStatuses, coreData));
 
   // Populate the member list with info from coreData
-  console.log(coreData);
-  console.log(memberData);
   getBasicInfo(memberData, coreData);
   getPartyInfoAndRoles(selectedDate, memberData, coreData);
   getGovtRoles(selectedDate, memberData, coreData);
@@ -380,3 +378,4 @@ export {
   createMemberListAndAddTitles,
   getMembers,
 };
+

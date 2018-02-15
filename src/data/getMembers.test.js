@@ -383,4 +383,3 @@ it('Creating the member list and party titles works', () => {
   const memberList = createMemberListAndAddTitles(memberData);
   expect(memberList).toMatchObject(expected);
 });
-
