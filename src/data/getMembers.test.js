@@ -1,7 +1,6 @@
 /* eslint-env jest */
 
 import moment from 'moment';
-import { keys, values } from 'lodash';
 import {
   parseSPDate,
   filterByDate,
@@ -17,7 +16,7 @@ import {
 } from './getMembers';
 
 
-it('Date parsing works', () => {
+it('parses dates', () => {
   const parsedDate = parseSPDate('2017-05-11T00:00:00');
   const referenceDate = moment({ year: 2017, month: 4, date: 11 });
   expect(parsedDate.isSame(referenceDate)).toBeTruthy();
@@ -27,7 +26,7 @@ it('Date parsing works', () => {
   expect(parseSPDate(undefined)).toBeNull();
 });
 
-it('Finding dates between ranges works', () => {
+it('finds dates between ranges', () => {
   const min = moment({ year: 2010, month: 0, date: 1 });
   const max = moment({ year: 2018, month: 0, date: 1 });
   const inRange = moment({ year: 2014, month: 0, date: 1 });
@@ -38,7 +37,7 @@ it('Finding dates between ranges works', () => {
   expect(isBetweenDates(outOfRange, min, null)).toBeFalsy();
 });
 
-it('Date filtering works', () => {
+it('filters dates', () => {
   const arrToFilter = [
     {
       ValidFromDate: '2005-01-01T00:00:00',
@@ -61,7 +60,7 @@ it('Date filtering works', () => {
   expect(filterByDate(twoDates, arrToFilter)).toHaveLength(2);
 });
 
-it('Getting members by constituency works', () => {
+it('gets members by constituency', () => {
   const statuses = [
     { ID: 306, PersonID: 1001, ConstituencyID: 1 },
     { ID: 307, PersonID: 1002, ConstituencyID: 103 },
@@ -86,7 +85,7 @@ it('Getting members by constituency works', () => {
   expect(getConstituencyMembers(statuses, coreData)).toEqual(expect.arrayContaining(expected));
 });
 
-it('Getting members by region works', () => {
+it('gets members by region', () => {
   const statuses = [
     { ID: 306, PersonID: 1001, RegionID: 1 },
     { ID: 307, PersonID: 1002, RegionID: 12 },
@@ -106,7 +105,7 @@ it('Getting members by region works', () => {
   expect(getRegionalMembers(statuses, coreData)).toEqual(expect.arrayContaining(expected));
 });
 
-it('Adding basic info works', () => {
+it('adds basic info', () => {
   const memberData = {
     1001: { ID: 1001 },
     1002: { ID: 1002 },
@@ -148,7 +147,7 @@ it('Adding basic info works', () => {
   expect(memberData).toMatchObject(expected);
 });
 
-it('Adding party info and roles works', () => {
+it('adds party info and roles', () => {
   const memberData = {
     1001: { ID: 1001 },
     1002: { ID: 1002 },
@@ -222,7 +221,7 @@ it('Adding party info and roles works', () => {
   expect(memberData).toMatchObject(expected);
 });
 
-it('Adding government roles works', () => {
+it('adds govt roles', () => {
   const memberData = {
     1001: { ID: 1001 },
   };
@@ -258,7 +257,7 @@ it('Adding government roles works', () => {
   expect(memberData).toMatchObject(expected);
 });
 
-it('Adding committee roles works', () => {
+it('adds committee roles', () => {
   const memberData = {
     1001: { ID: 1001 },
   };
@@ -303,7 +302,7 @@ it('Adding committee roles works', () => {
   expect(memberData).toMatchObject(expected);
 });
 
-it('Adding cpg roles works', () => {
+it('adds cpg roles', () => {
   const memberData = {
     1001: { ID: 1001 },
   };
@@ -346,7 +345,7 @@ it('Adding cpg roles works', () => {
   expect(memberData).toMatchObject(expected);
 });
 
-it('Creating the member list and party titles works', () => {
+it('creates the member list and adds party titles', () => {
   const memberData = {
     1001: {
       ID: 1001,

@@ -3,10 +3,9 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Header } from 'semantic-ui-react';
-import SelectorTabs from './SelectorTabs';
-import SPDatePicker from './SPDatePicker';
-
+import MainTabs from './MainTabs';
 
 class AppBody extends React.PureComponent {
   render() {
@@ -15,7 +14,7 @@ class AppBody extends React.PureComponent {
         <div className="TopBar">
           <Header as="h1">MSP Data</Header>
         </div>
-        <SelectorTabs
+        <MainTabs
           partyData={this.props.partyData}
           commData={this.props.commData}
           cpgData={this.props.cpgData}
@@ -27,5 +26,14 @@ class AppBody extends React.PureComponent {
     );
   }
 }
+
+AppBody.propTypes = {
+  partyData: PropTypes.object.isRequired,
+  commData: PropTypes.object.isRequired,
+  cpgData: PropTypes.object.isRequired,
+  selectedDate: PropTypes.object.isRequired,
+  openModalCallback: PropTypes.func.isRequired,
+  dateUpdateCallback: PropTypes.func.isRequired,
+};
 
 export default AppBody;

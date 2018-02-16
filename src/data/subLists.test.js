@@ -2,7 +2,7 @@
 
 import { getPartyList, getGroupList } from '../data/subLists';
 
-it('getPartyList works', () => {
+it('returns the party list', () => {
   const memberData = [
     {
       ID: 1735,
@@ -49,7 +49,7 @@ it('getPartyList works', () => {
   expect(getPartyList(memberData)).toMatchObject(expected);
 });
 
-it('getGroupList works', () => {
+it('returns a group list', () => {
   const memberData = [
     {
       ID: 5929,

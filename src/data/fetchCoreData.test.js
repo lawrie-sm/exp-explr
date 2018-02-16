@@ -2,7 +2,7 @@
 
 import { fetchCoreData, SP_APIS } from './fetchCoreData';
 
-it('API returns correct arrays', () => {
+it('returns the correct arrays', () => {
   return fetchCoreData().then(data => {
     expect(data).toBeDefined();
     SP_APIS.forEach((api) => {

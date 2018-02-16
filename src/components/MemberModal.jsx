@@ -1,10 +1,12 @@
 /*
-  This modal opens when a member is clicked. It displays
-  CPG and Committee info about the member in question, as well
-  as a larger image.
+  This modal opens when a member is clicked.
+  semantic-ui handles the display of opening/closing via the modalIsOpen prop
+  It displays CPG and Committee info about the member in question, as well
+  as a larger image. A subcomponent is used for the role listing.
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Header, List, Divider, Modal, Image } from 'semantic-ui-react';
 
 class MemberModal extends React.Component {
@@ -79,5 +81,15 @@ const MemberRolesList = ({ header, roles }) => {
   );
 };
 
+MemberModal.propTypes = {
+  modalIsOpen: PropTypes.bool.isRequired,
+  selectedMember: PropTypes.object.isRequired,
+  closeModalCallback: PropTypes.func.isRequired,
+};
+
+MemberRolesList.propTypes = {
+  header: PropTypes.object.isRequired,
+  roles: PropTypes.array.isRequired,
+};
 
 export default MemberModal;

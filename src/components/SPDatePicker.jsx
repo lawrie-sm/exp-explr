@@ -7,6 +7,7 @@ import React from 'react';
 import { Button } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import 'react-datepicker/dist/react-datepicker.css';
 
 class SPDatePicker extends React.Component {
@@ -67,5 +68,10 @@ class SPDatePicker extends React.Component {
     );
   }
 }
+
+SPDatePicker.propTypes = {
+  dateUpdateCallback: PropTypes.func.isRequired,
+  selectedDate: PropTypes.object.isRequired,
+};
 
 export default (SPDatePicker);

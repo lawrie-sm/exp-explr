@@ -1,14 +1,16 @@
 /*
   Tab and datepicker menu
   Each tab contains a series of lists, depending on the context.
+  The datepicker portal button is included in the semantic-ui panes.
 */
 
 import React from 'react';
-import { Tab, Menu } from 'semantic-ui-react';
-import SubLists from './SubLists';
+import PropTypes from 'prop-types';
+import { Tab } from 'semantic-ui-react';
+import PaneContent from './PaneContent';
 import SPDatePicker from './SPDatePicker';
 
-const SelectorTabs = ({
+const MainTabs = ({
   partyData,
   commData,
   cpgData,
@@ -21,21 +23,21 @@ const SelectorTabs = ({
       menuItem: partyData.title,
       pane: {
         key: partyData.title,
-        content: <SubLists subLists={partyData.data} openModalCallback={openModalCallback} />,
+        content: <PaneContent subLists={partyData.data} openModalCallback={openModalCallback} />,
       },
     },
     {
       menuItem: commData.title,
       pane: {
         key: commData.title,
-        content: <SubLists subLists={commData.data} openModalCallback={openModalCallback} />,
+        content: <PaneContent subLists={commData.data} openModalCallback={openModalCallback} />,
       },
     },
     {
       menuItem: cpgData.title,
       pane: {
         key: cpgData.title,
-        content: <SubLists subLists={cpgData.data} openModalCallback={openModalCallback} />,
+        content: <PaneContent subLists={cpgData.data} openModalCallback={openModalCallback} />,
       },
     },
     {
@@ -58,4 +60,13 @@ const SelectorTabs = ({
   );
 };
 
-export default SelectorTabs;
+MainTabs.propTypes = {
+  partyData: PropTypes.object.isRequired,
+  commData: PropTypes.object.isRequired,
+  cpgData: PropTypes.object.isRequired,
+  selectedDate: PropTypes.object.isRequired,
+  openModalCallback: PropTypes.func.isRequired,
+  dateUpdateCallback: PropTypes.func.isRequired,
+};
+
+export default MainTabs;

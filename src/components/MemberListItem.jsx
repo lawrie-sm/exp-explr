@@ -5,6 +5,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Image, List } from 'semantic-ui-react';
 
 class MemberListItem extends React.Component {
@@ -37,5 +38,10 @@ class MemberListItem extends React.Component {
     );
   }
 }
+
+MemberListItem.propTypes = {
+  memberInfo: PropTypes.object.isRequired,
+  openModalCallback: PropTypes.func.isRequired,
+};
 
 export default MemberListItem;

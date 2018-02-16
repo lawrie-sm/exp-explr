@@ -44,8 +44,6 @@ class AppContainer extends Component {
       commData,
       cpgData,
     });
-    //console.log(coreData);
-    //console.log(memberData);
   }
 
   // Handles the click event on updating the date

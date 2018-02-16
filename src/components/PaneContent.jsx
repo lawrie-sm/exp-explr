@@ -1,12 +1,13 @@
 /*
-  Accordion for each sublist (party, cpg, committee)
+  Accordion for each sublist
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Accordion } from 'semantic-ui-react';
 import MemberList from './MemberList';
 
-const SubLists = ({ subLists, openModalCallback }) => {
+const PaneContent = ({ subLists, openModalCallback }) => {
   const subListPanels = subLists.map((subList) => (
     {
       title: subList.name,
@@ -27,4 +28,9 @@ const SubLists = ({ subLists, openModalCallback }) => {
   );
 };
 
-export default SubLists;
+PaneContent.propTypes = {
+  subLists: PropTypes.object.isRequired,
+  openModalCallback: PropTypes.func.isRequired,
+};
+
+export default PaneContent;
