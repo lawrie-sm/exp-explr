@@ -133,17 +133,19 @@ function getPartyInfoAndRoles(selectedDate, memberData, coreData) {
       }
       const roleInfo = coreData.partyroles.find((r) =>
         r.ID === parseInt(pRole.PartyRoleTypeID, 10));
-      const isLeader = roleInfo.Name.search(/leader/gi) !== -1;
-      const isDeputy = roleInfo.Name.search(/deputy/gi) !== -1;
-      const captureRole = /(party spokesperson on the |party spokesperson on )(.*)/gi;
-      const capRole = captureRole.exec(roleInfo.Name);
-      if (capRole && !member.party.role.portfolios.includes(capRole[2])) {
-        member.party.role.portfolios.push(capRole[2]);
+      if (roleInfo) {
+        const isLeader = roleInfo.Name.search(/leader/gi) !== -1;
+        const isDeputy = roleInfo.Name.search(/deputy/gi) !== -1;
+        const captureRole = /(party spokesperson on the |party spokesperson on )(.*)/gi;
+        const capRole = captureRole.exec(roleInfo.Name);
+        if (capRole && !member.party.role.portfolios.includes(capRole[2])) {
+          member.party.role.portfolios.push(capRole[2]);
+        }
+        if (isLeader && !isDeputy && member.party.role.rank > 0) member.party.role.rank = 0;
+        else if (isLeader && isDeputy && member.party.role.rank > 1) member.party.role.rank = 1;
+        else if (!isLeader && isDeputy && member.party.role.rank > 3) member.party.role.rank = 3;
+        else if (member.party.role.rank > 2 && capRole) member.party.role.rank = 2;
       }
-      if (isLeader && !isDeputy && member.party.role.rank > 0) member.party.role.rank = 0;
-      else if (isLeader && isDeputy && member.party.role.rank > 1) member.party.role.rank = 1;
-      else if (!isLeader && isDeputy && member.party.role.rank > 3) member.party.role.rank = 3;
-      else if (member.party.role.rank > 2 && capRole) member.party.role.rank = 2;
     }
   }
 }
